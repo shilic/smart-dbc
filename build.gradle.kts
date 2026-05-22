@@ -31,8 +31,8 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     // 使用该语句，调用自己在 GitHubPackages 上发布的软件包
-    implementation("io.github.shilic:smart-grid:1.0.0")
-    implementation("io.github.shilic:numeric-converter:1.0.0")
+    implementation("io.github.shilic:smart-grid:1.0.1")
+    implementation("io.github.shilic:numeric-converter:1.0.1")
 }
 
 tasks.test {

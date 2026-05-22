@@ -1,9 +1,9 @@
 package dataModel.models
 
-import core.IGridRowData
 import dataModel.dataEnums.CanMsgIdType
 import dataModel.dataEnums.GenMsgSendType
-import numberUtils.toHexStr
+import io.github.shilic.numberUtils.toHexStr
+import io.github.shilic.smartGrid.core.IGridRowData
 
 /** 用于描述消息 Message */
 class CanMessage: IGridRowData  {
