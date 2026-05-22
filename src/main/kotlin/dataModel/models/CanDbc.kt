@@ -36,7 +36,7 @@ class CanDbc {
     fun getChannelInfo(): String = buildString {
         for ((_, msg) in msgMap) {
             append(msg.getMsgBaseInfo())
-            for ((_, sig) in msg.signalMap) append(sig.getSignalInfo())
+            for ((_, sig) in msg.signalMap) append(sig.signalInfo())
         }
     }
 }

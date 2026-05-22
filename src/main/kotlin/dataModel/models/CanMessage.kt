@@ -1,12 +1,18 @@
 package dataModel.models
 
-import dataModel.dataEnums.CANMsgIdType
-import dataModel.dataEnums.MsgSendType
+import core.IGridRowData
+import dataModel.dataEnums.CanMsgIdType
+import dataModel.dataEnums.GenMsgSendType
+import numberUtils.toHexStr
 
-/**
- * 用于描述消息 Message
- */
-class CanMessage  {
+/** 用于描述消息 Message */
+class CanMessage: IGridRowData  {
+
+    // ---------------- IGridRowData 接口实现 -----------------
+    override val gridKey: String get() = msgId.toHexStr()
+    override var gridFather: String = ""
+    override var gridRowIndex: Int? = null
+
     /** 报文名称 */
     var msgName: String = ""
     /** 报文标识符 */
@@ -14,7 +20,7 @@ class CanMessage  {
     /** 报文标识符的DBC编码。标准帧 = msgId；扩展帧 = msgId + 0x8000_0000L */
     var msgIdCode: Long = 0
     /** 帧类型 */
-    var msgIdType: CANMsgIdType = CANMsgIdType.Extended
+    var msgIdType: CanMsgIdType = CanMsgIdType.Extended
     /** 报文长度(byte) */
     var msgLength: Int = 0
     /** 发送节点名称 */
@@ -22,7 +28,7 @@ class CanMessage  {
 //    @Deprecated("暂时不打算增加对诊断报文的识别")
 //    var msgType: MsgType = MsgType.Normal
 
-    var msgSendType: MsgSendType = MsgSendType.Cycle
+    var genMsgSendType: GenMsgSendType = GenMsgSendType.Cycle
     var msgCycleTime: Int = 0
     var msgComment: String = ""
     var msgSendNodeList: MutableSet<String> = hashSetOf()
@@ -34,7 +40,7 @@ class CanMessage  {
 
     fun getMsgBaseInfo(): String = buildString {
         append("\n--消息名称:$msgName, 报文标识符:${msgId.toString(16)}")
-        append(", 信号ID类型:$msgIdType, 发送类型:$msgSendType")
+        append(", 信号ID类型:$msgIdType, 发送类型:$genMsgSendType")
         append(", 周期(ms):$msgCycleTime, 长度(byte):$msgLength")
         append(", 注释:$msgComment, 发送节点:$nodeName")
         append(", 信号数量:${signalMap.size}\n")

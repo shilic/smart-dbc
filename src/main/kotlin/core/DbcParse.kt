@@ -5,7 +5,7 @@ import dataModel.models.CanMessage
 import dataModel.models.CanSignal
 import dataModel.dataEnums.CANByteOrder
 import dataModel.dataEnums.CANDataType
-import dataModel.dataEnums.CANMsgIdType
+import dataModel.dataEnums.CanMsgIdType
 import dataModel.dataEnums.MatrixGroupType
 import tool.toHexStr
 import java.io.*
@@ -117,8 +117,8 @@ object DbcParse {
         val m = boRegex.find(trimmed) ?: error("DbcParse：识别异常: $trimmed")
         val g = m.groups
         val longIdCode = g["longIdCode"]!!.value.toLong(10)
-        val msgIdType = if (longIdCode > 0x7FF) CANMsgIdType.Extended else CANMsgIdType.Standard
-        val msgId = if (msgIdType == CANMsgIdType.Extended) CanMessage.transIdCodeToID(longIdCode) else longIdCode.toInt()
+        val msgIdType = if (longIdCode > 0x7FF) CanMsgIdType.Extended else CanMsgIdType.Standard
+        val msgId = if (msgIdType == CanMsgIdType.Extended) CanMessage.transIdCodeToID(longIdCode) else longIdCode.toInt()
         return CanMessage()
     }
 
