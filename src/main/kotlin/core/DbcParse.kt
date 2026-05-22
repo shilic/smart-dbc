@@ -6,7 +6,8 @@ import dataModel.models.CanSignal
 import dataModel.dataEnums.CANByteOrder
 import dataModel.dataEnums.CANDataType
 import dataModel.dataEnums.CANMsgIdType
-import dataModel.dataEnums.GroupType
+import dataModel.dataEnums.MatrixGroupType
+import tool.toHexStr
 import java.io.*
 import java.nio.charset.Charset
 
@@ -33,7 +34,7 @@ object DbcParse {
 
     /** 从 InputStream 解析 DBC */
     fun getDbcFromInputStream(dbcTag: String, inputStream: InputStream): CanDbc {
-        val dbc = CanDbc.getEmptyDbc(dbcTag)
+        val dbc = CanDbc()
         try {
             inputStream.reader(Charset.forName("GBK")).buffered().use { parseLines(dbc, it) }
         } catch (e: IOException) { error("DbcParse: IO异常") }
@@ -46,7 +47,7 @@ object DbcParse {
         require(file.exists()) { "DbcParse：文件不存在" }
         require(!file.isDirectory) { "DbcParse：该文件是目录" }
         require(file.name.endsWith(".dbc")) { "DbcParse：不是DBC文件" }
-        val dbc = CanDbc.getEmptyDbc(dbcTag)
+        val dbc = CanDbc()
         try {
             file.reader(Charset.forName("GBK")).buffered().use { parseLines(dbc, it) }
         } catch (e: IOException) { error("DbcParse：IO异常") }
@@ -60,14 +61,14 @@ object DbcParse {
             val match = titleRegex.find(trimmed) ?: return@forEachLine
             when (match.groupValues[1]) {
                 "VERSION" -> println("DbcParse：版本信息：$trimmed")
-                "BU_:" -> dbc.addCanNodeSet(parseBU(trimmed))
+                "BU_:" -> dbc.nodeSet.addAll(parseBU(trimmed))
                 "BO_" -> {
                     val msg = parseBO(trimmed)
-                    dbc.intMsgMap.putIfAbsent(msg.msgId, msg)
+                    dbc.msgMap.putIfAbsent(msg.msgId.toHexStr(), msg)
                 }
                 "SG_" -> {
                     val sig = parseSG(trimmed)
-                    dbc.getMessageAtIndex(dbc.intMsgMap.size - 1)?.signalMap?.putIfAbsent(sig.signalName, sig)
+                    dbc.getMsgAt(dbc.msgMap.size - 1)?.signalMap?.putIfAbsent(sig.signalName, sig)
                 }
             }
         }
@@ -80,15 +81,18 @@ object DbcParse {
         val m = sgRegex.find(trimmed) ?: error("DbcParse：识别异常: $trimmed")
         val g = m.groups
 
-        var groupNum = -1; var groupType = GroupType.Default_Group
+        var groupNum = -1
+        var groupType : MatrixGroupType = MatrixGroupType.DefaultGroup
         val groupStr = g["group"]?.value
         if (groupStr != null) {
             val gm = groupFlagRegex.find(groupStr)
             if (gm != null) {
                 when {
-                    gm.groups["M"] != null -> error("DbcParse：暂不支持报文分组")
+                    gm.groups["M"] != null -> MatrixGroupType.GroupFlag
                     gm.groups["num"] != null -> {
-                        groupType = GroupType.Group_Number; groupNum = gm.groupValues[2].toInt()
+                        groupNum = gm.groupValues[2].toInt()
+                        groupType = MatrixGroupType.CustomGroup(groupNum)
+
                     }
                 }
             }
@@ -103,12 +107,7 @@ object DbcParse {
             receiveNodeRegex.findAll(nodeStr).forEach { it.groups["node"]?.value?.let { n -> receiveNodeSet.add(n) } }
         } else { receiveNodeSet.add(Vector__XXX) }
 
-        return CanSignal(
-            g["sigName"]!!.value, groupType, groupNum, byteOrder,
-            g["startBit"]!!.value.toInt(), g["bitLength"]!!.value.toInt(), dataType,
-            g["Factor"]!!.value.toDouble(), g["Offset"]!!.value.toDouble(),
-            g["min"]!!.value.toDouble(), g["max"]!!.value.toDouble(), unit, receiveNodeSet
-        )
+        return CanSignal()
     }
 
     /** 解析消息行 */
@@ -120,10 +119,7 @@ object DbcParse {
         val longIdCode = g["longIdCode"]!!.value.toLong(10)
         val msgIdType = if (longIdCode > 0x7FF) CANMsgIdType.Extended else CANMsgIdType.Standard
         val msgId = if (msgIdType == CANMsgIdType.Extended) CanMessage.transIdCodeToID(longIdCode) else longIdCode.toInt()
-        return CanMessage(
-            g["msgName"]!!.value, msgId, longIdCode, msgIdType,
-            g["length"]!!.value.toInt(), g["node"]?.value ?: Vector__XXX
-        )
+        return CanMessage()
     }
 
     /** 解析节点行 */

@@ -1,6 +1,7 @@
 package core
 
 import dataModel.models.CanDbc
+import tool.toHexStr
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -99,18 +100,18 @@ class CanManagerImp private constructor() : CanManagerService {
             val canBind = field.getAnnotation(CanBinding::class.java) ?: continue
             val signal = resolveSignal(canBind)
                 ?: error("字段 '${field.name}' 绑定有误: 信号{${canBind.signalTag}}未在DBC中找到")
-            signal.field = field
-            signal.dataModel = model
+//            signal.field = field
+//            signal.dataModel = model
         }
     }
 
     private fun resolveSignal(bind: CanBinding) = dbcMap.values.firstNotNullOfOrNull { dbc ->
-        if (bind.messageId == CanBinding.Default) dbc.getSignal(bind.signalTag.trim())
-        else dbc.getSignal(bind.signalTag.trim(), bind.messageId)
+        if (bind.messageId == CanBinding.DEFAULT_ID) dbc.getSignal(bind.signalTag.trim())
+        else dbc.getSignal(bind.signalTag.trim(), bind.messageId.toHexStr())
     }
 
     private fun getCoderForCanId(canId: Int): CanCoder? {
-        val dbc = dbcMap.values.firstOrNull { canId in it.intMsgMap } ?: return null
+        val dbc = dbcMap.values.firstOrNull { canId.toHexStr() in it.msgMap.keys } ?: return null
         return coderMap.getOrPut(dbc.dbcTag) { CanCoder(dbc) }
     }
 

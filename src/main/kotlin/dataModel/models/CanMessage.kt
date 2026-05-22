@@ -44,8 +44,9 @@ class CanMessage  {
     fun getMsgValue(): String = buildString {
         append("报文名称：").append(msgName).append(";\n")
         signalMap.values.forEach { sig ->
-            append("信号 : ${sig.signalName} = ${sig.readValue()};\n")
+            //append("信号 : ${sig.signalName} = ${sig.readValue()};\n")
         }
+        TODO()
     }
 
     companion object {

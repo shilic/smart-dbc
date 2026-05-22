@@ -22,7 +22,7 @@ fun IntArray?.toHexStr(): String {
 /** LongArray -> 16进制格式 */
 fun LongArray?.toHexStr(): String {
     if (this == null || isEmpty()) return "{}"
-    return joinToString(", ", "{ ", " }") { "0x%16X".format(it) }
+    return joinToString(", ", "{ ", " }") { "0x%016X".format(it) }
 }
 
 //  ============================== 集合 → 十六进制 ==============================
@@ -41,22 +41,22 @@ fun Array<Number>?.toHexStr(): String {
 /** Array UByte -> 16进制格式 */
 fun Array<UByte>?.toHexStr(): String {
     if (this == null || isEmpty()) return "{}"
-    return joinToString(", ", "{ ", " }") { "0x%02X".format(it)  }
+    return joinToString(", ", "{ ", " }") { "0x%02X".format(it.toInt())  }
 }
 /** Array UShort -> 16进制格式 */
 fun Array<UShort>?.toHexStr(): String {
     if (this == null || isEmpty()) return "{}"
-    return joinToString(", ", "{ ", " }") { "0x%04X".format(it)  }
+    return joinToString(", ", "{ ", " }") { "0x%04X".format(it.toInt())  }
 }
 /** Array UInt -> 16进制格式 */
 fun Array<UInt>?.toHexStr(): String {
     if (this == null || isEmpty()) return "{}"
-    return joinToString(", ", "{ ", " }") { "0x%08X".format(it)  }
+    return joinToString(", ", "{ ", " }") { "0x%08X".format(it.toLong())  }
 }
 /** Array ULong -> 16进制格式 */
 fun Array<ULong>?.toHexStr(): String {
     if (this == null || isEmpty()) return "{}"
-    return joinToString(", ", "{ ", " }") { "0x%16X".format(it)  }
+    return joinToString(", ", "{ ", " }") { "0x%016X".format(it.toLong())  }
 }
 // ============================== 紧凑格式 ==============================
 /** ByteArray -> 紧凑格式 "AB01FE"（无0x前缀，无分隔符） */
@@ -72,7 +72,7 @@ fun Array<Byte>?.toCompactHexStr(): String {
 /** Array UByte -> 紧凑格式 "AB01FE"（无0x前缀，无分隔符） */
 fun Array<UByte>?.toCompactHexStr(): String {
     if (this == null || isEmpty()) return ""
-    return joinToString("") { "%02X".format(it) }
+    return joinToString("") { "%02X".format(it.toInt()) }
 }
 // ============================== 单值 → 十六进制 ==============================
 /** 数值 → 16进制格式 */
@@ -92,16 +92,16 @@ fun Short.toHexStr(): String = "0x%04X".format(this)
 /** Int -> 16进制格式 */
 fun Int.toHexStr(): String = "0x%08X".format(this)
 /** Long -> 16进制格式 */
-fun Long.toHexStr(): String = "0x%16X".format(this)
+fun Long.toHexStr(): String = "0x%016X".format(this)
 
 /** UByte -> 16进制格式 */
-fun UByte.toHexStr(): String = "0x%02X".format(this)
+fun UByte.toHexStr(): String = "0x%02X".format(this.toInt())
 /** UShort -> 16进制格式 */
-fun UShort.toHexStr(): String = "0x%04X".format(this)
+fun UShort.toHexStr(): String = "0x%04X".format(this.toInt())
 /** UInt -> 16进制格式 */
-fun UInt.toHexStr(): String = "0x%08X".format(this)
+fun UInt.toHexStr(): String = "0x%08X".format(this.toLong())
 /** ULong -> 16进制格式 */
-fun ULong.toHexStr(): String = "0x%16X".format(this)
+fun ULong.toHexStr(): String = "0x%016X".format(this.toLong())
 
 /** Long -> 8位十六进制（截断高32位） */
 fun Long.toHex8(): String = "0x%08X".format(this.toInt())
