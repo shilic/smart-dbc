@@ -1,0 +1,158 @@
+# ====================================
+# Kotlin & Java 类库项目 .gitignore
+# 版本：2025.1
+# 覆盖：Gradle, Maven, IntelliJ, Android Studio, macOS, Linux, Windows
+# ====================================
+
+# ------------- 构建系统 -------------
+# Gradle (现代 Kotlin/Java 项目首选)
+.gradle/
+**/build/
+!src/**/build/ # 保留 src 下可能存在的 build 目录（如有特殊结构），但通常不需要
+build/
+
+# Gradle 包装器特定文件（保留 gradle-wrapper.jar 但忽略其下载缓存）
+!gradle/wrapper/gradle-wrapper.jar
+.gradle-wrapper/
+gradle/wrapper/*.zip
+gradle/wrapper/*.zip.lock
+
+# Gradle 守护进程和本地构建缓存
+**/gradle-app.setting
+!gradle-app.setting
+gradle.properties.offline
+**/.gradle-app.setting
+gradle/daemon/
+.gradle/daemon/
+
+# Maven (备用)
+target/
+**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.properties
+
+# ------------- 集成开发环境 -------------
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iws
+*.iml
+*.ipr
+*.orig
+**/out/
+.idea_modules/
+.idea/copyright/
+.idea/scopes/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+.idea/libraries/
+.idea/runConfigurations/
+
+# Android Studio 特定
+.idea/navEditor.xml
+.idea/deploymentTargetDropDown.xml
+.idea/assetWizardSettings.xml
+.idea/completion/
+.idea/compiler.xml
+.idea/codeStyles/
+
+# VS Code (如果使用)
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# ------------- 编译输出 -------------
+# 编译产生的类文件
+*.class
+**/*.class
+
+# 打包文件
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Kotlin 元数据
+*.kotlin_module
+
+# KAPT 注解处理器生成的文件（如果使用）
+**/build/generated/source/kapt/
+**/build/tmp/kapt3/
+
+# ------------- 日志文件 -------------
+*.log
+*.log.*
+**/logs/
+logs/
+**/*.log.*
+
+# ------------- 操作系统 -------------
+# macOS
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+**/.DS_Store
+
+# Linux/Unix
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+[Ll]ost+[Ff]ound/
+
+# ------------- 本地配置 -------------
+# 本地环境变量、密钥等（永远不要提交！）
+*.env
+*.env.local
+*.env.*.local
+local.properties
+secrets.properties
+**/local-overrides.gradle
+**/local.gradle
+override.properties
+
+# 用户特定配置
+*.orig
+*.*~
+
+# ------------- 测试报告 -------------
+# 单元测试和集成测试报告
+**/build/reports/tests/
+**/test-results/
+*.hprof
+*.hprof.index
+**/TEST-*.xml
+**/surefire-reports/
+**/failsafe-reports/
+/src/test/resources/DBC/Example.ini
+/src/test/resources/DBC/Example2.ini
+/src/test/resources/DBC/大屏协议（测试版2）GBK编码.ini
