@@ -11,38 +11,17 @@ interface CanAccessor : KPropertyAccessor, SignalAccessor {
      *
      * -> 到DBC对象
      *
-     * -> 到绑定的默认接受者字段
+     * -> 到指定接受者字段; [newOwner] 参数为空时，使用默认接受者
      * */
-    fun writeCanValue(value: Double) {
-        super<SignalAccessor>.currentPhyValue = value
-        super<KPropertyAccessor>.setPropertyValue(value)
-    }
-    /**  写入CAN值：
-     *
-     * -> 到DBC对象
-     *
-     * -> 到指定接受者字段
-     * */
-    fun writeCanValue(owner: Any, value: Double){
-        super<SignalAccessor>.currentPhyValue = value
-        super<KPropertyAccessor>.setPropertyValue(owner, value)
+    fun writeCanValue(value: Double, newOwner: Any? = null) {
+        currentPhyValue = value
+        setPropertyValue(value, newOwner)
     }
     /**  读取CAN值：
      *
-     * -> 优先从从绑定的默认接受者字段
+     * -> 优先从指定接受者字段读取值; [newOwner] 参数为空时，使用默认接受者
      *
-     * -> 其次从DBC对象
+     * -> 如果绑定字段值为空, 其次从DBC对象读取信号值
      * */
-    fun readCanValue() : Double {
-        return super<KPropertyAccessor>.getPropertyValue() ?: super<SignalAccessor>.currentPhyValue
-    }
-    /**  读取CAN值：
-     *
-     * -> 优先从从指定接受者字段
-     *
-     * -> 其次从DBC对象
-     * */
-    fun readCanValue(owner: Any) : Double {
-        return super<KPropertyAccessor>.getPropertyValue(owner) ?: super<SignalAccessor>.currentPhyValue
-    }
+    fun readCanValue(newOwner: Any? = null) : Double = getPropertyValue(newOwner) ?: currentPhyValue
 }

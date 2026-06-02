@@ -14,11 +14,11 @@ interface MutableCanSignal: IMutableValueTable, IMutableGridRowData, CanSignal {
 
     // -------------------- 信号排列 ----------------------
     override var groupType: MatrixGroupType
-    override var byteOrder: CANByteOrder
+    override var byteOrder: CanByteOrder
     override var genSigSendType: GenSigSendType
     override var startBit: Int
     override var bitLength: Int
-    override var dataType: CANDataType
+    override var dataType: CanDataType
     override var factor: Double
     override var offset: Double
 

@@ -1,13 +1,17 @@
 package io.github.shilic.smartDbc.can.contract
 
-import io.github.shilic.smartDbc.can.models.canFrame.interfaces.CanFrame
+import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 
 /** 抽象底层 MCU 接口
  *
+ * 实现最基础的报文的收发功能
+ *
  * */
 interface IMcu {
-    fun nativeSend(canId: Int, data8: ByteArray)
+    /** 本地发送 */
+    fun nativeSend(canFrame: CanFrame)
+    /** 本地注册监听 */
     fun nativeRegister(canListener: CanListener)
+    /** 本地取消注册监听 */
     fun nativeUnRegister(canListener: CanListener)
-    fun nativeReceive(): Array<CanFrame> = error("该方法暂时未实现")
 }

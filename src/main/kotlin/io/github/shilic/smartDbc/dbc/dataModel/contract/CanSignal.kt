@@ -3,7 +3,12 @@ package io.github.shilic.smartDbc.dbc.dataModel.contract
 import io.github.shilic.smartDbc.can.accessors.*
 import io.github.shilic.smartDbc.dbc.dataModel.*
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
-import io.github.shilic.smartDbc.dbc.utils.*
+import io.github.shilic.smartDbc.valueConverter.hexToPhy
+import io.github.shilic.smartDbc.valueConverter.hexToText
+import io.github.shilic.smartDbc.valueConverter.phyToHex
+import io.github.shilic.smartDbc.valueConverter.phyToText
+import io.github.shilic.smartDbc.valueConverter.textToHex
+import io.github.shilic.smartDbc.valueConverter.textToPhy
 import io.github.shilic.smartGrid.core.*
 
 /** 提供不可变的 CanSignal */
@@ -31,13 +36,13 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
     val groupType: MatrixGroupType
     /** 排列格式。
      *
-     * [CANByteOrder.Intel] : 低位存低位, 显示 1 ;
+     * [CanByteOrder.Intel] : 低位存低位, 显示 1 ;
      *
-     * [CANByteOrder.MotorolaMSB] 摩托罗拉格式 MSB, 显示 0 , 与 DBC 文件格式一致
+     * [CanByteOrder.MotorolaMSB] 摩托罗拉格式 MSB, 显示 0 , 与 DBC 文件格式一致
      *
-     * [CANByteOrder.MotorolaLSB] 摩托罗拉格式 LSB, 显示 0 , 与 CANdb++ 软件格式一致
+     * [CanByteOrder.MotorolaLSB] 摩托罗拉格式 LSB, 显示 0 , 与 CANdb++ 软件格式一致
      * */
-    val byteOrder: CANByteOrder
+    val byteOrder: CanByteOrder
     /** 信号发送类型
      *
      *  [GenSigSendType.Cyclic] 周期型, 值 = 0
@@ -66,15 +71,15 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
     val bitLength: Int
     /** 数据类型，
      *
-     * [CANDataType.Unsigned] 无符号 , 显示+
+     * [CanDataType.Unsigned] 无符号 , 显示+
      *
-     * [CANDataType.Signed] 有符号， 显示 -
+     * [CanDataType.Signed] 有符号， 显示 -
      *
-     * [CANDataType.Float] 浮点数， 显示 - ; 另外标注 SIG_VALTYPE_ = 1
+     * [CanDataType.Float] 浮点数， 显示 - ; 另外标注 SIG_VALTYPE_ = 1
      *
-     * [CANDataType.Double] 双精度浮点数， 显示 - ; 另外标注 SIG_VALTYPE_ = 2
+     * [CanDataType.Double] 双精度浮点数， 显示 - ; 另外标注 SIG_VALTYPE_ = 2
      * */
-    val dataType: CANDataType
+    val dataType: CanDataType
     /** factor 精度 (精度factor作为除数不可以为0, 否则无意义) ; 物理值 = 原始值 * factor + offset */
     val factor: Double
     /** offset 偏移量 (通常为负数) ； 物理值 = 原始值 * factor + offset */

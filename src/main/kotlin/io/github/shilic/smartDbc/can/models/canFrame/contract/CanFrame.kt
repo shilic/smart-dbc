@@ -1,4 +1,6 @@
-package io.github.shilic.smartDbc.can.models.canFrame.interfaces
+package io.github.shilic.smartDbc.can.models.canFrame.contract
+
+import io.github.shilic.numberUtils.toHexStr
 
 /**
  * CAN帧接口
@@ -52,4 +54,6 @@ interface CanFrame {
     val fdFlag: Int
     /** 数据长度, 自动赋值为 [CanFrame.data] 的长度*/
     val dataLen :Int get() = data.size
+    /**  帧数据展示 */
+    val display: String get() = "CanFrame: [msgId: ${msgId.toHexStr()}, data:${data.toHexStr()}]"
 }

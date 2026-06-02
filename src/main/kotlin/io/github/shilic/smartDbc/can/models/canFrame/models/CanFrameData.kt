@@ -1,7 +1,7 @@
 package io.github.shilic.smartDbc.can.models.canFrame.models
 
 import io.github.shilic.smartDbc.can.models.canFrame.enums.*
-import io.github.shilic.smartDbc.can.models.canFrame.interfaces.*
+import io.github.shilic.smartDbc.can.models.canFrame.contract.*
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 
 /**
@@ -51,7 +51,7 @@ data class CanFrameData (
      *
      *  @property CanExternFlag.intValue 整型值
      * */
-    val canExternFlag: CanExternFlag,
+    val canExternFlag: CanExternFlag = CanExternFlag.Extended,
     /**
      *  CanFd 标志位
      *
@@ -61,7 +61,7 @@ data class CanFrameData (
      *
      * @property CanFdFlag.intValue 整型值
      */
-    val canFdFlag: CanFdFlag
+    val canFdFlag: CanFdFlag = CanFdFlag.Can
 ) : CanFrame {
     // ++++++++++++++++++++++++ 实现 CanFrame 接口 +++++++++++++++++++++++++
     override val msgId: Int get() = canMsgId
@@ -96,4 +96,11 @@ data class CanFrameData (
         result = 31 * result + dataLen
         return result
     }
+
+    override fun toString(): String = display
+    companion object {
+        fun empty(canMsgId: Int) = CanFrameData(canMsgId, ByteArray(8))
+    }
 }
+/** 使用扩展函数，快速创建一个 CanFrameData  */
+fun ByteArray.toCanFrame(canMsgId: Int) : CanFrameData = CanFrameData(canMsgId, this)

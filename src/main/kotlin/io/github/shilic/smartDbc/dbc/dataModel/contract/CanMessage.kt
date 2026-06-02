@@ -5,7 +5,7 @@ import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartGrid.core.*
 
 /**
- * 提供不可变的 CanMessage ;
+ * 提供只读的的 [CanMessage] ;
  * */
 interface CanMessage : IGridRowData, IDbcElement, SubDataOwner  {
     // +++++++++++++ IGridRowData 接口实现， 只重写 gridKey 定义，其他保持默认 ++++++++++++++

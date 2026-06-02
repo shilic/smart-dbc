@@ -5,10 +5,11 @@ import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
 import kotlin.collections.mutableMapOf
 import kotlin.text.appendLine
+import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanMessage as MMsg
 
 /** 用于描述消息 Message */
 @GridSheetBind(gridSheetType = GridSheetType.Dictionary)
-class CanMessageImp: MutableCanMessage<CanSignalImp> {
+open class CanMessageImp: MMsg<CanSignalImp> {
     // ----------------------- 基本信息 -----------------------
     @GridColumnBind(headerText = "报文名称", pattern = "报文名称|MsgName|((Msg|msg|MSG|Message|MESSAGE|message)\\s*(Name|name|NAME))", valueType = GridValueType.Text, uiIgnore = true, keyword = true)
     override var msgName: String = ""

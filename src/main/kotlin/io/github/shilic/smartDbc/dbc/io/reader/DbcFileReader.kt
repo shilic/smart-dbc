@@ -1,9 +1,10 @@
 package io.github.shilic.smartDbc.dbc.io.reader
 
 import io.github.shilic.smartDbc.dbc.dataModel.DEFAULT_NODE
-import io.github.shilic.smartDbc.dbc.dataModel.contract.CanMessage
+import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartDbc.dbc.dataModel.models.*
+
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
@@ -37,7 +38,6 @@ class DbcFileReader {
      *
      * 此时会自动关闭文件输入流。
      * */
-    @Suppress("UNUSED")
     constructor(filePath: String) {
         val file = File(filePath)
         require(file.exists()) { "${DbcFileReader::class.simpleName}：文件\"${file.name}\"不存在" }
@@ -75,11 +75,11 @@ class DbcFileReader {
     /** 主函数: 解析 DBC;
      *
      * 并自动判断是否应该关闭文件 */
-    fun createMutableDbc(): CanDbcImp = parseLines(inputStream.reader(charset).buffered()).also { if (closeFile) { inputStream.close() } }
+    fun createMutableDbc(): DataBaseCanImp  = parseLines(inputStream.reader(charset).buffered()).also { if (closeFile) { inputStream.close() } }
 
     /** 逐行解析 */
-    private fun parseLines(reader: BufferedReader) : CanDbcImp {
-        val dbc = CanDbcImp()
+    private fun parseLines(reader: BufferedReader) : DataBaseCanImp  {
+        val dbc = DataBaseCanImp()
         // 行号，调使用
         var lineNumber = 0
         // 使用forEachLine自动处理资源关闭
@@ -137,8 +137,8 @@ class DbcFileReader {
 
         sig.startBit = matchGroups["startBit"]!!.value.toInt()
         sig.bitLength = matchGroups["bitLength"]!!.value.toInt()
-        sig.byteOrder = if (matchGroups["ByteOrder"]!!.value == "0") CANByteOrder.MotorolaMSB else CANByteOrder.Intel
-        sig.dataType = if (matchGroups["DataType"]!!.value == "-") CANDataType.Signed else CANDataType.Unsigned
+        sig.byteOrder = if (matchGroups["ByteOrder"]!!.value == "0") CanByteOrder.MotorolaMSB else CanByteOrder.Intel
+        sig.dataType = if (matchGroups["DataType"]!!.value == "-") CanDataType.Signed else CanDataType.Unsigned
 
         sig.factor = matchGroups["Factor"]!!.value.toDouble()
         sig.offset = matchGroups["Offset"]!!.value.toDouble()

@@ -4,9 +4,13 @@ import io.github.shilic.numberUtils.toHexStr
 import io.github.shilic.smartDbc.dbc.dataModel.models.DbcBaseInfo
 import io.github.shilic.smartGrid.core.*
 
+import  io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanMessage as MMsg
+import  io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
+
+
 // 参考了kotlin语言的设计风格，设计了类似的API，区分了可变和不可变的对象。
-/**  可修改的 CanDbc */
-interface MutableCanDbc<M, S> : CanDbc, IMutableGridRowData, IMutableGridSpecificSheet, MutableSubDataOwner where M: MutableCanMessage<S>, S: MutableCanSignal {
+/**  可修改的 [DataBaseCan] */
+interface MutableDataBaseCan<M, S> : DataBaseCan, IMutableGridRowData, IMutableGridSpecificSheet, MutableSubDataOwner where M: MMsg<S>, S: MSig {
     // ------------------------- 基本信息 ---------------------
     override var dbcTag: String
     override var version: String
@@ -34,9 +38,9 @@ interface MutableCanDbc<M, S> : CanDbc, IMutableGridRowData, IMutableGridSpecifi
     /** 根据索引(添加顺序)获取消息，用于在添加信号时获取刚插入的消息。超出范围返回 null */
     override fun getMsgAt(index: Int): M? = msgMap.entries.elementAtOrNull(index)?.value
     /** 根据信号名称获取一个信号（遍历所有消息） */
-    override fun getSignal(signalTag: String): S? = msgMap.values.firstNotNullOfOrNull { message -> message.signalMap[signalTag] }
+    override fun getSignal(signalName: String): S? = msgMap.values.firstNotNullOfOrNull { message -> message.signalMap[signalName] }
     /** 根据信号名称和报文id获取一个信号 */
-    override fun getSignal(messageTag: String, signalTag: String): S? = msgMap[messageTag]?.signalMap?.get(signalTag)
+    override fun getSignal(messageTag: String, signalName: String): S? = msgMap[messageTag]?.signalMap?.get(signalName)
     /** 根据信号名称和报文id获取一个信号 */
-    override fun getSignal(msgId: Int, signalTag: String): S? = msgMap[msgId.toHexStr()]?.signalMap?.get(signalTag)
+    override fun getSignal(msgId: Int, signalName: String): S? = msgMap[msgId.toHexStr()]?.signalMap?.get(signalName)
 }

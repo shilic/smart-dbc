@@ -3,8 +3,8 @@ package io.github.shilic.smartDbc.dbc.dataModel.contract
 import io.github.shilic.numberUtils.toHexStr
 import io.github.shilic.smartGrid.core.*
 
-/** 提供不可变的 CanDbc */
-interface CanDbc: IGridSpecificSheet, IGridRowData, IDbcElement  {
+/** 提供只读的 [DataBaseCan] */
+interface DataBaseCan: IGridSpecificSheet, IGridRowData, IDbcElement  {
     // +++++++++++++ IGridRowData 接口实现 +++++++++++++++
     override val gridKey: String get() = dbcTag
     override val dbcKey: String get() = dbcTag
@@ -33,22 +33,21 @@ interface CanDbc: IGridSpecificSheet, IGridRowData, IDbcElement  {
         TODO("实现 IDbcElement , 用于序列化到dbc文件 ")
     }
     // =========================  索引器们  ===========================
-    /** 根据报文标签获取报文 */
+    /** 根据报文标签获取报文, 键为消息ID的16进制表示 */
     operator fun get(messageTag: String): CanMessage? = msgMap[messageTag]
     /** 根据消息ID获取消息 */
     operator fun get(msgId: Int): CanMessage? = msgMap[msgId.toHexStr()]
     /** 根据索引(添加顺序)获取消息，用于在添加信号时获取刚插入的消息。超出范围返回 null */
     fun getMsgAt(index: Int): CanMessage? = msgMap.entries.elementAtOrNull(index)?.value
     /** 根据信号名称获取一个信号（遍历所有消息） */
-    fun getSignal(signalTag: String): CanSignal? = msgMap.values.firstNotNullOfOrNull { message -> message.signalMap[signalTag] }
-    /** 根据信号名称和报文id获取一个信号 */
-    fun getSignal(messageTag: String, signalTag: String): CanSignal? = msgMap[messageTag]?.signalMap?.get(signalTag)
-    /** 根据信号名称和报文id获取一个信号 */
-    fun getSignal(msgId: Int, signalTag: String): CanSignal? = msgMap[msgId.toHexStr()]?.signalMap?.get(signalTag)
+    fun getSignal(signalName: String): CanSignal? = msgMap.values.firstNotNullOfOrNull { message -> message.signalMap[signalName] }
+    /** 根据报文id(键为消息ID的16进制表示)和信号名称获取一个信号 */
+    fun getSignal(messageTag: String, signalName: String): CanSignal? = msgMap[messageTag]?.signalMap?.get(signalName)
+    /** 根据报文id(键为消息ID的16进制表示)和信号名称获取一个信号; 推荐使用该方法查询。 */
+    fun getSignal(msgId: Int, signalName: String): CanSignal? = msgMap[msgId.toHexStr()]?.signalMap?.get(signalName)
 
     // ========================= 调试方法 ===============================
     /** 基本信息 */
-
     val baseInfo: String get() = "CanDbcImpBaseInfo(dbcTag=$dbcTag, version = $version, dbcComment=$dbcComment, " +
                 "nodeSet.size=${nodeSet.size}, baudRate=$baudRate, msgMap.size=${msgMap.size})"
     @Suppress("UNUSED")

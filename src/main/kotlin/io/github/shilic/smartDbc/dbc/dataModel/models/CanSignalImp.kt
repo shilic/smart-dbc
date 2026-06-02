@@ -4,10 +4,11 @@ import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
 import kotlin.reflect.KProperty1
+import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
 
 /** 用于描述单个信号 */
 @GridSheetBind(gridSheetType = GridSheetType.SubSignal)
-class CanSignalImp: MutableCanSignal {
+open class CanSignalImp: MSig {
     // ----------------------- 基本信息 ----------------------
     @GridColumnBind(headerText = "SignalName", pattern = "信号名称|((Signal|signal|SIGNAL)\\s*(Name|name|NAME)\\s*)(?!([(（]?\\s*(Chinese|chinese|CHINESE)\\s*[）)]?))", valueType = GridValueType.Text, keyword = true)
     override var signalName: String =  ""
@@ -18,7 +19,7 @@ class CanSignalImp: MutableCanSignal {
     @GridColumnBind(headerText = "GroupType ", pattern = "GroupType|分组类型", valueType = GridValueType.Custom, customAdapterName = "GroupType")
     override var groupType: MatrixGroupType = MatrixGroupType.DefaultGroup
     @GridColumnBind(headerText = "ByteOrder", pattern = "排列格式|ByteOrder|((Byte|byte|BYTE)\\s*(Order|order|ORDER))", valueType = GridValueType.Enumeration)
-    override var byteOrder: CANByteOrder = CANByteOrder.Intel
+    override var byteOrder: CanByteOrder = CanByteOrder.Intel
     @GridColumnBind(headerText = "SignalSendType", pattern = "信号发送类型|SignalSendType|((Signal|signal|SIGNAL)\\s*(Send|send|SEND)\\s*(Type|type|TYPE))", valueType = GridValueType.Enumeration)
     override var genSigSendType: GenSigSendType = GenSigSendType.Cyclic
     @GridColumnBind(headerText = "StartBit", pattern = "起始位|StartBit|((Start|start|START)\\s*(Bit|bit|BIT))", valueType = GridValueType.NumberType)
@@ -26,7 +27,7 @@ class CanSignalImp: MutableCanSignal {
     @GridColumnBind(headerText = "BitLength", pattern = "信号长度|BitLength|((Bit|bit|BIT)\\s*(Length|length|LENGTH))", valueType = GridValueType.NumberType)
     override var bitLength: Int = 0
     @GridColumnBind(headerText = "DataType", pattern = "数据类型|DataType|((Data|data|DATA)\\s*(Type|type|TYPE))", valueType = GridValueType.Enumeration)
-    override var dataType: CANDataType = CANDataType.Unsigned
+    override var dataType: CanDataType = CanDataType.Unsigned
     @GridColumnBind(headerText = "Factor", pattern = "精度|分辨率|Resolution|resolution|Factor|factor|FACTOR", valueType = GridValueType.NumberType)
     override var factor: Double = 1.0
     @GridColumnBind(headerText = "Offset", pattern = "偏移量|offset|Offset|OFFSET", valueType = GridValueType.NumberType)

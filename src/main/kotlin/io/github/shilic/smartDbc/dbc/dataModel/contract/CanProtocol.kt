@@ -11,7 +11,7 @@ interface CanProtocol : IGridRowData  {
     /** 协议描述 */
     val protocolComment: String
     /** DBC对象 */
-    val dbcMap: Map<String, CanDbc>
+    val dbcMap: Map<String, DataBaseCan>
 
-    operator fun get(dbcTag: String): CanDbc? = dbcMap[dbcTag]
+    operator fun get(dbcTag: String): DataBaseCan? = dbcMap[dbcTag]
 }

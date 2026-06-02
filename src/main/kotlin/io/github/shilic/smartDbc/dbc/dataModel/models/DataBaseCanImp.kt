@@ -3,9 +3,11 @@ package io.github.shilic.smartDbc.dbc.dataModel.models
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
 
+import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableDataBaseCan as MDbc
+
 /**  单个 dbc 对象 */
 @GridSheetBind(sheetName = "DbcList", pattern = "DbcList", gridSheetType = GridSheetType.Dictionary)
-class CanDbcImp: MutableCanDbc<CanMessageImp, CanSignalImp> {
+open class DataBaseCanImp: MDbc<CanMessageImp, CanSignalImp> {
     // ------------------------- 基本信息 ---------------------
     @GridColumnBind(headerText = "DBC英文名", pattern = "DBC英文名", valueType = GridValueType.Text, keyword = true)
     override var dbcTag: String = ""

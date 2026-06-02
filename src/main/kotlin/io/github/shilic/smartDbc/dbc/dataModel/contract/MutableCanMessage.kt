@@ -2,9 +2,10 @@ package io.github.shilic.smartDbc.dbc.dataModel.contract
 
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartGrid.core.*
+import  io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
 
 /** 提供可变的 CanMessage; */
-interface MutableCanMessage<S>:  CanMessage, IMutableGridRowData, MutableSubDataOwner where S: MutableCanSignal {
+interface MutableCanMessage<S>:  CanMessage, IMutableGridRowData, MutableSubDataOwner where S: MSig {
     // ----------------------- 基本信息 -----------------------
     override var msgName: String
     override var msgIdType: CanExternFlag

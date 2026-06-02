@@ -18,19 +18,18 @@ class DbcGridReader(private val workbook: Workbook) {
      *
      * 需要在excel表格中使用 'DbcList' 标注需要解析的协议sheet。
      * */
-    fun createMutableDbcMap(): MutableMap<String, CanDbcImp> = GridReader(workbook).read(CanDbcImp::class)
+    fun createMutableDbcMap(): MutableMap<String, DataBaseCanImp> = GridReader(workbook).read(DataBaseCanImp::class)
     /** 从单个DBC sheet 页面, 获取可编辑的CanDbc;
      *
      * 使用此方法可以将任意的协议页面解析成
      * */
-    fun createMutableDbc(sheetName: String, dbcBaseInfo : DbcBaseInfo): CanDbcImp {
+    fun createMutableDbc(sheetName: String, dbcBaseInfo : DbcBaseInfo? = null): DataBaseCanImp {
         val sheet: Sheet = workbook.getSheet(sheetName) ?: error("没有找到名为 '${sheetName}' 的DBC协议")
         val rowIndex: Ref<Int> = Ref(0)
-        // 使用 smart-grid 组件, 从名为 sheetName 的 sheet 读取 CanMessage
-        val canMessages = GridReader(workbook).readBySheet(sheet, CanMessageImp::class, GridSheetType.Dictionary, rowIndex, null)
-        return CanDbcImp().apply {
-            setDbcBaseInfo(dbcBaseInfo)
-            msgMap = canMessages
+        return DataBaseCanImp().apply {
+            dbcBaseInfo?.let { this.setDbcBaseInfo(it) }
+            // 使用 smart-grid 组件, 从名为 sheetName 的 sheet 读取 CanMessage
+            msgMap =  GridReader(workbook).readBySheet(sheet, CanMessageImp::class, GridSheetType.Dictionary, rowIndex, null)
         }
     }
 }
