@@ -3,15 +3,10 @@ package io.github.shilic.smartDbc.dbc.dataModel.contract
 import io.github.shilic.smartDbc.can.accessors.*
 import io.github.shilic.smartDbc.dbc.dataModel.*
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
-import io.github.shilic.smartDbc.valueConverter.hexToPhy
-import io.github.shilic.smartDbc.valueConverter.hexToText
-import io.github.shilic.smartDbc.valueConverter.phyToHex
-import io.github.shilic.smartDbc.valueConverter.phyToText
-import io.github.shilic.smartDbc.valueConverter.textToHex
-import io.github.shilic.smartDbc.valueConverter.textToPhy
+import io.github.shilic.smartDbc.valueConverter.*
 import io.github.shilic.smartGrid.core.*
 
-/** 提供不可变的 CanSignal */
+/** 提供不可变的 [CanSignal] */
 interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
     // +++++++++++++ IGridRowData 接口实现， 只重写 gridKey 定义，其他保持默认 ++++++++++++++
     override val gridKey: String get() = signalName
@@ -110,7 +105,7 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
     /** 信号接收节点列表 (使用自定义逻辑从表格解析) */
     val sigReceiveNodeSet: Set<String>
     /** 信号接收节点集合DBC值 (使用逗号分隔, 自动组合成字符串) */
-    val sigReceiveNodesDbcValue: String get() = sigReceiveNodeSet.takeIf { it.isNotEmpty() }?.joinToString(",") ?: DEFAULT_NODE
+    val sigReceiveNodesDbcValue: String get() = sigReceiveNodeSet.takeIf { it.isNotEmpty() }?.joinToString(",") ?: Vector__XXX
 
     // ++++++++++++++++ 实现 IDbcElement , 用于序列化到文件 ++++++++++++++++
     /** 返回DBC编码, 形如
@@ -118,9 +113,13 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
      * SG_ test_Signal_14 m2 : 24|8@1+ (0.1,-5.55) [-5|20.5] ""  Cabin,CCS
      * */
     override val dbcValue: String get() =
-        " SG_ $signalName ${groupType.dbcValue} : $startBit|$bitLength@${byteOrder.dbcValue}${dataType.dbcValue} " +
+        " $SG_ $signalName ${groupType.dbcValue} : $startBit|$bitLength@${byteOrder.dbcValue}${dataType.dbcValue} " +
                 "($factor,$offset) [$signalMinValuePhys|$signalMaxValuePhys] \"${unit}\" $sigReceiveNodesDbcValue"
-
+    /** 输出注释编码：
+     *
+     * 例如：CM_ SG_ 2560104484 CabinToCCS1_FanMotFlt "鼓风电机故障状态";
+     * */
+    fun commentLine(msgIdCode: Long): String = "$CM_ $SG_ $msgIdCode $signalName \"$signalComment\";"
     // ======================== 调试方法 =========================
     /** 获取基本信息 */
     val baseInfo: String get() = "CanSignalBaseInfo(signalName='$signalName', signalComment='$signalComment', " +
@@ -130,7 +129,6 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
             "unit='$unit', valueTable=$valueTable)"
     /** 获取值信息 */
     val valueInfo: String get() = "($signalName = $currentTextValue)"
-
     /** 将物理值转换为16进制总线值;
      *
      * 公式: 物理值 = 原始值 * factor + offset  */

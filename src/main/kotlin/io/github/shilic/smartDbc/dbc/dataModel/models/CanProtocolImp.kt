@@ -1,10 +1,11 @@
 package io.github.shilic.smartDbc.dbc.dataModel.models
 
+import io.github.shilic.smartDbc.dbc.attributes.models.DbcAttributeDefinitionImp
 import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanProtocol
 import io.github.shilic.smartGrid.core.*
 
 @GridSheetBind(sheetName = "CanProtocol_Info", pattern = "CanProtocol_Info", gridSheetType = GridSheetType.Single)
-open class CanProtocolImp: MutableCanProtocol<DataBaseCanImp, CanMessageImp, CanSignalImp> {
+open class CanProtocolImp: MutableCanProtocol<DataBaseCanImp, CanMessageImp, CanSignalImp, DbcAttributeDefinitionImp> {
     // +++++++++++++++++  IGridRowData 接口实现  +++++++++++++++++
     override var gridFather: String = ""
     override var gridRowIndex: Int? = null

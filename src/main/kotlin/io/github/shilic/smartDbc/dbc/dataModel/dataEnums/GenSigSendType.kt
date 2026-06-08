@@ -1,6 +1,6 @@
 package io.github.shilic.smartDbc.dbc.dataModel.dataEnums
 
-import io.github.shilic.smartDbc.common.tool.IntEnum
+import io.github.shilic.smartDbc.common.customComponents.IntEnum
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.GridColumnBind
 

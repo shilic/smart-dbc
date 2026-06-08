@@ -1,6 +1,6 @@
 package io.github.shilic.smartDbc.can.models.canFrame.enums
 
-import io.github.shilic.smartDbc.common.tool.IntEnum
+import io.github.shilic.smartDbc.common.customComponents.IntEnum
 
 /**
  * CanFd 标志位

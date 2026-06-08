@@ -1,5 +1,6 @@
 package io.github.shilic.smartDbc.dbc.dataModel.models
 
+import io.github.shilic.smartDbc.dbc.attributes.models.*
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
 
@@ -7,7 +8,7 @@ import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableDataBaseCan as MD
 
 /**  单个 dbc 对象 */
 @GridSheetBind(sheetName = "DbcList", pattern = "DbcList", gridSheetType = GridSheetType.Dictionary)
-open class DataBaseCanImp: MDbc<CanMessageImp, CanSignalImp> {
+open class DataBaseCanImp: MDbc<CanMessageImp, CanSignalImp, DbcAttributeDefinitionImp> {
     // ------------------------- 基本信息 ---------------------
     @GridColumnBind(headerText = "DBC英文名", pattern = "DBC英文名", valueType = GridValueType.Text, keyword = true)
     override var dbcTag: String = ""
@@ -20,6 +21,7 @@ open class DataBaseCanImp: MDbc<CanMessageImp, CanSignalImp> {
     @GridColumnBind(headerText = "波特率", pattern = "波特率", valueType = GridValueType.NumberType)
     override var baudRate: Int = 500
 
+    override var attributeMap: MutableMap<String, DbcAttributeDefinitionImp> = mutableMapOf()
     // ------------------------ 子数据 ------------------------
     @GridColumnBind(headerText = "CAN1", valueType = GridValueType.SpecificSheet)
     override var msgMap: MutableMap<String, CanMessageImp> = mutableMapOf()

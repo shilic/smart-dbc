@@ -39,7 +39,7 @@ sealed class MatrixGroupType : IDbcElement {
                 "M" -> GroupFlag
                 "" -> DefaultGroup
                 else ->  groupRegex.find(dbcValueTrim)?.groups["number"]?.value?.let { CustomGroup(it.toInt()) }
-            } ?: error("${MatrixGroupType::class.simpleName} 识别异常, 值必须为 'M' 或 空字符串 \"\" 或 'm + 分组号', 例如 m2 ; 错误值: $dbcValueTrim")
+            } ?: error("${MatrixGroupType::class.simpleName}识别异常, 值必须为 'M' 或 空字符串 \"\" 或 'm + 分组号', 例如 m2 ; 错误值: $dbcValueTrim ;")
         }
     }
 }

@@ -47,6 +47,8 @@ dependencies {
     // 处理xlsx文件（Office Open XML格式）
     implementation("org.apache.poi:poi-ooxml:5.4.0")
 
+    implementation("com.github.albfernandez:juniversalchardet:2.4.0")
+
     // ========== 反射 引入 kotlin-reflect ==========
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
 

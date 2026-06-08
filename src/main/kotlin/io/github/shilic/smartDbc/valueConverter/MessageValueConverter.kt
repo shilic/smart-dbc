@@ -22,16 +22,18 @@ import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 
 // -------------------- 对于 dbc  ----------------------
 /** 解码报文: 输入 CanFrame 报文, 将数据解析到DBC和绑定对象中； */
-fun DataBaseCan.decodeCanFrame(canFrame: CanFrame) = decodeBytes(canFrame.msgId, canFrame.data)
+fun DataBaseCan.decodeCanFrame(canFrame: CanFrame) = this[canFrame.msgId]?.decodeBytes(canFrame.data)
 /** 解码报文: 输入 Bytes 报文, 将数据解析到DBC和绑定对象中； */
 fun DataBaseCan.decodeBytes(msgId: Int, data: ByteArray) = this[msgId]?.decodeBytes(data)
 /** 编码报文: 输出 CanFrame 报文, 将DBC中的数据编码成报文； */
-fun DataBaseCan.encodeCanFrame(msgId: Int, newOwner: Any? = null): CanFrame = this[msgId]?.encodeCanFrame(newOwner) ?: CanFrameData.empty(msgId)
+fun DataBaseCan.encodeCanFrame(msgId: Int, newOwner: Any? = null): CanFrameData = this[msgId]?.encodeCanFrame(newOwner) ?: CanFrameData.empty(msgId)
 /** 编码报文: 输出 Bytes 报文, 将DBC中的数据编码成报文； */
 fun DataBaseCan.encodeBytes(msgId: Int, newOwner: Any? = null): ByteArray = this[msgId]?.encodeBytes(newOwner) ?: ByteArray(8)
 
 
 // -------------------- 对于 msg, 不关心报文ID，只关心数据输入输出 --------------------------
+/** 解码报文: 输入 CanFrame 报文; 将数据解析到 CanMessage 和绑定对象中； */
+fun CanMessage.decodeCanFrame(canFrame: CanFrame) = takeIf { this.msgId == canFrame.msgId }?.decodeBytes(canFrame.data)
 /** 解码报文: 输入 bytes 报文; 将数据解析到 CanMessage 和绑定对象中； */
 fun CanMessage.decodeBytes(canData: ByteArray) {
     // 1. 将字节数组转换为bits数组, 不需要处理摩托罗拉格式。
@@ -49,15 +51,22 @@ fun CanMessage.decodeBytes(canData: ByteArray) {
  *
  * 将 CanMessage 和绑定对象中的数据编码成 CanFrame 报文；
  *
- * 优先从指定接受者字段(或者默认接受者)
+ * 读取CAN值：
+ *
+ * -> 优先从指定接受者字段读取值; [newOwner] 参数为空时，使用默认接受者
+ *
+ * -> 如果绑定字段值为空, 其次从DBC对象读取信号值
  * */
-fun CanMessage.encodeCanFrame(newOwner: Any? = null): CanFrame = encodeBytes(newOwner).toCanFrame(msgId)
-
+fun CanMessage.encodeCanFrame(newOwner: Any? = null): CanFrameData = encodeBytes(newOwner).toCanFrameData(msgId)
 /** 编码报文: 输出 bytes 报文;
  *
  * 将 CanMessage 和绑定对象中的数据编码成 bytes 报文；
  *
- * 优先从指定接受者字段(或者默认接受者)
+ * 读取CAN值：
+ *
+ * -> 优先从指定接受者字段读取值; [newOwner] 参数为空时，使用默认接受者
+ *
+ * -> 如果绑定字段值为空, 其次从DBC对象读取信号值
  * */
 fun CanMessage.encodeBytes(newOwner: Any? = null): ByteArray {
     // 根据报文的字节数，创建对应长度的 待填充的 bits 数组
@@ -155,7 +164,7 @@ fun ByteArray.bitsToHexValue(byteOrder: CanByteOrder, startBit: Int, bitLength: 
 }
 
 /** 将数据按bit位取出，并转换为一个 物理值, 不需要处理摩托罗拉格式 */
-fun ByteArray.intelBitsToPhy(startBit: Int, bitLength: Int, factor: Double, offset: Double) : Double = intelBitsToHex(startBit, bitLength).hexToPhy(factor, offset)
+fun ByteArray.intelBitsToPhy(startBit: Int, bitLength: Int, factor: Double, offset: Double) : Double = copyOfRange(startBit, startBit + bitLength).bitsToLong().hexToPhy(factor, offset)
 
 /** 将数据按bit位取出，并转换为一个 Long 的无符号数 , 不需要处理摩托罗拉格式*/
 fun ByteArray.intelBitsToHex(startBit: Int, bitLength: Int): Long = copyOfRange(startBit, startBit + bitLength).bitsToLong()

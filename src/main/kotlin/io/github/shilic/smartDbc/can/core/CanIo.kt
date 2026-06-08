@@ -3,6 +3,7 @@ package io.github.shilic.smartDbc.can.core
 import io.github.shilic.smartDbc.can.binds.*
 import io.github.shilic.smartDbc.can.contract.*
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
+import io.github.shilic.smartDbc.valueConverter.encodeCanFrame
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
@@ -63,12 +64,17 @@ object CanIo {
      */
     inline fun <reified T : Any> copyNewModel(): T? = (modelMap[T::class] as? CanCopyable<*>)?.copyNew() as? T
     // ======================================== 发送报文 ========================================
-
-//    override fun send(canId: Int, model: Any) {
-//        checkNotNull(mcu) { "没有注册CAN服务，无法发送报文" }
-//        mcu!!.nativeSend(canId, manager.enCode_B(canId, model))
-//    }
-
+    /** 发送报文
+     *
+     * @param msgId 报文ID
+     * @param model 数据模型
+     *  */
+    fun send(msgId: Int, model: Any? = null) {
+        val canFrame = findMessage(msgId)?.encodeCanFrame(model) ?: error("没有在注册DBC中找到报文ID:$msgId")
+        mcu.nativeSend(canFrame)
+    }
+    /**  查找信号  */
+    fun findMessage(msgId: Int): CanMessage? = dbcMap.values.firstNotNullOfOrNull { dbc -> dbc[msgId] }
     /**  查找信号  */
     fun findSignal(canBind: CanBinding): CanSignal? = when (canBind.msgId) {
         CanBinding.DEFAULT_ID -> dbcMap.values.firstNotNullOfOrNull { dbc -> dbc.getSignal(canBind.signalName) }

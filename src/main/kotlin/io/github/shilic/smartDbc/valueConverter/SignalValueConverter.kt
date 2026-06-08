@@ -1,7 +1,7 @@
 package io.github.shilic.smartDbc.valueConverter
 
-import io.github.shilic.smartDbc.common.tool.digitsFormat
-import io.github.shilic.smartDbc.common.tool.findFirstKeyByValue
+import io.github.shilic.smartDbc.common.typeExtension.digitsFormat
+import io.github.shilic.smartDbc.common.typeExtension.findFirstKeyByValue
 
 /**
  * 查找第一个匹配的键（如果存在）

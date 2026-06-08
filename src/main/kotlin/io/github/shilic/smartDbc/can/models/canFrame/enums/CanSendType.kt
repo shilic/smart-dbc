@@ -1,6 +1,6 @@
 package io.github.shilic.smartDbc.can.models.canFrame.enums
 
-import io.github.shilic.smartDbc.common.tool.IntEnum
+import io.github.shilic.smartDbc.common.customComponents.IntEnum
 
 /**
  * 发送帧类型, 只在此帧为发送帧时有意义, 默认 [CanSendType.NORMAL]  ;

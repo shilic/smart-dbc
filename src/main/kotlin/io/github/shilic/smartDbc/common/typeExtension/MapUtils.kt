@@ -1,4 +1,4 @@
-package io.github.shilic.smartDbc.common.tool
+package io.github.shilic.smartDbc.common.typeExtension
 
 /**
  * 在Map中根据值查找所有对应的键

@@ -1,5 +1,6 @@
 package canDemo
 
+import demoData.dbcTag1
 import io.github.shilic.smartDbc.dbc.dataModel.models.DataBaseCanImp
 import io.github.shilic.smartDbc.dbc.io.reader.DbcFileReader
 import kotlin.test.Test

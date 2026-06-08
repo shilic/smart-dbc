@@ -1,4 +1,4 @@
-package canDemo
+package demoData
 
 import io.github.shilic.smartDbc.can.binds.*
 

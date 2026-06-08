@@ -1,4 +1,4 @@
-package io.github.shilic.smartDbc.common.tool
+package io.github.shilic.smartDbc.common.customComponents
 
 /**
  * 自引用泛型接口；
@@ -14,8 +14,6 @@ interface IntEnum<T> where T : Enum<T>, T : IntEnum<T> {
      * 伴生对象必须实现这个接口才能提供fromInt方法
      */
     companion object {
-
-
         /**
          * 为所有实现IntEnum接口的枚举类的伴生对象添加扩展函数
          */

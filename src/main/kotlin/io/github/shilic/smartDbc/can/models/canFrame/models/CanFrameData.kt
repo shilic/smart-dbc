@@ -103,4 +103,4 @@ data class CanFrameData (
     }
 }
 /** 使用扩展函数，快速创建一个 CanFrameData  */
-fun ByteArray.toCanFrame(canMsgId: Int) : CanFrameData = CanFrameData(canMsgId, this)
+fun ByteArray.toCanFrameData(canMsgId: Int): CanFrameData = CanFrameData(canMsgId, this)
