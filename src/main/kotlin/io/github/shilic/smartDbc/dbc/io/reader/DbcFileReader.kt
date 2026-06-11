@@ -52,98 +52,12 @@ class DbcFileReader {
         this.closeFile = true
         this.encoding = inputStream.encoding ?: Charset.forName("GBK")
     }
-
-    // --------------------- 正则表达式们 ----------------------
-    /** 匹配标题的正则表达式。*/
-    private val startRegex = Regex("""^(?<start>${VERSION}|${BU_colon}|${BO_}|${SG_}|${BO_TX_BU_}|${CM_}|${BA_DEF_}|${BA_DEF_DEF_}|${BA_}|${VAL_})\s+""")
-    /** 版本行正则表达式。*/
-    private val versionRegex = Regex("""^${VERSION}\s+"(?<version>[^"]*)"""")
-    /** 解析信号的正则表达式。
-     *
-     * 解析形如 SG_ intel1 m1 : 24|8@1+ (1,0) [0|255] ""  Cabin,CCS  */
-    private val sgRegex = Regex(
-        """${SG_}\s+(?<sigName>\S+)\s+(?<group>[mM]\d*)?\s*:""" +
-        """\s*(?<startBit>\d+)\s*[|]\s*(?<bitLength>\d+)\s*@\s*(?<ByteOrder>[10])\s*(?<DataType>[+-])""" +
-        """\s*\(\s*(?<Factor>-?\d[\d.]*)\s*,\s*(?<Offset>-?\d[\d.]*)\s*\)\s*\[\s*(?<min>-?\d[\d.]*)\s*[|]\s*(?<max>-?\d[\d.]*)]\s*""" +
-        """"(?<unit>[^"]*)"\s*(?<nodeSet>[\w,]*)?"""
-    )
-    /** 解析消息的正则表达式。
-     *
-     * 解析形如 BO_ 2551255586 GroupTest: 8 Test
-     * */
-    private val boRegex = Regex("""${BO_}\s+(?<longIdCode>\d+)\s+(?<msgName>[a-zA-Z_]\w*)\s*:\s*(?<length>\d+)\s*(?<node>[a-zA-Z_]\w*)?""")
-    /** 解析节点的正则表达式。
-     *
-     * 解析形如 BU_: CCS AC
-     *
-     * */
-    private val nodeRegex = Regex("""${BU_colon}(?<nodeSet>[\w\s]*)?""")
-    /** 解析消息接收节点的行正则表达式。
-     *
-     * 解析形如: BO_TX_BU_ 2560107544 : Cabin,Test;
-     * */
-    private val msgReceiveNodesRegex = Regex("""$BO_TX_BU_\s+(?<longIdCode>\d+)\s*:\s*(?<nodeSet>[\w,]*)?\s*;""")
-    /** 解析注释的正则表达式。
-     *
-     * 解析形如
-     *
-     * CM_ BO_ 2560107544 "报文的注释";
-     * */
-    private val msgCommentRegex = Regex("""$BO_\s+(?<longIdCode>\d+)\s+"(?<comment>[^"]*)"\s*;""")
-    /** 解析注释的正则表达式。
-     *
-     * 解析形如
-     *
-     * CM_ SG_ 2560107544 CCSToAC1_AirSw "空调开关。";
-     * */
-    private val sigCommentRegex = Regex("""$SG_\s+(?<longIdCode>\d+)\s+(?<sigName>[a-zA-Z_]\w*)\s+"(?<comment>[^"]*)"\s*;""")
-    /** 解析属性定义的正则表达式。
-     *
-     * 解析形如
-     *
-     * BA_DEF_ SG_  "GenSigStartValue" INT 0 65535;
-     *
-     * BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","Event","IfActive","CE","CA";
-     *
-     * BA_DEF_ BU_  "New_AttrDef_14" FLOAT 0 0;
-     *
-     * BA_DEF_ EV_  "New_AttrDef_17" INT 0 0;
-     *
-     * BA_DEF_  "DBName" STRING ;
-     *
-     * BA_DEF_  "BusType" STRING ;
-     * */
-    private val baDefRegex = Regex("""${BA_DEF_}\s+(?<scope>$BO_|$SG_|$BU_|$EV_)?\s*"(?<name>[^"]+)"\s+(?<valueType>${INT}|${FLOAT}|${STRING}|${ENUM}|${HEX})(?<range>.*);""")
-    /** 解析数值类型的自定义属性范围的正则表达式。
-     *
-     * 例如： BA_DEF_ SG_  "GenSigInactiveValue" INT -5 65535; 中的范围
-     * */
-    private val baDefMinMaxRegex = Regex("""(?<min>\S+)\s+(?<max>\S+)""")
-    /** 解析自定义属性默认值的正则表达式
-     *
-     * 解析形如：
-     *
-     * BA_DEF_DEF_  "GenSigStartValue" 0;
-     *
-     * BA_DEF_DEF_  "GenMsgCycleTime" 200;
-     *
-     * BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
-     *
-     * BA_DEF_DEF_  "GwUsedMsg" "No";
-     *
-     * BA_DEF_DEF_  "DiagState" "No";
-     *
-     * BA_DEF_DEF_  "NmStationAddress" 0;
-     *
-     * BA_DEF_DEF_  "BusType" "CAN";
-     *
-     * */
-    private val baDefDefaultRegex = Regex("""${BA_DEF_DEF_}\s+"(?<name>[^"]+)"(?<value>.*);""")
-
     /** 主函数: 解析 DBC;
      *
      * 并自动判断是否应该关闭文件 */
     fun createMutableDbc(): DataBaseCanImp  = parseLines(inputStream.reader(encoding).buffered()).also { if (closeFile) { inputStream.close() } }
+    /** 匹配标题的正则表达式。*/
+    private val startRegex = Regex("""^(?<start>${VERSION}|${BU_colon}|${BO_}|${SG_}|${BO_TX_BU_}|${CM_}|${BA_DEF_}|${BA_DEF_DEF_}|${BA_}|${VAL_})\s+""")
     /** 逐行解析 */
     private fun parseLines(reader: BufferedReader) : DataBaseCanImp  {
         val dbc = DataBaseCanImp()
@@ -188,6 +102,8 @@ class DbcFileReader {
         }
         return dbc
     }
+    /** 版本行正则表达式。*/
+    private val versionRegex = Regex("""^${VERSION}\s+"(?<version>[^"]*)"""")
     /** 解析版本行
      *
      * 形如 VERSION "V1.0.1"
@@ -198,6 +114,15 @@ class DbcFileReader {
         val matchGroups = versionRegex.find(line)?.groups ?: error("正则表达式识别异常")
         return matchGroups["version"]?.value ?: ""
     }
+    /** 解析信号的正则表达式。
+     *
+     * 解析形如 SG_ intel1 m1 : 24|8@1+ (1,0) [0|255] ""  Cabin,CCS  */
+    private val sgRegex = Regex(
+        """${SG_}\s+(?<sigName>\S+)\s+(?<group>[mM]\d*)?\s*:""" +
+                """\s*(?<startBit>\d+)\s*[|]\s*(?<bitLength>\d+)\s*@\s*(?<ByteOrder>[10])\s*(?<DataType>[+-])""" +
+                """\s*\(\s*(?<Factor>-?\d[\d.]*)\s*,\s*(?<Offset>-?\d[\d.]*)\s*\)\s*\[\s*(?<min>-?\d[\d.]*)\s*[|]\s*(?<max>-?\d[\d.]*)]\s*""" +
+                """"(?<unit>[^"]*)"\s*(?<nodeSet>[\w,]*)?"""
+    )
     /** 解析信号行
      *
      * 形如 SG_ intel1 m1 : 24|8@1+ (1,0) [0|255] ""  Cabin,CCS
@@ -222,6 +147,11 @@ class DbcFileReader {
                 ?.also { list -> list.forEach { it.trim().requireWord() } }?.toMutableSet() ?: mutableSetOf()
         }
     }
+    /** 解析消息的正则表达式。
+     *
+     * 解析形如 BO_ 2551255586 GroupTest: 8 Test
+     * */
+    private val boRegex = Regex("""${BO_}\s+(?<longIdCode>\d+)\s+(?<msgName>[a-zA-Z_]\w*)\s*:\s*(?<length>\d+)\s*(?<node>[a-zA-Z_]\w*)?""")
     /** 解析消息行
      *
      * 形如 BO_ 2551255586 GroupTest: 8 Test
@@ -239,6 +169,12 @@ class DbcFileReader {
             nodeName = matchGroups["node"]?.value?.trim() ?: Vector__XXX
         }
     }
+    /** 解析节点的正则表达式。
+     *
+     * 解析形如 BU_: CCS AC
+     *
+     * */
+    private val nodeRegex = Regex("""${BU_colon}(?<nodeSet>[\w\s]*)?""")
     /** 解析节点行
      *
      * 形如: BU_: CCS AC
@@ -250,6 +186,11 @@ class DbcFileReader {
         return matchGroups["nodeSet"]?.value?.split(" ")
             ?.also { list -> list.forEach { it.trim().requireWord() } }?.toSet() ?: emptySet()
     }
+    /** 解析消息接收节点的行正则表达式。
+     *
+     * 解析形如: BO_TX_BU_ 2560107544 : Cabin,Test;
+     * */
+    private val msgReceiveNodesRegex = Regex("""$BO_TX_BU_\s+(?<longIdCode>\d+)\s*:\s*(?<nodeSet>[\w,]*)?\s*;""")
     /** 解析消息接收节点行
      *
      * 形如: BO_TX_BU_ 2560107544 : Cabin,Test;
@@ -264,6 +205,20 @@ class DbcFileReader {
             ?.also { list -> list.forEach { it.trim().requireWord() } }?.toSet() ?: emptySet()
         return  msgId to nodeSet
     }
+    /** 解析注释的正则表达式。
+     *
+     * 解析形如
+     *
+     * CM_ BO_ 2560107544 "报文的注释";
+     * */
+    private val msgCommentRegex = Regex("""$BO_\s+(?<longIdCode>\d+)\s+"(?<comment>[^"]*)"\s*;""")
+    /** 解析注释的正则表达式。
+     *
+     * 解析形如
+     *
+     * CM_ SG_ 2560107544 CCSToAC1_AirSw "空调开关。";
+     * */
+    private val sigCommentRegex = Regex("""$SG_\s+(?<longIdCode>\d+)\s+(?<sigName>[a-zA-Z_]\w*)\s+"(?<comment>[^"]*)"\s*;""")
     /** 解析注释行
      *
      * CM_ BU_ CCS "大屏节点";
@@ -295,6 +250,28 @@ class DbcFileReader {
             // 添加其他注释的解析......
         }
     }
+    /** 解析属性定义的正则表达式。
+     *
+     * 解析形如
+     *
+     * BA_DEF_ SG_  "GenSigStartValue" INT 0 65535;
+     *
+     * BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","Event","IfActive","CE","CA";
+     *
+     * BA_DEF_ BU_  "New_AttrDef_14" FLOAT 0 0;
+     *
+     * BA_DEF_ EV_  "New_AttrDef_17" INT 0 0;
+     *
+     * BA_DEF_  "DBName" STRING ;
+     *
+     * BA_DEF_  "BusType" STRING ;
+     * */
+    private val baDefRegex = Regex("""${BA_DEF_}\s+(?<scope>$BO_|$SG_|$BU_|$EV_)?\s*"(?<name>[^"]+)"\s+(?<valueType>${INT}|${FLOAT}|${STRING}|${ENUM}|${HEX})(?<range>.*);""")
+    /** 解析数值类型的自定义属性范围的正则表达式。
+     *
+     * 例如： BA_DEF_ SG_  "GenSigInactiveValue" INT -5 65535; 中的范围
+     * */
+    private val baDefMinMaxRegex = Regex("""(?<min>\S+)\s+(?<max>\S+)""")
     /** 解析属性定义
      *
      * 解析形如
@@ -376,6 +353,26 @@ class DbcFileReader {
             // 给 List 集合添加序号，并且转换为MutableMap<Int, String>
             .withIndex().associateTo(mutableMapOf()) { (index, value) -> index to value }
     }
+    /** 解析自定义属性默认值的正则表达式
+     *
+     * 解析形如：
+     *
+     * BA_DEF_DEF_  "GenSigStartValue" 0;
+     *
+     * BA_DEF_DEF_  "GenMsgCycleTime" 200;
+     *
+     * BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+     *
+     * BA_DEF_DEF_  "GwUsedMsg" "No";
+     *
+     * BA_DEF_DEF_  "DiagState" "No";
+     *
+     * BA_DEF_DEF_  "NmStationAddress" 0;
+     *
+     * BA_DEF_DEF_  "BusType" "CAN";
+     *
+     * */
+    private val baDefDefaultRegex = Regex("""${BA_DEF_DEF_}\s+"(?<name>[^"]+)"(?<value>.*);""")
     /** 解析自定义属性的默认值
      *
      * 例如:
@@ -402,19 +399,79 @@ class DbcFileReader {
         val name = matchGroups["name"]!!.value
         val value = matchGroups["value"]?.value?.trim()?.takeIf { it.isNotBlank() } ?: error("自定义属性的默认值不可以为空")
 
-        var attributeDefinition : DbcAttributeDefinitionImp = dbc.attributeMap[name] ?: error("在DBC中, 找不到属性定义: $name")
-        attributeDefinition.defaultValue = when (attributeDefinition.valueType) {
+        var attribute : DbcAttributeDefinitionImp = dbc.attributeMap[name] ?: error("在DBC中, 找不到属性定义: $name")
+        attribute.defaultValue = when (attribute.valueType) {
             StringType -> value.also { it.requireStartsAndEnds("\"") } .removeSurrounding("\"").trim()
             IntegerType, FloatType, HexType -> value.trim().also { it.requireDouble() }
             Enumeration -> {
                 value.also { it.requireStartsAndEnds("\"") } .removeSurrounding("\"").trim().also {
-                    require(attributeDefinition.valueTable.values.contains(it)) {"自定义属性 '${attributeDefinition.name}' 的枚举项不存在: $value"}
+                    require(attribute.valueTable.values.contains(it)) {"自定义属性 '${attribute.name}' 的枚举项不存在: $value"}
                 }
             }
         }
     }
+    /**解析自定义属性值的正则表达式
+     *
+     * 解析形如：
+     *
+     * BA_ "DBName" "Example";
+     *
+     * BA_ "NmStationAddress" BU_ CCS 2;
+     *
+     * BA_ "GenMsgCycleTime" BO_ 2560107544 500;
+     *
+     * BA_ "GenMsgSendType" BO_ 2560107544 1;
+     *
+     * BA_ "GwUsedMsg" BO_ 2560107544 0;
+     *
+     * BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig8 0;
+     *
+     * BA_ "GenSigInactiveValue" SG_ 2434937668 msg1_sig2 100;
+     *
+     * BA_ "GenSigSendType" SG_ 2434937668 msg1_sig2 2;
+     *
+     * */
+    private val baRegex = Regex("""${BA_}\s+"(?<name>[^"]+)"""")
+    private val baNetRegex = Regex("""${BA_}\s+"(?<name>[^"]+)"\s*"(?<value>[^"]+)"\s*;""")
+    private val baNodeRegex = Regex("""${BA_}\s+"(?<name>[^"]+)"\s*${BU_}\s+(?<node>[a-zA-Z_][a-zA-Z0-9_]*)\s+(?<value>.*);""")
+    private val baMsgRegex = Regex("""${BA_}\s+"(?<name>[^"]+)"\s*${BO_}\s+(?<longIdCode>\d+)\s+(?<value>.*);""")
+    private val baSigRegex = Regex("""${BA_}\s+"(?<name>[^"]+)"\s*${SG_}\S+(?<longIdCode>\d+)\s+(?<sigName>[a-zA-Z_][a-zA-Z0-9_]*)\s+(?<value>.*);""")
+    /**解析自定义属性值
+     *
+     * 解析形如：
+     *
+     * BA_ "DBName" "Example";
+     *
+     * BA_ "NmStationAddress" BU_ CCS 2;
+     *
+     * BA_ "GenMsgCycleTime" BO_ 2560107544 500;
+     *
+     * BA_ "GenMsgSendType" BO_ 2560107544 1;
+     *
+     * BA_ "GwUsedMsg" BO_ 2560107544 0;
+     *
+     * BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig8 0;
+     *
+     * BA_ "GenSigInactiveValue" SG_ 2434937668 msg1_sig2 100;
+     *
+     * BA_ "GenSigSendType" SG_ 2434937668 msg1_sig2 2;
+     *
+     * */
+    fun parseBaValue(rawLine: String, dbc : DataBaseCanImp) {
+        val line = rawLine.trim()
+        require(line.startsWith(BA_)) { "该行不以 '${BA_}' 开头" }
+        val matchGroups = baRegex.find(line)?.groups ?: error("正则表达式识别异常")
+        val name = matchGroups["name"]!!.value.also { it.requireWord() }
+        var attribute : DbcAttributeDefinitionImp = dbc.attributeMap[name] ?: error("在DBC中, 找不到属性定义: $name")
+        when(attribute.scope) {
+            DbcAttributeScopeDefinition.Net -> {
+                val
+            }
+        }
+    }
 
-    fun parseBaValue(rawLine: String, dbc : DataBaseCanImp) { 
+    fun parseValueTable(rawLine: String, dbc : DataBaseCanImp) {
+        
     }
 
 
