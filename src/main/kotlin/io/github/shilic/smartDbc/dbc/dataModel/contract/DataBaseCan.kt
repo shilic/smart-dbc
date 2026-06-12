@@ -24,12 +24,16 @@ interface DataBaseCan: IGridSpecificSheet, IGridRowData, IDbcElement  {
     val baudRate: Int
 
     // ----------------------- 自定义属性 ---------------------
-    /** 自定义属性集合 */
+    /** 自定义属性定义的集合 */
     val attributeMap : Map<String, DbcAttributeDefinition>
+    /** 自定义属性值的集合 */
+    val attributeValueMap: Map<String, DbcAttributeValue>
 
     // ------------------------ 子数据 ------------------------
     /** 消息列表，键为消息ID的16进制表示，值为消息对象 */
     val msgMap: Map<String, CanMessage>
+    /** 一个消息对象，用于添加信号时使用, 保存没有依赖的信号; 不允许外部修改 */
+    val independentSigMsg : CanMessage?
 
     // +++++++++++++++ 实现 IGridSpecificSheet 接口, 用于精确定位表格位置。 ++++++++++++++
     override val specificSheetName: String
@@ -45,13 +49,17 @@ interface DataBaseCan: IGridSpecificSheet, IGridRowData, IDbcElement  {
     operator fun get(messageTag: String): CanMessage? = msgMap[messageTag]
     /** 根据消息ID获取消息 */
     operator fun get(msgId: Int): CanMessage? = msgMap[CanMessage.msgIdToKey(msgId)]
+    /** 根据报文关键字和信号名称来搜索一个信号 */
+    operator fun get(messageTag: String, signalName: String): CanSignal? = getSignal(messageTag, signalName)
+    /** 根据报文ID和信号名称来搜索一个信号 */
+    operator fun get(msgId: Int, signalName: String): CanSignal? = getSignal(msgId, signalName)
     /** 根据索引(添加顺序)获取消息，用于在添加信号时获取刚插入的消息。超出范围返回 null */
     fun getMsgAt(index: Int): CanMessage? = msgMap.entries.elementAtOrNull(index)?.value
-    /** 根据信号名称获取一个信号（遍历所有消息） */
+    /** 根据信号名称从DBC中获取一个信号; 需要遍历所有消息, 效率会比较低。 */
     fun getSignal(signalName: String): CanSignal? = msgMap.values.firstNotNullOfOrNull { message -> message.signalMap[signalName] }
-    /** 根据报文id(键为消息ID的16进制表示)和信号名称获取一个信号 */
+    /** 根据报文id(键为消息ID的16进制表示)和信号名称获取一个信号; 相比于单使用名称，查找效率会高一些;  */
     fun getSignal(messageTag: String, signalName: String): CanSignal? = msgMap[messageTag]?.signalMap?.get(signalName)
-    /** 根据报文id(键为消息ID的16进制表示)和信号名称获取一个信号; 推荐使用该方法查询。 */
+    /** 根据报文id(键为消息ID的16进制表示)和信号名称获取一个信号; 相比于单使用名称，查找效率会高一些; 推荐使用该方法查询。 */
     fun getSignal(msgId: Int, signalName: String): CanSignal? = msgMap[CanMessage.msgIdToKey(msgId)]?.signalMap?.get(signalName)
 
     // ========================= 调试方法 ===============================

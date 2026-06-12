@@ -29,6 +29,17 @@ sealed class DbcAttributeScopeData : IDbcElement {
      * */
     abstract val scope: DbcAttributeScopeDefinition
     override val dbcKey: String get() = scope.dbcKey
+    /** 作用域的DBC数据，用于生成DBC文件的属性作用域数据;
+     *
+     * 类似：
+     *
+     * BO_ 2560107544
+     *
+     * SG_ 2560107544 CCSToAC1_FactoryID
+     *
+     * BU_ CCS
+     * */
+    abstract override val dbcValue: String
     /** [DbcAttributeScopeData.Net] 网络类型, 在DBC文件中的编码为 空字符串 "" , 表示整个DBC文件的自定义属性;
      *
      * 例如 DB 的名称 DBName ; 例如 总线类型 BusType ;
@@ -41,16 +52,16 @@ sealed class DbcAttributeScopeData : IDbcElement {
     /** [DbcAttributeScopeData.Message] 报文类型;
      *
      * 在DBC文件中的编码类似:  BA_ "GenMsgCycleTime" BO_ 2560107544 500; */
-    data class Message(val msgIdCode: Long) : DbcAttributeScopeData() {
+    data class Message(val longIdCode: Long) : DbcAttributeScopeData() {
         override val scope: DbcAttributeScopeDefinition = DbcAttributeScopeDefinition.Message
-        override val dbcValue: String get() = "$BO_ $msgIdCode "
+        override val dbcValue: String get() = "$BO_ $longIdCode "
     }
     /** [DbcAttributeScopeData.Signal] 信号类型;
      *
      * 在DBC文件中的编码类似: BA_ "GenSigStartValue" SG_ 2560107544 CCSToAC1_FactoryID 0; */
-    data class Signal(val msgIdCode: Long, val signalName: String) : DbcAttributeScopeData() {
+    data class Signal(val longIdCode: Long, val signalName: String) : DbcAttributeScopeData() {
         override val scope: DbcAttributeScopeDefinition = DbcAttributeScopeDefinition.Signal
-        override val dbcValue: String get() = "$SG_ $msgIdCode $signalName "
+        override val dbcValue: String get() = "$SG_ $longIdCode $signalName "
     }
     /** [DbcAttributeScopeData.Node] 节点类型;
      *

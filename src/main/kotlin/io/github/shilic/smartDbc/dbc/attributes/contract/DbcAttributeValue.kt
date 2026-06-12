@@ -6,8 +6,11 @@ import io.github.shilic.smartDbc.dbc.dataModel.contract.IDbcElement
 
 /** 自定义只读的属性值 */
 interface DbcAttributeValue : IDbcElement {
+    override val dbcKey: String get() = name
     /** 只读的自定义属性类型定义 */
     val definition: DbcAttributeDefinition
+    /** 自定义属性的名称; 固定为属性定义的名称 */
+    val name : String get() = definition.name
     /** 自定义属性作用域数据
      *
      * 作用域数据，用于生成DBC文件的属性作用域数据;
@@ -34,7 +37,7 @@ interface DbcAttributeValue : IDbcElement {
      * */
     val value: String
 
-    override val dbcKey: String get() = definition.name
+
     /** 返回DBC编码，例如：
      *
      * BA_ "DBName" "Example";
@@ -49,7 +52,7 @@ interface DbcAttributeValue : IDbcElement {
      *
      * BA_ "GenMsgSendType" BO_ 2560107544 1;
      * */
-    override val dbcValue: String get() = "$BA_ \"${definition.name}\" ${scopeData.dbcValue} $value;"
+    override val dbcValue: String get() = "$BA_ \"${name}\" ${scopeData.dbcValue} $value;"
 
     /**
      * 获取自定义属性值，并转换为整形

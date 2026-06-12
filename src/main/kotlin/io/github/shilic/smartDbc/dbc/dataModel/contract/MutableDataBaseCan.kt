@@ -1,12 +1,11 @@
 package io.github.shilic.smartDbc.dbc.dataModel.contract
 
+import io.github.shilic.smartDbc.dbc.attributes.models.DbcAttributeData
 import io.github.shilic.smartDbc.dbc.dataModel.models.DbcBaseInfo
-
 import io.github.shilic.smartGrid.core.*
-
-import  io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanMessage as MMsg
-import  io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
 import io.github.shilic.smartDbc.dbc.attributes.contract.MutableDbcAttributeDefinition as MAttr
+import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanMessage as MMsg
+import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
 
 
 // 参考了kotlin语言的设计风格，设计了类似的API，区分了可变和不可变的对象。
@@ -21,9 +20,12 @@ interface MutableDataBaseCan<M, S, A> : DataBaseCan, IMutableGridRowData, IMutab
 
     // ----------------------- 自定义属性 ---------------------
     override var attributeMap : MutableMap<String, A>
+    override var attributeValueMap: MutableMap<String, DbcAttributeData>
 
     // ------------------------ 子数据 ------------------------
     override var msgMap: MutableMap<String, M>
+    override val independentSigMsg : M?
+
     /** 供外部使用，用于快速设置DBC基础信息 */
     fun setDbcBaseInfo (baseInfo: DbcBaseInfo) {
         this.dbcTag = baseInfo.dbcTag
@@ -39,6 +41,10 @@ interface MutableDataBaseCan<M, S, A> : DataBaseCan, IMutableGridRowData, IMutab
     override operator fun get(messageTag: String): M? = msgMap[messageTag]
     /** 根据消息ID获取消息 */
     override operator fun get(msgId: Int): M? = msgMap[CanMessage.msgIdToKey(msgId)]
+    /** 根据报文关键字和信号名称来搜索一个信号 */
+    override operator fun get(messageTag: String, signalName: String): S? = getSignal(messageTag, signalName)
+    /** 根据报文ID和信号名称来搜索一个信号 */
+    override operator fun get(msgId: Int, signalName: String): S? = getSignal(msgId, signalName)
     /** 根据索引(添加顺序)获取消息，用于在添加信号时获取刚插入的消息。超出范围返回 null */
     override fun getMsgAt(index: Int): M? = msgMap.entries.elementAtOrNull(index)?.value
     /** 根据信号名称获取一个信号（遍历所有消息） */

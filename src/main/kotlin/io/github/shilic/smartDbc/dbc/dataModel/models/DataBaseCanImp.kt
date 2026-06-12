@@ -3,6 +3,8 @@ package io.github.shilic.smartDbc.dbc.dataModel.models
 import io.github.shilic.smartDbc.dbc.attributes.models.*
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
+import io.github.shilic.smartDbc.dbc.attributes.models.DbcAttributeData
+import io.github.shilic.smartDbc.dbc.dataModel.*
 
 import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableDataBaseCan as MDbc
 
@@ -22,9 +24,12 @@ open class DataBaseCanImp: MDbc<CanMessageImp, CanSignalImp, DbcAttributeDefinit
     override var baudRate: Int = 500
 
     override var attributeMap: MutableMap<String, DbcAttributeDefinitionImp> = mutableMapOf()
+    override var attributeValueMap: MutableMap<String, DbcAttributeData> = mutableMapOf()
+
     // ------------------------ 子数据 ------------------------
     @GridColumnBind(headerText = "CAN1", valueType = GridValueType.SpecificSheet)
     override var msgMap: MutableMap<String, CanMessageImp> = mutableMapOf()
+    override val independentSigMsg : CanMessageImp? get() = get(VECTOR__INDEPENDENT_SIG_MSG_ID)
 
     // +++++++++++++++ 实现 IGridSpecificSheet 接口 ++++++++++++++
     @GridColumnBind(headerText = "DBC页面名称", pattern = "DBC页面名称", valueType = GridValueType.Text)

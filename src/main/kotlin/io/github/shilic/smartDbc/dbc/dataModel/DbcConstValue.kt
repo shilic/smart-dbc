@@ -5,6 +5,8 @@ package io.github.shilic.smartDbc.dbc.dataModel
  *
  * 表示默认节点 */
 const val Vector__XXX = "Vector__XXX"
+const val VECTOR__INDEPENDENT_SIG_MSG = "VECTOR__INDEPENDENT_SIG_MSG"
+const val VECTOR__INDEPENDENT_SIG_MSG_ID : Int = 0x40000000
 /** 常量: VERSION
  *
  * 表示DBC文件中的版本号*/
@@ -87,4 +89,3 @@ const val BU_BO_REL_ = "BU_BO_REL_"
  *
  * 官方名：Node - Mapped Rx Signal */
 const val BU_SG_REL_ = "BU_SG_REL_"
-

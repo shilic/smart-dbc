@@ -1,6 +1,7 @@
 package io.github.shilic.smartDbc.dbc.dataModel.contract
 
 import io.github.shilic.numberUtils.toHexStr
+import io.github.shilic.smartDbc.dbc.attributes.contract.DbcAttributeValue
 import io.github.shilic.smartDbc.dbc.dataModel.*
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartGrid.core.*
@@ -61,6 +62,10 @@ interface CanMessage : IGridRowData, IDbcElement, SubDataOwner  {
 
     /** 信号列表 ; 键指信号的名称, 值指的是信号 */
     val signalMap: Map<String, CanSignal>
+
+    // ----------------------- 自定义属性 ---------------------
+    /** 自定义属性值的集合 */
+    val attributeValueMap: Map<String, DbcAttributeValue>
 
     // ++++++++++++++++ 实现 IDbcElement , 用于序列化到文件 ++++++++++++++
     /** 返回DBC编码, 形如

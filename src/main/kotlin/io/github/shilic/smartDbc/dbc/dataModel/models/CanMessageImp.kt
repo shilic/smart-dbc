@@ -1,5 +1,7 @@
 package io.github.shilic.smartDbc.dbc.dataModel.models
 
+import io.github.shilic.smartDbc.dbc.attributes.models.DbcAttributeData
+import io.github.shilic.smartDbc.dbc.dataModel.Vector__XXX
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
@@ -33,11 +35,12 @@ open class CanMessageImp: MMsg<CanSignalImp> {
 
     // -------------------------- 节点信息 ------------------------
     //@GridColumnBind(headerText = "nodeName", pattern = "nodeName", valueType = GridValueType.Custom, customAdapterName = "")
-    override var nodeName: String = ""
+    override var nodeName: String = Vector__XXX
     //@GridColumnBind(headerText = "msgReceiveNodeList", pattern = "msgReceiveNodeList", valueType = GridValueType.Custom, customAdapterName = "")
     override var msgReceiveNodeSet: MutableSet<String> = hashSetOf()
     @GridColumnBind(headerText = "SignalName", pattern = "信号名称|((Signal|signal|SIGNAL)\\s*(Name|name|NAME)\\s*)(?!([(（]?\\s*(Chinese|chinese|CHINESE)\\s*[）)]?))", valueType = GridValueType.SubSignal)
     override var signalMap: MutableMap<String, CanSignalImp> = mutableMapOf()
+    override var attributeValueMap: MutableMap<String, DbcAttributeData> = mutableMapOf()
 
     // ++++++++++++++++++++++++ IGridRowData 接口实现 +++++++++++++++++++++++
     override var gridFather: String = ""

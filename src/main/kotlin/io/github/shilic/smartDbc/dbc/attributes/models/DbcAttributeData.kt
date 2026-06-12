@@ -7,7 +7,7 @@ import io.github.shilic.smartDbc.valueConverter.findFirstIndexByValue
 
 /** 自定义属性值  */
 data class DbcAttributeData (
-    override val definition: DbcAttributeDefinitionImp = DbcAttributeDefinitionImp(),
+    override val definition: DbcAttributeDefinition = DbcAttributeDefinitionImp(),
     override val scopeData: DbcAttributeScopeData
 ) : DbcAttributeValue {
     /** 后背字段 */
@@ -50,6 +50,4 @@ data class DbcAttributeData (
         require(definition.isInRange(value.toString())) { "自定义属性 '${definition.name}' 的值 '${value}' 超出范围: '${definition.range}' " }
         this.mValue = value.toString()
     }
-
-
 }

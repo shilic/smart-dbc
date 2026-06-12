@@ -1,8 +1,10 @@
 package io.github.shilic.smartDbc.dbc.dataModel.models
 
+import io.github.shilic.smartDbc.dbc.attributes.models.DbcAttributeData
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
 
@@ -62,6 +64,7 @@ open class CanSignalImp: MSig {
 
     //@GridColumnBind(headerText = "信号接收节点列表", pattern = "信号接收节点列表", valueType = GridValueType.Custom , customAdapterName = "")
     override var sigReceiveNodeSet: MutableSet<String> = mutableSetOf()
+    override var attributeValueMap: MutableMap<String, DbcAttributeData> = mutableMapOf()
 
     // ++++++++++++++++++ IGridRowData 接口实现 +++++++++++++++++
     override var gridFather: String = ""
@@ -116,7 +119,9 @@ open class CanSignalImp: MSig {
 
     // ++++++++++ 实现 KPropertyAccessor 接口，用于从外部绑定对象获取值 +++++++++++
     @Transient
-    override var owner: Any? = null
+    override var originalOwnerType: KClass<*>? = null
     @Transient
-    override var property: KProperty1<*, *>? = null
+    override var originalOwner: Any? = null
+    @Transient
+    override var originalProperty: KProperty1<*, *>? = null
 }

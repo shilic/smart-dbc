@@ -1,7 +1,10 @@
 package io.github.shilic.smartDbc.dbc.dataModel.contract
 
+import io.github.shilic.smartDbc.dbc.attributes.models.DbcAttributeData
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartGrid.core.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 
 /** 提供可变的 CanSignal ;
  *
@@ -36,4 +39,12 @@ interface MutableCanSignal: IMutableValueTable, IMutableGridRowData, CanSignal {
     override var unit: String
 
     override var sigReceiveNodeSet: MutableSet<String>
+
+    // ----------------------- 自定义属性 ---------------------
+    override var attributeValueMap: MutableMap<String, DbcAttributeData>
+
+
+    override var originalOwnerType: KClass<*>?
+    override var originalOwner: Any?
+    override var originalProperty: KProperty1<*, *>?
 }

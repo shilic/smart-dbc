@@ -1,5 +1,6 @@
 package io.github.shilic.smartDbc.dbc.dataModel.contract
 
+import io.github.shilic.smartDbc.dbc.attributes.models.DbcAttributeData
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartGrid.core.*
 import  io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
@@ -19,6 +20,9 @@ interface MutableCanMessage<S>:  CanMessage, IMutableGridRowData, MutableSubData
     override var nodeName: String
     override var msgReceiveNodeSet: MutableSet<String>
     override var signalMap: MutableMap<String, S>
+
+    // ----------------------- 自定义属性 ---------------------
+    override var attributeValueMap: MutableMap<String, DbcAttributeData>
 
     // ======================= 索引器 ==========================
     override operator fun get(signalName: String): S? = signalMap[signalName]

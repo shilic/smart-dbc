@@ -87,7 +87,7 @@ interface DbcAttributeDefinition : IDbcElement, IValueTable, IGridRowData {
      *
      * 文本类型 -> 字符串，或空字符串
      *
-     * 枚举类型 -> 枚举项的文本值, 或空字符串; 注意!! 并不是保存的枚举项序号，而是枚举项的文本值; 而在具体的自定义属性值时，才保存枚举项序号，妈的搞扯;
+     * 枚举类型 -> 枚举项的文本值, 或空字符串; 注意!! 并不是保存的枚举项序号，而是枚举项的文本值; 而在具体的自定义属性值时，才保存枚举项序号，妈的搞扯，为什么不统一定义;
      *
      * */
     val defaultValue: String
@@ -158,5 +158,7 @@ interface DbcAttributeDefinition : IDbcElement, IValueTable, IGridRowData {
             DbcAttributeValueType.HexType -> value.toInt() in min.toInt()..max.toInt()
         }
     }
+
+
 
 }

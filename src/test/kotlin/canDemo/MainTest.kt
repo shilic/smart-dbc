@@ -10,7 +10,7 @@ class MainTest {
     @Test
     fun onCreate() {
         val dbcPath = "src/test/resources/DBC/Example.dbc"
-        val dbc : DataBaseCanImp = DbcFileReader(dbcPath).createMutableDbc().apply {
+        val dbc : DataBaseCanImp = DbcFileReader(dbcPath).create().apply {
             dbcTag = dbcTag1
             dbcComment = "DBC描述"
         }

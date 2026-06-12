@@ -1,6 +1,7 @@
 package io.github.shilic.smartDbc.dbc.dataModel.contract
 
 import io.github.shilic.smartDbc.can.accessors.*
+import io.github.shilic.smartDbc.dbc.attributes.contract.DbcAttributeValue
 import io.github.shilic.smartDbc.dbc.dataModel.*
 import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 import io.github.shilic.smartDbc.valueConverter.*
@@ -106,6 +107,10 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
     val sigReceiveNodeSet: Set<String>
     /** 信号接收节点集合DBC值 (使用逗号分隔, 自动组合成字符串) */
     val sigReceiveNodesDbcValue: String get() = sigReceiveNodeSet.takeIf { it.isNotEmpty() }?.joinToString(",") ?: Vector__XXX
+
+    // ----------------------- 自定义属性 ---------------------
+    /** 自定义属性值的集合 */
+    val attributeValueMap: Map<String, DbcAttributeValue>
 
     // ++++++++++++++++ 实现 IDbcElement , 用于序列化到文件 ++++++++++++++++
     /** 返回DBC编码, 形如

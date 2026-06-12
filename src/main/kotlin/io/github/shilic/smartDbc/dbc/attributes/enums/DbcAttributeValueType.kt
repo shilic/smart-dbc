@@ -24,7 +24,9 @@ const val HEX = "HEX"
  *
  *  [DbcAttributeValueType.Enumeration] 枚举在, DBC文件中是 ENUM ; 范围以英文双引号包裹、以逗号分割的序列表示枚举项, 项不重复; 枚举项的排序(从0开始记)表示枚举的实际值
  *
- *  [DbcAttributeValueType.HexType] 十六进制数值, 在DBC文件中是 HEX ; 注意, 虽然说是16进制数值类型, 但是在DBC文件中, 该数值的最大值、最小值和默认值均是以十进制的方式在保存; 可以说非常智障了;该数据类型和十进制整形基本没有任何区别;
+ *  [DbcAttributeValueType.HexType] 十六进制数值, 在DBC文件中是 HEX ;
+ *  注意, 虽然说是16进制数值类型, 但是在DBC文件中, 该数值的最大值、最小值、默认值以及实际值均是以十进制的方式在保存;
+ *  可以说非常智障了; 该数据类型和十进制整形基本没有任何区别;
  *
  * */
 enum class DbcAttributeValueType (

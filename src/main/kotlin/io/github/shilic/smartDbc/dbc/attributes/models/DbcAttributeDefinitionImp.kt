@@ -32,4 +32,5 @@ open class DbcAttributeDefinitionImp: MutableDbcAttributeDefinition {
 
     override var valueTable: MutableMap<Int, String> = mutableMapOf()
     override var aValue: String = ""
+    override fun toString(): String = "DbcAttributeDefinition(name=$name, comment=$comment, scope=$scope, valueType=$valueType, defaultValue=$defaultValue, range=$range)"
 }
