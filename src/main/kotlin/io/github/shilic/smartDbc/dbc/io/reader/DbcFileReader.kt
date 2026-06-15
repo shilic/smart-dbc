@@ -35,13 +35,11 @@ class DbcFileReader {
         require(file.name.lowercase().endsWith(".dbc")) { "${DbcFileReader::class.simpleName}：文件\"${file.name}\"后缀名必须是 .dbc " }
         this.inputStream = file.inputStream()
         this.encoding = inputStream.encoding ?: Charset.forName("GBK")
-        println("DBC文件编码: $encoding")
     }
     /** 直接通过文件输入流的方式初始化一个 'DBC文件解析器' */
     constructor(inputStream: FileInputStream) {
         this.inputStream = inputStream
         this.encoding = inputStream.encoding ?: Charset.forName("GBK")
-        println("DBC文件编码: $encoding")
     }
     /** 主函数: 解析 DBC;
      *
@@ -50,7 +48,7 @@ class DbcFileReader {
     /** 匹配标题的正则表达式。*/
     val startRegex = Regex("""^(?<start>${VERSION}|${BU_colon}|${BO_}|${SG_}|${BO_TX_BU_}|${CM_}|${BA_DEF_}|${BA_DEF_DEF_}|${BA_}|${VAL_})\s+""")
     /** 逐行解析 */
-    private fun parseLines(reader: BufferedReader) : DataBaseCanImp {
+    private fun parseLines(reader: BufferedReader): DataBaseCanImp {
         val dbc = DataBaseCanImp()
         // 行号，调试用; 这里需要从0开始, 因为进去之后首先会+1
         var lineNumber = 0
@@ -70,7 +68,7 @@ class DbcFileReader {
                         val msg = parseBO(line)
                         dbc.set(msg)
                     }
-                    SG_ -> dbc.getMsgAt(dbc.msgMap.size - 1)?.set(parseSG(line))
+                    SG_ -> dbc.getMsgAt(dbc.msgMap.size - 1)?.let { it.set( parseSG(line).apply { longIdCode = it.longIdCode }) }
                     BO_TX_BU_ -> {
                         val (msgId, nodeSet) = parseBOTXBU(line)
                         dbc[msgId]?.msgReceiveNodeSet?.addAll(nodeSet)
@@ -393,6 +391,7 @@ class DbcFileReader {
             // 整形和16进制按照整形处理。需要去除空白字符，并且校验十进制
             IntegerType, HexType -> value.trim().also { it.requireDecimal() }
             FloatType -> value.trim().also { it.requireDouble() }
+            // 保存枚举默认值时，直接保存文本值，故这里直接去除双引号即可
             Enumeration -> value.trim().also { it.requireStartsAndEnds("\"") } .removeSurrounding("\"").trim().also {
                 require(attribute.valueTable.values.contains(it)) {"自定义属性 '${attribute.name}' 的枚举项不存在: $value"}
             }
@@ -459,7 +458,7 @@ class DbcFileReader {
             DbcAttributeScopeDefinition.Net -> {
                 val netMatchGroups = baNetRegex.find(line)?.groups ?: error("识别网络类型自定义属性值时, 正则表达式识别异常")
                 val valueText = netMatchGroups["value"]?.value?.trim()?.takeIf { it.isNotBlank() } ?: error("自定义属性值不可以为空")
-                val attributeData = DbcAttributeData(attribute, DbcAttributeScopeData.Net)
+                val attributeData = DbcAttributeData(attribute, DbcAttributeScopeData.Net())
                     .apply { value = parseBaValueByType(valueText, attribute.valueType) }
                 // 网络的自定义属性，直接添加到总的属性集合中。
                 dbc.attributeValueMap[name] = attributeData

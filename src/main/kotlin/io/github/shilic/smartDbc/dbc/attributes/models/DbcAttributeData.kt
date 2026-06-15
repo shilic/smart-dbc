@@ -7,6 +7,7 @@ import io.github.shilic.smartDbc.valueConverter.findFirstIndexByValue
 
 /** 自定义属性值  */
 data class DbcAttributeData (
+    @Transient
     override val definition: DbcAttributeDefinition = DbcAttributeDefinitionImp(),
     override val scopeData: DbcAttributeScopeData
 ) : DbcAttributeValue {

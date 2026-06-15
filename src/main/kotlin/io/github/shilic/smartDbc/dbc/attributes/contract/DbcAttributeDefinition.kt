@@ -6,7 +6,7 @@ import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartGrid.core.*
 import kotlin.reflect.KClass
 
-/** 只读的自定义属性值
+/** 只读的自定义属性的定义
  *
  * 例如
  *
@@ -85,9 +85,9 @@ interface DbcAttributeDefinition : IDbcElement, IValueTable, IGridRowData {
      *
      * 整形、浮点型、16进制值时 -> 十进制的数值
      *
-     * 文本类型 -> 字符串，或空字符串
+     * 文本类型 -> 字符串，或空字符串, 序列化时需要添加双引号
      *
-     * 枚举类型 -> 枚举项的文本值, 或空字符串; 注意!! 并不是保存的枚举项序号，而是枚举项的文本值; 而在具体的自定义属性值时，才保存枚举项序号，妈的搞扯，为什么不统一定义;
+     * 枚举类型 -> 枚举项的文本值, 或空字符串, 序列化时需要添加双引号; 注意!! 并不是保存的枚举项序号，而是枚举项的文本值; 而在具体的自定义属性值时，才保存枚举项序号，妈的搞扯，为什么不统一定义;
      *
      * */
     val defaultValue: String
@@ -95,8 +95,15 @@ interface DbcAttributeDefinition : IDbcElement, IValueTable, IGridRowData {
      *
      * 键表示枚举的序号, 从0开始记; 值表示枚举的显示值, 不重复; */
     override val valueTable: Map<Int, String>
-
-
+    /** 自定义属性的默认值行, 仅枚举型时有效;
+     *
+     * 形如 BA_DEF_DEF_  "New_AttrDef_12_Double" 0.5;
+     * */
+    val defaultValueLine: String get() = "$BA_DEF_DEF_  \"${name}\" ${defaultValueText};"
+    val defaultValueText: String get() = when(valueType) {
+        DbcAttributeValueType.IntegerType, DbcAttributeValueType.FloatType, DbcAttributeValueType.HexType -> defaultValue
+        DbcAttributeValueType.StringType, DbcAttributeValueType.Enumeration -> "\"$defaultValue\""
+    }
 
     /**自定义属性的范围
      *

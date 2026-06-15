@@ -29,6 +29,9 @@ sealed class DbcAttributeScopeData : IDbcElement {
      * */
     abstract val scope: DbcAttributeScopeDefinition
     override val dbcKey: String get() = scope.dbcKey
+    override fun toString(): String = "${DbcAttributeScopeData::class.simpleName}.${this::class.simpleName}" +
+            "(${::scope.name}=$scope,${::dbcValue.name}=$dbcValue)"
+
     /** 作用域的DBC数据，用于生成DBC文件的属性作用域数据;
      *
      * 类似：
@@ -38,6 +41,8 @@ sealed class DbcAttributeScopeData : IDbcElement {
      * SG_ 2560107544 CCSToAC1_FactoryID
      *
      * BU_ CCS
+     *
+     * 网络类型则直接输出空字符串
      * */
     abstract override val dbcValue: String
     /** [DbcAttributeScopeData.Net] 网络类型, 在DBC文件中的编码为 空字符串 "" , 表示整个DBC文件的自定义属性;
@@ -45,7 +50,8 @@ sealed class DbcAttributeScopeData : IDbcElement {
      * 例如 DB 的名称 DBName ; 例如 总线类型 BusType ;
      *
      * BA_ "DBName" "Example"; */
-    data object Net : DbcAttributeScopeData() {
+    /* 使用 object 类型，序列化会出现问题；所以这里我使用了class类型，确保序列化密封类时没有问题 */
+    class Net: DbcAttributeScopeData() {
         override val scope: DbcAttributeScopeDefinition = DbcAttributeScopeDefinition.Net
         override val dbcValue: String get() = ""
     }
@@ -70,4 +76,5 @@ sealed class DbcAttributeScopeData : IDbcElement {
         override val scope: DbcAttributeScopeDefinition = DbcAttributeScopeDefinition.Node
         override val dbcValue: String get() = "$BU_ $nodeName "
     }
+
 }

@@ -15,6 +15,16 @@ import io.github.shilic.smartDbc.dbc.dataModel.contract.*
  * */
 enum class DbcAttributeScopeDefinition(
     override val dbcKey : String,
+    /** 自定义属性的作用域类型
+     *
+     * [DbcAttributeScopeDefinition.Net] 网络类型, 在DBC文件中的编码为 空字符串 "" , 表示整个DBC文件的自定义属性;
+     *
+     * [DbcAttributeScopeDefinition.Message] 报文类型, 在DBC文件中的编码为 BO_
+     *
+     * [DbcAttributeScopeDefinition.Signal] 信号类型, 在DBC文件中的编码为 SG_
+     *
+     * [DbcAttributeScopeDefinition.Node] 节点类型, 在DBC文件中的编码为 BU_
+     * */
     override val dbcValue : String
 ) : IDbcElement {
     /** [DbcAttributeScopeDefinition.Net] 网络类型, 在DBC文件中的编码为 空字符串 "" , 表示整个DBC文件的自定义属性;

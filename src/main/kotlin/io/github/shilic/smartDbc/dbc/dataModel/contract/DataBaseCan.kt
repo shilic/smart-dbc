@@ -42,7 +42,9 @@ interface DataBaseCan: IGridSpecificSheet, IGridRowData, IDbcElement  {
     /** 将DBC对象以一整个DBC文件字符串的方式输出； */
     @Deprecated("不推荐使用这种方式输出, 占用内存极大", ReplaceWith("allSequence"))
     override val dbcValue: String get() = allSequence.joinToString(separator = "\n")
+    /** 输出DBC版本编码行，例如 VERSION "1.0.1" */
     val versionLine: String get()  = "$VERSION \"$version\""
+    /** 输出节点行，例如 BU_: CCS AC */
     val nodesLine: String get() = "$BU_colon ${nodeSet.joinToString(" ")}"
     // =========================  索引器们  ===========================
     /** 根据报文标签获取报文, 键为消息ID的16进制表示 */
@@ -64,8 +66,9 @@ interface DataBaseCan: IGridSpecificSheet, IGridRowData, IDbcElement  {
 
     // ========================= 调试方法 ===============================
     /** 基本信息 */
-    val baseInfo: String get() = "CanDbcImpBaseInfo(dbcTag=$dbcTag, version = $version, dbcComment=$dbcComment, " +
-                "nodeSet.size=${nodeSet.size}, baudRate=$baudRate, msgMap.size=${msgMap.size})"
+    val baseInfo: String get() = "${DataBaseCan::class.simpleName}(${::dbcTag.name}=$dbcTag, " +
+            "${::version.name}=$version, ${::dbcComment.name}=$dbcComment, " +
+                "nodeSet.size=${nodeSet.size}, ${::baudRate.name}=$baudRate, msgMap.size=${msgMap.size})"
     @Suppress("UNUSED")
-    val valueInfo: String get() = "CanDbc($dbcTag).Values = \n${msgMap.values.map { it -> "\t${it.valueInfo}\n" }}"
+    val valueInfo: String get() = "${DataBaseCan::class.simpleName}($dbcTag).Values = \n${msgMap.values.map { it -> "\t${it.valueInfo}\n" }}"
 }

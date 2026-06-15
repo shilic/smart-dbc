@@ -12,6 +12,7 @@ import io.github.shilic.smartDbc.dbc.dataModel.contract.MutableCanSignal as MSig
 @GridSheetBind(gridSheetType = GridSheetType.SubSignal)
 open class CanSignalImp: MSig {
     // ----------------------- 基本信息 ----------------------
+    override var longIdCode: Long = 0
     @GridColumnBind(headerText = "SignalName", pattern = "信号名称|((Signal|signal|SIGNAL)\\s*(Name|name|NAME)\\s*)(?!([(（]?\\s*(Chinese|chinese|CHINESE)\\s*[）)]?))", valueType = GridValueType.Text, keyword = true)
     override var signalName: String =  ""
     @GridColumnBind(headerText = "SignalDescription", pattern = "SignalDescription|信号描述|信号注释|((Signal|signal|SIGNAL)\\s*(Name|name|NAME)\\s*[(（]?\\s*(Chinese|chinese|CHINESE)\\s*[）)]?)", valueType = GridValueType.Text)
@@ -19,7 +20,7 @@ open class CanSignalImp: MSig {
 
     // ----------------------- 信号排列 -------------------------
     @GridColumnBind(headerText = "GroupType ", pattern = "GroupType|分组类型", valueType = GridValueType.Custom, customAdapterName = "GroupType")
-    override var groupType: MatrixGroupType = MatrixGroupType.DefaultGroup
+    override var groupType: MatrixGroupType = MatrixGroupType.DefaultGroup()
     @GridColumnBind(headerText = "ByteOrder", pattern = "排列格式|ByteOrder|((Byte|byte|BYTE)\\s*(Order|order|ORDER))", valueType = GridValueType.Enumeration)
     override var byteOrder: CanByteOrder = CanByteOrder.Intel
     @GridColumnBind(headerText = "SignalSendType", pattern = "信号发送类型|SignalSendType|((Signal|signal|SIGNAL)\\s*(Send|send|SEND)\\s*(Type|type|TYPE))", valueType = GridValueType.Enumeration)

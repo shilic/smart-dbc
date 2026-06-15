@@ -12,6 +12,7 @@ import kotlin.reflect.KProperty1
  * */
 interface MutableCanSignal: IMutableValueTable, IMutableGridRowData, CanSignal {
     // -------------------- 基本信息 ---------------------
+    override var longIdCode: Long
     override var signalName: String
     override var signalComment: String
 

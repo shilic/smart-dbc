@@ -1,12 +1,13 @@
 package io.github.shilic.smartDbc.dbc.dataModel
 
+import io.github.shilic.smartDbc.dbc.dataModel.contract.CanMessage
+import io.github.shilic.smartDbc.dbc.dataModel.models.CanMessageImp
+
 // -------------- 常用，标准常量 ------------
 /** 常量: Vector__XXX
  *
  * 表示默认节点 */
 const val Vector__XXX = "Vector__XXX"
-const val VECTOR__INDEPENDENT_SIG_MSG = "VECTOR__INDEPENDENT_SIG_MSG"
-const val VECTOR__INDEPENDENT_SIG_MSG_ID : Int = 0x40000000
 /** 常量: VERSION
  *
  * 表示DBC文件中的版本号*/
@@ -89,3 +90,19 @@ const val BU_BO_REL_ = "BU_BO_REL_"
  *
  * 官方名：Node - Mapped Rx Signal */
 const val BU_SG_REL_ = "BU_SG_REL_"
+
+// ---------------- 无依无靠msg ------------------
+/** 无依无靠msg的名称 */
+const val VECTOR__INDEPENDENT_SIG_MSG = "VECTOR__INDEPENDENT_SIG_MSG"
+/** 无依无靠msg的ID, 加上0x8000_0000后，得到0xC000_0000, 也就是这个报文在DBC文件中的编码 */
+const val IndependentSigMsgId : Int = 0x40000000
+/** 无依无靠msg的Key */
+val IndependentSigMsgKey = CanMessage.msgIdToKey(IndependentSigMsgId)
+/** 通过函数, 获取无依无靠msg */
+fun getIndependentSigMsg(): CanMessageImp = CanMessageImp().apply {
+    msgId = IndependentSigMsgId
+    msgName = VECTOR__INDEPENDENT_SIG_MSG
+    msgLength = 0
+    nodeName = Vector__XXX
+    msgComment =  "This is a message for not used signals, created by github.shilic.smart-dbc project."
+}

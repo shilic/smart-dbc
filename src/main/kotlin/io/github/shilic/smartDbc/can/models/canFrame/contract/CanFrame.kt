@@ -55,5 +55,5 @@ interface CanFrame {
     /** 数据长度, 自动赋值为 [CanFrame.data] 的长度*/
     val dataLen :Int get() = data.size
     /**  帧数据展示 */
-    val display: String get() = "CanFrame: [msgId: ${msgId.toHexStr()}, data:${data.toHexStr()}]"
+    val display: String get() = "${CanFrame::class.simpleName}(${::msgId.name}=${msgId.toHexStr()}, ${::data.name}=${data.toHexStr()})"
 }

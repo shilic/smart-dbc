@@ -18,7 +18,6 @@ import kotlin.coroutines.*
  * 4. 提供明确的启动/停止控制
  */
 object McuAdapter : IMcu, CoroutineScope {
-
     // 使用 AtomicReference 确保线程安全的监听器访问
     private val listenerRef = AtomicReference<CanListener?>(null)
 
@@ -56,6 +55,7 @@ object McuAdapter : IMcu, CoroutineScope {
 
                     // 如果监听器存在，调用它
                     currentListener?.onListening(
+                        // TODO 改为随机数据
                         CanFrameData(
                             0x123,
                             byteArrayOf(0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08)

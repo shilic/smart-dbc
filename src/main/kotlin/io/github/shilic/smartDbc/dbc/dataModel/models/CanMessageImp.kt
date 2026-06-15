@@ -27,9 +27,9 @@ open class CanMessageImp: MMsg<CanSignalImp> {
     @GridColumnBind(headerText = "报文周期时间",
         pattern = "报文周期时间|MsgCycleTime|((Msg|msg|MSG|Message|MESSAGE|message)\\s*(Cyclic|CYCLIC|cyclic|Cycle|cycle|CYCLE)\\s*(Time|time|TIME))",
         valueType = GridValueType.NumberType)
-    override var msgCycleTime: Int = 0
+    override var msgCycleTime: Int = 200
     @GridColumnBind(headerText = "报文长度", pattern = "报文长度|MsgLength|((Msg|msg|MSG|Message|MESSAGE|message)\\s*(Length|length|LENGTH))", valueType = GridValueType.NumberType)
-    override var msgLength: Int = 0
+    override var msgLength: Int = 8
     @GridColumnBind(headerText = "Remark", pattern = "Remark|备注", valueType = GridValueType.Text)
     override var msgComment: String = ""
 

@@ -84,13 +84,15 @@ interface CanMessage : IGridRowData, IDbcElement, SubDataOwner  {
      * */
     val commentLine: String get() = "$CM_ $BO_ $longIdCode \"$msgComment\";"
     // ========================= 调试方法 ==========================
-    val baseInfo: String get() = "CanMessageBaseInfo(msgName='$msgName', msgId=${msgIdToKey(msgId)}, msgIdType=$msgIdType, " +
-            "genMsgSendType=$genMsgSendType, msgCycleTime=$msgCycleTime, msgLength=$msgLength, msgComment=$msgComment, " +
-            "nodeName='$nodeName',  msgReceiveNodeSet=$msgReceiveNodeSet, signalMap.size=${signalMap.size})"
-    val valueInfo: String get() = "(CanMessage($msgName).Values=${signalMap.values.map { it.valueInfo }})"
+    val baseInfo: String get() = "${CanMessage::class.simpleName}(${::msgName.name}='$msgName', " +
+            "${::msgId.name}=${msgIdToKey(msgId)}, ${::msgIdType.name}=$msgIdType, " +
+            "${::genMsgSendType.name}=$genMsgSendType, ${::msgCycleTime.name}=$msgCycleTime, " +
+            "${::msgLength.name}=$msgLength, ${::msgComment.name}=$msgComment, " +
+            "${::nodeName.name}='$nodeName', ${::msgReceiveNodeSet.name}=$msgReceiveNodeSet, signalMap.size=${signalMap.size})"
+    val valueInfo: String get() = "(${CanMessage::class.simpleName}($msgName).Values=${signalMap.values.map { it.valueInfo }})"
     operator fun get(signalName: String): CanSignal? = signalMap[signalName]
     companion object {
-        /** 根据 id 转 key */
+        /** 根据 id 转 key 字符串 */
         fun msgIdToKey(msgId: Int): String = msgId.toHexStr()
         /** 扩展帧 longIdCode 转 id */
         fun transLongIdCodeToMsgId(longIdCode: Long): Int = when {

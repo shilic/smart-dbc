@@ -29,7 +29,8 @@ open class DataBaseCanImp: MDbc<CanMessageImp, CanSignalImp, DbcAttributeDefinit
     // ------------------------ 子数据 ------------------------
     @GridColumnBind(headerText = "CAN1", valueType = GridValueType.SpecificSheet)
     override var msgMap: MutableMap<String, CanMessageImp> = mutableMapOf()
-    override val independentSigMsg : CanMessageImp? get() = get(VECTOR__INDEPENDENT_SIG_MSG_ID)
+    override val independentSigMsg: CanMessageImp get() = msgMap.getOrPut(IndependentSigMsgKey) { getIndependentSigMsg() }
+
 
     // +++++++++++++++ 实现 IGridSpecificSheet 接口 ++++++++++++++
     @GridColumnBind(headerText = "DBC页面名称", pattern = "DBC页面名称", valueType = GridValueType.Text)

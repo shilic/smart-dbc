@@ -5,9 +5,7 @@ import io.github.shilic.smartGrid.core.*
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 
-/**
- * DBC协议解析器。通过DBC的excel协议文件, 解析为DBC对象。
- */
+/**  DBC协议解析器。通过DBC的excel协议文件, 解析为DBC对象。 */
 class DbcGridReader(private val workbook: Workbook) {
     /** 获取可编辑的整车协议 Protocol 。
      *

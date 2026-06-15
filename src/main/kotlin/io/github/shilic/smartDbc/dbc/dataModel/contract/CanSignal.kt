@@ -14,6 +14,8 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
     override val dbcKey: String get() = signalName
 
     // ----------------------- 基本信息 ----------------------
+    /** 记录父级元素的报文ID */
+    val longIdCode: Long
     /** 信号名称 */
     val signalName: String
     /** 信号注释 */
@@ -124,14 +126,28 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
      *
      * 例如：CM_ SG_ 2560104484 CabinToCCS1_FanMotFlt "鼓风电机故障状态";
      * */
-    fun commentLine(msgIdCode: Long): String = "$CM_ $SG_ $msgIdCode $signalName \"$signalComment\";"
+    val commentLine: String get() = "$CM_ $SG_ $longIdCode $signalName \"$signalComment\";"
+    /** 输出值表编码
+     *
+     * 例如：
+     *
+     * VAL_ 2560107544 CCSToAC1_AirSw 0 "预留" 1 "关闭" 2 "开启" 3 "无效值未使用" ;
+     * */
+    val valueTableLine: String get() = "$VAL_ $longIdCode $signalName $keyValuePairLine ;"
+
+    /** 获取值表 */
+    val keyValuePairLine: String get() = valueTable.entries.sortedBy { it.key }
+        .joinToString(" ") { """${it.key} "${it.value}"""" }
+
     // ======================== 调试方法 =========================
     /** 获取基本信息 */
-    val baseInfo: String get() = "CanSignalBaseInfo(signalName='$signalName', signalComment='$signalComment', " +
-            "startBit=$startBit, bitLength=$bitLength, byteOrder=$byteOrder, dataType=$dataType, groupType='${groupType.dbcValue}', " +
-            "factor=$factor, offset=$offset, " +
-            "signalMinValuePhys=$signalMinValuePhys, signalMaxValuePhys=$signalMaxValuePhys, invalidValueHex=$invalidValueHex, " +
-            "unit='$unit', valueTable=$valueTable)"
+    val baseInfo: String get() = "${CanSignal::class.simpleName}(${::signalName.name}='$signalName', ${::signalComment.name}='$signalComment', " +
+            "${::startBit.name}=$startBit, ${::bitLength.name}=$bitLength, " +
+            "${::byteOrder.name}=$byteOrder, ${::dataType.name}=$dataType, ${::groupType.name}='${groupType.dbcValue}', " +
+            "${::factor.name}=$factor, ${::offset.name}=$offset, " +
+            "${::signalMinValuePhys.name}=$signalMinValuePhys, ${::signalMaxValuePhys.name}=$signalMaxValuePhys, " +
+            "${::invalidValueHex.name}=$invalidValueHex, " +
+            "${::unit.name}='$unit', ${::valueTable.name}=$valueTable)"
     /** 获取值信息 */
     val valueInfo: String get() = "($signalName = $currentTextValue)"
     /** 将物理值转换为16进制总线值;

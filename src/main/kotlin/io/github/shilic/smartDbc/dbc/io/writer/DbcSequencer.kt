@@ -5,38 +5,27 @@ import io.github.shilic.smartDbc.dbc.dataModel.contract.DataBaseCan
 /** 将DBC对象一整个以序列方式输出 */
 val DataBaseCan.allSequence: Sequence<String> get() = sequence {
     yieldAll(dbcTitleSequence)
-    yield("\n")
     yieldAll(msgSequence)
-    yield("\n")
     yieldAll(msgNodesSequence)
-    yield("\n\n")
     yieldAll(commentSequence)
-    yield("\n")
-    yieldAll(dbcAttributeDefinitionSequence)
-    yield("\n")
-    yieldAll(dbcAttributeDefaultSequence)
-    yield("\n")
-    yieldAll(dbcAttributeValueSequence)
-    yield("\n")
+    yieldAll(attributeDefinitionSequence)
+    yieldAll(attributeDefaultSequence)
+    yieldAll(attributeValueSequence)
     yieldAll(valueTableSequence)
-    yield("\n\n")
+    yield("")
 }
 
-/** 输出DBC标题序列:
+/** 1. 输出DBC标题序列:
  *
  * 包括：版本、通用模版、波特率、DBC节点
  * */
 val DataBaseCan.dbcTitleSequence: Sequence<String> get() = sequence {
     yield(versionLine)
-    yield("\n")
-    yield("\n")
     yieldAll(dbcTemplateSequence)
-    yield("\n")
     yield(nodesLine)
-    yield("\n")
-    yield("\n")
+    yield("")
 }
-/** DBC模板序列:
+/** 输出DBC模板序列:
  *
  * 例如： [DbcTemplateText]
  * */
@@ -80,7 +69,8 @@ NS_ :
 
 BS_:
 """
-/** 报文序列:
+
+/** 2. 输出报文及信号的序列:
  *
  * 例如：
  *
@@ -102,11 +92,11 @@ val DataBaseCan.msgSequence: Sequence<String> get() = sequence {
         msg.signalMap.values.forEach { signal ->
             yield(signal.dbcValue)
         }
-        yield("\n")
+        yield("")
     }
-    yield("\n")
+    yield("")
 }
-/** 报文节点序列:
+/** 3. 输出报文节点序列:
  *
  * 使用 BO_TX_BU_ 创建一个报文节点;
  *
@@ -116,11 +106,13 @@ val DataBaseCan.msgSequence: Sequence<String> get() = sequence {
  * */
 val DataBaseCan.msgNodesSequence : Sequence<String> get() = sequence {
     msgMap.values.forEach { msg ->
-        yield(msg.nodesLine)
+        if (msg.msgReceiveNodeSet.isNotEmpty()) {
+            yield(msg.nodesLine)
+        }
     }
-    yield("\n")
+    yield("")
 }
-/** 注释序列:
+/** 4. 输出注释序列:
  *
  * 使用 CM_ 关键字注释一个对象;
  *
@@ -139,14 +131,20 @@ val DataBaseCan.msgNodesSequence : Sequence<String> get() = sequence {
  * CM_ SG_ 2560104484 CabinToCCS1_FactoryID "工厂代号。";
  *  */
 val DataBaseCan.commentSequence : Sequence<String> get() = sequence {
+    // TODO 需要新增节点的注释
     msgMap.values.forEach { msg ->
-        yield(msg.commentLine)
+        if (msg.msgComment.isNotBlank()) {
+            yield(msg.commentLine)
+        }
         msg.signalMap.values.forEach { signal ->
-            yield(signal.commentLine(msg.longIdCode))
+            if (signal.signalComment.isNotBlank()) {
+                yield(signal.commentLine)
+            }
         }
     }
+    yield("")
 }
-/** 自定义属性定义  序列:
+/** 5. 输出自定义属性定义  序列:
  *
  * 使用 BA_DEF_ 关键字定义一个自定义属性;
  *
@@ -177,10 +175,12 @@ val DataBaseCan.commentSequence : Sequence<String> get() = sequence {
  * BA_DEF_  "BusType" STRING ;
  *
  * */
-val DataBaseCan.dbcAttributeDefinitionSequence : Sequence<String> get() = sequence {
-
+val DataBaseCan.attributeDefinitionSequence : Sequence<String> get() = sequence {
+    attributeMap.values.forEach { attributeDefinition ->
+        yield(attributeDefinition.dbcValue)
+    }
 }
-/** 自定义属性默认值序列:
+/** 6. 输出自定义属性默认值序列:
  *
  * 使用 BA_DEF_DEF_ 关键字定义一个自定义属性的默认值;
  *
@@ -210,9 +210,12 @@ val DataBaseCan.dbcAttributeDefinitionSequence : Sequence<String> get() = sequen
  *
  * BA_DEF_DEF_  "BusType" "CAN";
  * */
-val DataBaseCan.dbcAttributeDefaultSequence : Sequence<String> get() = sequence {
+val DataBaseCan.attributeDefaultSequence : Sequence<String> get() = sequence {
+    attributeMap.values.forEach { attributeDefinition ->
+        yield(attributeDefinition.defaultValueLine)
+    }
 }
-/** 自定义属性值序列:
+/** 7. 输出自定义属性值序列:
  *
  * 使用 BA_ 关键字定义一个自定义属性值;
  *
@@ -242,9 +245,29 @@ val DataBaseCan.dbcAttributeDefaultSequence : Sequence<String> get() = sequence 
  *
  * BA_ "GenSigStartValue" SG_ 2560104484 CabinToCCS1_FactoryID 0;
  */
-val DataBaseCan.dbcAttributeValueSequence : Sequence<String> get() = sequence {
+val DataBaseCan.attributeValueSequence : Sequence<String> get() = sequence {
+    // 1. 先输出DBC级别的自定义属性值, 也就是 作用域 Net 类型的
+    attributeValueMap.values.forEach { attributeValue ->
+        yield(attributeValue.dbcValue)
+    }
+    // TODO 2. 再输出节点级别的自定义属性值。
+
+    // 3. 再输出报文级别的自定义属性值。
+    msgMap.values.forEach { msg ->
+        msg.attributeValueMap.values.forEach { attributeValue ->
+            yield(attributeValue.dbcValue)
+        }
+    }
+    // 4. 最后输出信号级别的自定义属性值。
+    msgMap.values.forEach { msg ->
+        msg.signalMap.values.forEach { signal ->
+            signal.attributeValueMap.values.forEach { attributeValue ->
+                yield(attributeValue.dbcValue)
+            }
+        }
+    }
 }
-/** 值描述序列：
+/** 8. 输出值描述序列：
  *
  * 使用 VAL_ 创建一个值描述;
  *
@@ -260,4 +283,11 @@ val DataBaseCan.dbcAttributeValueSequence : Sequence<String> get() = sequence {
  *
  * */
 val DataBaseCan.valueTableSequence : Sequence<String> get() = sequence {
+    msgMap.values.forEach { msg ->
+        msg.signalMap.values.forEach { signal ->
+            if (signal.valueTable.isNotEmpty()) {
+                yield(signal.valueTableLine)
+            }
+        }
+    }
 }

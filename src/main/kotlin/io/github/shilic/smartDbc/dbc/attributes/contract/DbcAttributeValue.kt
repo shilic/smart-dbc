@@ -37,7 +37,6 @@ interface DbcAttributeValue : IDbcElement {
      * */
     val value: String
 
-
     /** 返回DBC编码，例如：
      *
      * BA_ "DBName" "Example";
@@ -51,9 +50,14 @@ interface DbcAttributeValue : IDbcElement {
      * BA_ "GenMsgCycleTime" BO_ 2560107544 500;
      *
      * BA_ "GenMsgSendType" BO_ 2560107544 1;
+     *
+     * BA_ "GenSigStartValue" SG_ 2560107544 CCSToAC1_AirSw 0;
      * */
-    override val dbcValue: String get() = "$BA_ \"${name}\" ${scopeData.dbcValue} $value;"
-
+    override val dbcValue: String get() = "$BA_ \"${name}\" ${scopeData.dbcValue} $valueText;"
+    val valueText: String get() = when (definition.valueType) {
+        DbcAttributeValueType.StringType -> "\"$value\""
+        else -> value
+    }
     /**
      * 获取自定义属性值，并转换为整形
      *
