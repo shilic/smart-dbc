@@ -29,7 +29,7 @@ val DataBaseCan.dbcTitleSequence: Sequence<String> get() = sequence {
  *
  * 例如： [DbcTemplateText]
  * */
-val DataBaseCan.dbcTemplateSequence: Sequence<String> get() = sequence {
+val dbcTemplateSequence: Sequence<String> get() = sequence {
     yieldAll(DbcTemplateText.split("\n"))
 }
 /** DBC模板常量;
@@ -131,7 +131,7 @@ val DataBaseCan.msgNodesSequence : Sequence<String> get() = sequence {
  * CM_ SG_ 2560104484 CabinToCCS1_FactoryID "工厂代号。";
  *  */
 val DataBaseCan.commentSequence : Sequence<String> get() = sequence {
-    // TODO 需要新增节点的注释
+    // TODO 需要新增节点的注释, 新增节点的数据结构
     msgMap.values.forEach { msg ->
         if (msg.msgComment.isNotBlank()) {
             yield(msg.commentLine)
@@ -144,7 +144,7 @@ val DataBaseCan.commentSequence : Sequence<String> get() = sequence {
     }
     yield("")
 }
-/** 5. 输出自定义属性定义  序列:
+/** 5. 输出自定义属性定义 序列:
  *
  * 使用 BA_DEF_ 关键字定义一个自定义属性;
  *
