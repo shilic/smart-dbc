@@ -24,11 +24,13 @@ repositories {
     maven {
         name = "GitHubPackages"
         // 替换 OWNER 为你的 GitHub 用户名或组织名（小写）
-        url = uri("https://maven.pkg.github.com/shilic/smartGrid")
+        url = uri("https://maven.pkg.github.com/shilic/*")
         credentials {
             username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
             password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
+            println("username=$username,password=$password")
         }
+
     }
 }
 
