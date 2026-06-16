@@ -8,7 +8,6 @@ import io.github.shilic.smartDbc.valueConverter.decodeCanFrame
 import io.github.shilic.smartDbc.valueConverter.encodeCanFrame
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -35,23 +34,16 @@ object CanIo {
     inline fun <reified T : Any> bind(model: T) {
         // ------------------------- 前期校验 -------------------------
         val kClass : KClass<T> = T::class
-        require(kClass.isSubclassOf(CanCopyable::class)) { "'${kClass.simpleName}'类型需要实现'${CanCopyable::class.simpleName}'接口, 才可以绑定"}
         val dbcBind: DbcBinding = kClass.findAnnotation<DbcBinding>() ?: error("'${kClass.simpleName}'类型需要标记'${DbcBinding::class.simpleName}'注解, 才可以绑定")
         // 验证DBC必须先提前注册; 在已经注册的DBC标签中，搜索类型上标注的DBC标签; 要求标注的DBC必须注册进来。
         val missingDbcTags = dbcBind.dbcTags.filter { it !in dbcMap }
         require(missingDbcTags.isEmpty()) { "没有提前在${CanIo::class.simpleName}对象中注册以下DBC标签:${missingDbcTags}" }
+        println("------------ 类型'${kClass.simpleName}'上绑定的${DbcBinding::class.simpleName}为: [${dbcBind.dbcTags.joinToString(",")}] ---------------")
 
         // 遍历所有字段, 然后执行绑定操作, 允许只读字段绑定
         kClass.memberProperties.forEach { property ->
             // 拿到字段上的绑定信息，没有就跳过这一次循环。
-            val canBind = property.findAnnotation<CanBinding>()
-            //?: return@forEach
-            if (canBind ==  null){
-                println("字段'${property}'没有使用'${CanBinding::class.simpleName}'注解绑定DBC信号")
-                return@forEach
-            }
-
-
+            val canBind = property.findAnnotation<CanBinding>() ?: return@forEach
             // 使用绑定信息，到DBC中进行查找，查找到对应的信号
             val signal: CanSignal = findSignal(canBind)
                 ?: error("没有在注册DBC中找到 字段'${property}'的'${CanBinding::class.simpleName}'注解上标注的信号:${canBind.signalName}")
@@ -62,25 +54,14 @@ object CanIo {
                 it.originalProperty = property
             }
             // 保存绑定好的数据模型
-            println("对象绑定完成, 已经成功将 '$kClass' 类型绑定至DBC中")
             modelMap[kClass] = model
         }
-        //println("对象绑定完成, 已经成功将 '$kClass' 类型绑定至DBC中")
+        println("---------------- 对象绑定完成, 已经成功将 '$kClass' 类型绑定至DBC中 -----------------")
     }
 
     // ================== 模型操作 ======================
     /** 获取绑定的模型 */
-    @Suppress("unused")
     inline fun <reified T : Any> getModel(): T? = modelMap[T::class] as? T
-    /**
-     * 从模型映射中创建指定类型的新实例。
-     * 要求目标类型实现 [CanCopyable] 接口，并通过 [CanCopyable.copyNew] 方法创建新实例。
-     *
-     * @param T 要创建的类型，必须实现 [CanCopyable] 接口
-     * @return 新创建的实例，如果类型不匹配或创建失败则返回 null
-     */
-    @Suppress("unused")
-    inline fun <reified T : Any> copyNewModel(): T? = (modelMap[T::class] as? CanCopyable<*>)?.copyNew() as? T
     // ======================= 发送报文 =========================
     /** 发送报文
      *
@@ -93,9 +74,8 @@ object CanIo {
      * @param msgId 报文ID
      * @param model 数据模型
      *  */
-    @Suppress("unused")
     fun send(msgId: Int, model: Any? = null) {
-        val canFrame = findMessage(msgId)?.encodeCanFrame(model) ?: error("没有在注册DBC中找到报文ID:$msgId")
+        val canFrame = findMessage(msgId)?.encodeCanFrame(model) ?: error("没有在注册DBC中找到报文ID:${CanMessage.msgIdToKey(msgId)} ")
         mcu.nativeSend(canFrame)
     }
     /** 解码CAN报文 */

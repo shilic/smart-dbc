@@ -5,7 +5,7 @@ import io.github.shilic.smartDbc.can.contract.CanCopyable
 
 /** 使用 [DbcBinding] 注解, 将一个数据模型绑定到我们的DBC对象上
  *
- * 并且对象需要实现 CanCopyable 接口
+ * 并且对象需要实现 [CanCopyable] 接口
  * */
 @DbcBinding([dbcTag1])
 data class Message1 (
@@ -29,6 +29,7 @@ data class Message1 (
     @CanBinding(msg1_Id, "msg1_sig8")
     var msg1sig8: Double = 0.0,
 ): CanCopyable<Message1> {
+    // 因为数据类 data class  自带克隆方法, 所以如果你的数据模型没有采用数据类时, 请实现一个克隆方法, 用于快速生成新的数据进行报文的发送
     override fun copyNew(): Message1 {
         return this.copy()
     }

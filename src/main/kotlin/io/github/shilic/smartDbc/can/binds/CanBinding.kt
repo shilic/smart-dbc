@@ -5,7 +5,7 @@ package io.github.shilic.smartDbc.can.binds
  * @param msgId  CAN报文ID ; 存在默认值，可不填写（填写后可提高效率）。
  * @param signalName  CAN 信号在 dbc 文件中的信号名称 ;
  * */
-@Target(AnnotationTarget.FIELD)
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 annotation class CanBinding (

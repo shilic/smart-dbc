@@ -1,5 +1,7 @@
 package io.github.shilic.smartDbc.can.accessors
 
+import io.github.shilic.smartDbc.common.typeExtension.toDoubleValue
+import io.github.shilic.smartDbc.common.typeExtension.toPropertyValue
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
@@ -43,24 +45,7 @@ interface KPropertyAccessor {
         mProperty.isAccessible = true
         if (originalProperty !is KMutableProperty1<*, *>) { return }
         val setter : Setter<*, *> = (mProperty as KMutableProperty1<*, *>).setter
-        val safeValue = when (propertyType) {
-            Byte::class -> value.toInt().toByte()
-            Short::class -> value.toInt().toShort()
-            Int::class -> value.toInt()
-            Long::class ->  value.toLong()
-
-            UByte::class -> value.toUInt().toUByte()
-            UShort::class -> value.toUInt().toUShort()
-            UInt::class -> value.toUInt()
-            ULong::class -> value.toULong()
-
-            Float::class -> value.toFloat()
-            Double::class -> value.toDouble()
-
-            BigDecimal::class -> value.toBigDecimal()
-
-            else -> error("属性类型出错，数据类型必须是 Byte,Short,Int,Long,UByte,UShort,UInt,ULong,Double,Float,BigDecimal 类型")
-        }
+        val safeValue: Comparable<*> = value.toPropertyValue(propertyType)
         setter.call(aOwner, safeValue)
     }
     /** 获取指定接受者的对应字段值; 参数为空时，使用默认接受者
@@ -78,6 +63,6 @@ interface KPropertyAccessor {
         val mProperty = originalProperty!!
         mProperty.isAccessible = true
         val value: Any? = mProperty.getter.call(aOwner)
-        return value as Double
+        return value?.toDoubleValue()
     }
 }
