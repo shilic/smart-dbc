@@ -9,9 +9,10 @@ import java.io.File
  * 如果存在，自动递增文件名中的重复序号（如 file(1).txt → file(2).txt）, 若尚无序号则添加 (1)。
  */
 fun File.nextAvailableFile(): File {
-    if (!exists()) return this                     // 文件不存在，原样返回
-
-    val base = nameWithoutExtension                // 官方 API
+    // 文件不存在，原样返回
+    if (!exists()) return this
+    // 官方 API
+    val base = nameWithoutExtension
     val ext = extension.let { if (it.isEmpty()) "" else ".$it" }
     val parent = parentFile ?: File(".")
 
@@ -25,8 +26,7 @@ fun File.nextAvailableFile(): File {
         .first { !it.exists() }
 }
 
-/**
- * 下一个可用文件, 会无限递增，直到找到不重复的文件(避免覆盖);
+/** 下一个可用文件, 会无限递增，直到找到不重复的文件(避免覆盖);
  *
  * 字符串版本的扩展，行为与 File 版本一致。
  */

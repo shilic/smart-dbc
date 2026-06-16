@@ -35,7 +35,6 @@ BS_:
 
 BU_: CCS AC
 
-
 BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
  SG_ New_Signal_110 : 0|8@1- (1,0) [0|0] "" Vector__XXX
  SG_ New_Signal_109 : 0|8@1- (1,0) [0|0] "" Vector__XXX
@@ -87,10 +86,10 @@ BO_ 2560104484 ACToCCS1: 8 AC
 BO_ 2560163839 motorMsg1: 8 Vector__XXX
  SG_ motorSig0 : 7|8@0+ (1,0) [0|255] "" Vector__XXX
  SG_ intelSig0 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ motorsig1 : 36|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ motorsig1 : 20|8@0+ (1,0) [0|255] "" Vector__XXX
  SG_ motorsig2 : 27|4@0+ (1,0) [0|15] "" Vector__XXX
  SG_ motorsig3 : 46|4@0+ (1,0) [0|15] "" Vector__XXX
- SG_ motorsig4 : 57|16@0+ (1,0) [0|65535] "" Vector__XXX
+ SG_ motorsig4 : 41|16@0+ (1,0) [0|65535] "" Vector__XXX
 
 BO_ 2561387265 message1: 8 Vector__XXX
  SG_ msg1_sig1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -173,9 +172,8 @@ BO_ 2561387272 message8: 8 Vector__XXX
  SG_ msg8_sig8 : 56|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-
-CM_ BU_ CCS "´óÆÁ½Úµã";
-CM_ BU_ AC "¿Õµ÷½Úµã";
+CM_ BU_ CCS "´óÆÁ";
+CM_ BU_ AC "¿Õµ÷";
 CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
 CM_ BO_ 2560107544 "±¨ÎÄµÄ×¢ÊÍ¿ÉÒÔÐ´µ½ÕâÀï¡£±¨ÎÄµÄ×¢ÊÍÒ²Ò²Ò²Ò²¿ÉÒÔÐ´µ½ÕâÀï¡£¿ÉÒÔÔÚÕâÀïÌîÐ´±¨ÎÄµÄ±¸×¢¡£";
 CM_ SG_ 2560107544 CCSToAC1_FactoryID "¹¤³§´úºÅ¡££¬¿É±íÊ¾255¸ö¹¤³§£¬0±íÊ¾²»²ÉÓÃ¹¤³§´úºÅ¡£¿ÉÒÔÔÚÕâÀïÌîÐ´ÐÅºÅµÄ±¸×¢¡£";
@@ -195,6 +193,7 @@ CM_ SG_ 2560104484 CabinToCCS1_RollCnt "¿Õµ÷Ãæ°å¼ÆÊýÆ÷.¡£counter×Ô¶¯ÀÛ¼Ó£¬´Ó0¼Óµ
 CM_ BO_ 2560163839 "Ä¦ÍÐÂÞÀ­¸ñÊ½Çë²ÎÕÕÕâÒ»Ö¡±¨ÎÄÀ´±àÐ´¡£";
 CM_ SG_ 2560163839 motorSig0 "Ä¦ÍÐÂÞÀ­ºÍÓ¢ÌØ¶û¸ñÊ½µÄÇø±ð¡£Ó¢ÌØ¶û¸ñÊ½£¬ÔÚ8*8¾ØÕóÖÐµÄ×îµÍÎ»£¬ÊÇÊµ¼ÊÊý¾ÝµÄµÍÎ»£»¶øÄ¦ÍÐÂÞÀ­¸ñÊ½£¬ÔÚ8*8¾ØÕóÖÐµÄ×î¸ßÎ»²ÅÊÇÊµ¼ÊÊý¾ÝµÄ×îµÍÎ»¡£ÀýÈçËûÃÇÍ¬Ê±Õ¼¾Ý 01234567Õâ8Î»Êý¾ÝÎ»Ê±£¬Í¨³£À´½²£¬±íÊ¾2µÄ¶àÉÙ´Î·½£¬¼´[1£¬2£¬4£¬8£¬  16£¬32£¬64£¬128]¡£¶ÔÓ¢ÌØ¶û¶øÑÔ¾ØÕóÖÐµÄ0¾ÍÊÇÊý¾Ý×îµÍÎ»£¬¼´2µÄ0´Î·½¡£¶ø¶ÔÄ¦ÍÐÂÞÀ­¶øÑÔ£¬ÔÚ8*8¾ØÕóÖÐµÄ7²ÅÊÇ±íÊ¾2µÄ0´Î·½£¬¼´Êý¾Ý×îµÍÎ»¡£ËùÒÔmotorSig0µÄÆðÊ¼Î»ÊÇ7£¬³¤¶È8£¬±íÊ¾76543210Õâ8¸öÊý¾Ý¡£ºÃÁË£¬Àí½âÕâÒ»µãÖ®ºó£¬ÎÒÃÇÔÙÀ´Àí½âÄ¦ÍÐÂÞÀ­µÄ¿ç×Ö½Ú±íÊ¾£¬¼ûmotorsig4¡£";
 CM_ SG_ 2560163839 motorsig4 "Ä¦ÍÐÂÞÀ­µÄ¿ç×Ö½Ú±íÊ¾£¬ÀýÈçmotorsig4µÄ³¤¶ÈÎª16£¬ÆðÊ¼Î»ÊÇ41£¬¿çÁË3¸ö×Ö½Ú£¬·Ö±ð¿çÁËbyt5£¬byte6£¬byte7¹²3¸ö×Ö½Ú¡£ÆäÖÐ£¬byte5ÓÐ41 ¡¢40¹²2¸ö£»byte6ÓÐ55¡¢54¡¢53¡¢52¡¢51¡¢50¡¢49¡¢48¹²8¸öbit£»È»ºóbyte7ÓÐ 63¡¢62¡¢61¡¢60¡¢59¡¢58¹²6¸öbit£¬¼ÓÆðÀ´Ò»¹²16Î»¡£±í¸ñÖÐµÄÆðÊ¼Î»ÊÇ41£¬±íÊ¾´Ó41¿ªÊ¼£¬ÍùÏÂÊýÁË16¸öÊý¾Ý¡£µ«ÊÇÊµ¼ÊÉÏµÚ41Î»±íÊ¾µÄÊÇ2µÄ16´Î·½£¬ÊÇÕâ¸öÊý¾ÝµÄ×î¸ßÎ»£»¶ø58²ÅÊÇ2µÄ0´Î·½£¬±íÊ¾Êý¾ÝµÄ×îµÍÎ»¡£ÎªÊ²Ã´63²»ÊÇ×îµÍÎ»ÄØ£¬ÒòÎªÖ®Ç°½²ÁË£¬Ä¦ÍÐÂÞÀ­¸ñÊ½£¬ÔÚµ¥¸öbyte(8bits)ÖÐÊý¾ÝÊÇ´ÓµÍµ½¸ßÔÚÅÅÁÐ¡£";
+
 BA_DEF_ EV_  "New_AttrDef_17" INT 0 0;
 BA_DEF_ SG_  "New_AttrDef_16" INT 0 0;
 BA_DEF_ BO_  "New_AttrDef_15" STRING ;
@@ -209,7 +208,7 @@ BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","Event","IfActive","CE","CA";
 BA_DEF_ BO_  "GwUsedMsg" ENUM  "No","Yes";
 BA_DEF_ BO_  "DiagState" ENUM  "No","Yes";
 BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
-BA_DEF_ BU_  "NmStationAddress" HEX 0 15;
+BA_DEF_ BU_  "NmStationAddress" HEX 0 255;
 BA_DEF_  "DBName" STRING ;
 BA_DEF_  "BusType" STRING ;
 BA_DEF_REL_ BU_SG_REL_  "New_AttrDef_20" INT 0 0;
@@ -241,79 +240,61 @@ BA_ "New_AttrDef_14" BU_ CCS 3.14159;
 BA_ "NmStationAddress" BU_ CCS 10;
 BA_ "New_AttrDef_14" BU_ AC 3.14;
 BA_ "NmStationAddress" BU_ AC 11;
+BA_ "NmMessage" BO_ 2560107544 0;
 BA_ "DiagState" BO_ 2560107544 0;
+BA_ "GwUsedMsg" BO_ 2560107544 0;
 BA_ "GenMsgCycleTime" BO_ 2560107544 500;
 BA_ "GenMsgSendType" BO_ 2560107544 1;
-BA_ "GwUsedMsg" BO_ 2560107544 0;
-BA_ "NmMessage" BO_ 2560107544 0;
+BA_ "NmMessage" BO_ 2560104484 0;
 BA_ "DiagState" BO_ 2560104484 0;
+BA_ "GwUsedMsg" BO_ 2560104484 0;
 BA_ "GenMsgCycleTime" BO_ 2560104484 100;
 BA_ "GenMsgSendType" BO_ 2560104484 0;
-BA_ "GwUsedMsg" BO_ 2560104484 0;
-BA_ "NmMessage" BO_ 2560104484 0;
+BA_ "NmMessage" BO_ 2560163839 0;
 BA_ "DiagState" BO_ 2560163839 0;
+BA_ "GwUsedMsg" BO_ 2560163839 0;
 BA_ "GenMsgCycleTime" BO_ 2560163839 50;
 BA_ "GenMsgSendType" BO_ 2560163839 0;
-BA_ "GwUsedMsg" BO_ 2560163839 0;
-BA_ "NmMessage" BO_ 2560163839 0;
+BA_ "NmMessage" BO_ 2561387265 0;
 BA_ "DiagState" BO_ 2561387265 0;
+BA_ "GwUsedMsg" BO_ 2561387265 0;
 BA_ "GenMsgCycleTime" BO_ 2561387265 200;
 BA_ "GenMsgSendType" BO_ 2561387265 0;
-BA_ "GwUsedMsg" BO_ 2561387265 0;
-BA_ "NmMessage" BO_ 2561387265 0;
+BA_ "NmMessage" BO_ 2561387266 0;
 BA_ "DiagState" BO_ 2561387266 0;
+BA_ "GwUsedMsg" BO_ 2561387266 0;
 BA_ "GenMsgCycleTime" BO_ 2561387266 200;
 BA_ "GenMsgSendType" BO_ 2561387266 0;
-BA_ "GwUsedMsg" BO_ 2561387266 0;
-BA_ "NmMessage" BO_ 2561387266 0;
+BA_ "NmMessage" BO_ 2561387267 0;
 BA_ "DiagState" BO_ 2561387267 0;
+BA_ "GwUsedMsg" BO_ 2561387267 0;
 BA_ "GenMsgCycleTime" BO_ 2561387267 200;
 BA_ "GenMsgSendType" BO_ 2561387267 0;
-BA_ "GwUsedMsg" BO_ 2561387267 0;
-BA_ "NmMessage" BO_ 2561387267 0;
+BA_ "NmMessage" BO_ 2561387268 0;
 BA_ "DiagState" BO_ 2561387268 0;
+BA_ "GwUsedMsg" BO_ 2561387268 0;
 BA_ "GenMsgCycleTime" BO_ 2561387268 200;
 BA_ "GenMsgSendType" BO_ 2561387268 0;
-BA_ "GwUsedMsg" BO_ 2561387268 0;
-BA_ "NmMessage" BO_ 2561387268 0;
+BA_ "NmMessage" BO_ 2561387269 0;
 BA_ "DiagState" BO_ 2561387269 0;
+BA_ "GwUsedMsg" BO_ 2561387269 0;
 BA_ "GenMsgCycleTime" BO_ 2561387269 200;
 BA_ "GenMsgSendType" BO_ 2561387269 0;
-BA_ "GwUsedMsg" BO_ 2561387269 0;
-BA_ "NmMessage" BO_ 2561387269 0;
+BA_ "NmMessage" BO_ 2561387270 0;
 BA_ "DiagState" BO_ 2561387270 0;
+BA_ "GwUsedMsg" BO_ 2561387270 0;
 BA_ "GenMsgCycleTime" BO_ 2561387270 200;
 BA_ "GenMsgSendType" BO_ 2561387270 0;
-BA_ "GwUsedMsg" BO_ 2561387270 0;
-BA_ "NmMessage" BO_ 2561387270 0;
+BA_ "NmMessage" BO_ 2561387271 0;
 BA_ "DiagState" BO_ 2561387271 0;
+BA_ "GwUsedMsg" BO_ 2561387271 0;
 BA_ "GenMsgCycleTime" BO_ 2561387271 200;
 BA_ "GenMsgSendType" BO_ 2561387271 0;
-BA_ "GwUsedMsg" BO_ 2561387271 0;
-BA_ "NmMessage" BO_ 2561387271 0;
+BA_ "NmMessage" BO_ 2561387272 0;
 BA_ "DiagState" BO_ 2561387272 0;
+BA_ "GwUsedMsg" BO_ 2561387272 0;
 BA_ "GenMsgCycleTime" BO_ 2561387272 200;
 BA_ "GenMsgSendType" BO_ 2561387272 0;
-BA_ "GwUsedMsg" BO_ 2561387272 0;
-BA_ "NmMessage" BO_ 2561387272 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig8 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig7 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig6 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig5 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig4 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig3 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg2_sig2 0;
-BA_ "GenSigSendType" SG_ 2434937668 msg2_sig2 3;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig8 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig7 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig6 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig5 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig4 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig3 0;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig2 200;
-BA_ "GenSigSendType" SG_ 2434937668 msg1_sig2 2;
-BA_ "GenSigInactiveValue" SG_ 2434937668 msg1_sig2 100;
-BA_ "GenSigStartValue" SG_ 2434937668 msg1_sig1 0;
 BA_ "GenSigStartValue" SG_ 2560107544 CCSToAC1_FactoryID 0;
 BA_ "GenSigStartValue" SG_ 2560107544 CCSToAC1_AirSw 0;
 BA_ "GenSigStartValue" SG_ 2560107544 CCSToCabin1_ColdGearReq 0;
@@ -334,7 +315,6 @@ BA_ "GenSigStartValue" SG_ 2560163839 motorsig2 0;
 BA_ "GenSigStartValue" SG_ 2560163839 motorsig3 0;
 BA_ "GenSigStartValue" SG_ 2560163839 motorsig4 0;
 BA_ "GenSigStartValue" SG_ 2561387265 msg1_sig1 0;
-BA_ "GenSigSendType" SG_ 2561387265 msg1_sig1 1;
 BA_ "GenSigStartValue" SG_ 2561387265 msg1_sig2 0;
 BA_ "GenSigStartValue" SG_ 2561387265 msg1_sig3 0;
 BA_ "GenSigStartValue" SG_ 2561387265 msg1_sig4 0;
@@ -343,9 +323,7 @@ BA_ "GenSigStartValue" SG_ 2561387265 msg1_sig6 0;
 BA_ "GenSigStartValue" SG_ 2561387265 msg1_sig7 0;
 BA_ "GenSigStartValue" SG_ 2561387265 msg1_sig8 0;
 BA_ "GenSigStartValue" SG_ 2561387266 msg2_sig1 0;
-BA_ "GenSigSendType" SG_ 2561387266 msg2_sig1 1;
 BA_ "GenSigStartValue" SG_ 2561387266 msg2_sig2 0;
-BA_ "GenSigSendType" SG_ 2561387266 msg2_sig2 2;
 BA_ "GenSigStartValue" SG_ 2561387266 msg2_sig3 0;
 BA_ "GenSigStartValue" SG_ 2561387266 msg2_sig4 0;
 BA_ "GenSigStartValue" SG_ 2561387266 msg2_sig5 0;
@@ -401,10 +379,10 @@ BA_ "GenSigStartValue" SG_ 2561387272 msg8_sig6 0;
 BA_ "GenSigStartValue" SG_ 2561387272 msg8_sig7 0;
 BA_ "GenSigStartValue" SG_ 2561387272 msg8_sig8 0;
 VAL_ 2560107544 CCSToAC1_AirSw 0 "Ô¤Áô" 1 "¹Ø±Õ" 2 "¿ªÆô" 3 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" ;
-VAL_ 2560107544 CCSToCabin1_ColdGearReq 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" ;
-VAL_ 2560107544 CCSToAC1_FanGearReq 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" ;
-VAL_ 2560104484 CabinToCCS1_ColdGearSts 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" ;
-VAL_ 2560104484 CabinToCCS1_FanGearSts 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" ;
+VAL_ 2560107544 CCSToCabin1_ColdGearReq 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" ;
+VAL_ 2560107544 CCSToAC1_FanGearReq 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" ;
+VAL_ 2560104484 CabinToCCS1_ColdGearSts 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" ;
+VAL_ 2560104484 CabinToCCS1_FanGearSts 0 "µÈ¼¶Áã" 1 "µÈ¼¶Ò»" 2 "µÈ¼¶¶þ" 3 "µÈ¼¶Èý" 4 "µÈ¼¶ËÄ" 5 "µÈ¼¶Îå" 6 "µÈ¼¶Áù" 7 "µÈ¼¶Æß" 8 "µÈ¼¶°Ë" 9 "Ô¤Áô" 10 "Ô¤Áô" 11 "Ô¤Áô" 12 "Ô¤Áô" 13 "Ô¤Áô" 14 "Ô¤Áô" 15 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ" ;
 VAL_ 2560104484 CabinToCCS1_FanMotFlt 0 "ÎÞ¹ÊÕÏ" 1 "Ò»¼¶¹ÊÕÏ" 2 "¶þ¼¶¹ÊÕÏ" 3 "Èý¼¶¹ÊÕÏ" ;
 VAL_ 2560104484 CabinToCCS1_ColdMotFlt 0 "ÎÞ ¹ÊÕÏ" 1 "¶ÌÂ·" 2 "¶ÏÂ·" 3 "¶Â×ª" ;
 VAL_ 2560104484 CabinToCCS1_AirSts 0 "Ô¤Áô" 1 "¹Ø±Õ" 2 "¿ªÆô" 3 "ÎÞÐ§ÖµÎ´Ê¹ÓÃ  ·ÖºÅ·Ö¸îÄÚÈÝ" ;

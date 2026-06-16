@@ -44,7 +44,7 @@ class DbcFileReader {
     /** 主函数: 解析 DBC;
      *
      * 自动使用正确的文本文件编码; */
-    fun create() : DataBaseCanImp = inputStream.reader(encoding).buffered().use { parseLines(it) }
+    fun read() : DataBaseCanImp = inputStream.reader(encoding).buffered().use { parseLines(it) }
     /** 匹配标题的正则表达式。*/
     val startRegex = Regex("""^(?<start>${VERSION}|${BU_colon}|${BO_}|${SG_}|${BO_TX_BU_}|${CM_}|${BA_DEF_}|${BA_DEF_DEF_}|${BA_}|${VAL_})\s+""")
     /** 逐行解析 */

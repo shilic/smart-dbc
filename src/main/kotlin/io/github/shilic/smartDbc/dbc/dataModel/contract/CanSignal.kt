@@ -135,12 +135,14 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
      * */
     val valueTableLine: String get() = "$VAL_ $longIdCode $signalName $keyValuePairLine ;"
 
-    /** 获取值表 */
+    /** 获取值表, 给键值对的值加上双引号, 按照以下格式输出
+     *
+     * 0 "预留" 1 "关闭" 2 "开启" 3 "无效值未使用"  */
     val keyValuePairLine: String get() = valueTable.entries.sortedBy { it.key }
         .joinToString(" ") { """${it.key} "${it.value}"""" }
 
     // ======================== 调试方法 =========================
-    /** 获取基本信息 */
+    /** [CanSignal] 基本调试信息 */
     val baseInfo: String get() = "${CanSignal::class.simpleName}(${::signalName.name}='$signalName', ${::signalComment.name}='$signalComment', " +
             "${::startBit.name}=$startBit, ${::bitLength.name}=$bitLength, " +
             "${::byteOrder.name}=$byteOrder, ${::dataType.name}=$dataType, ${::groupType.name}='${groupType.dbcValue}', " +
@@ -148,8 +150,10 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
             "${::signalMinValuePhys.name}=$signalMinValuePhys, ${::signalMaxValuePhys.name}=$signalMaxValuePhys, " +
             "${::invalidValueHex.name}=$invalidValueHex, " +
             "${::unit.name}='$unit', ${::valueTable.name}=$valueTable)"
-    /** 获取值信息 */
-    val valueInfo: String get() = "($signalName = $currentTextValue)"
+    /** [CanSignal] 值调试信息 */
+    val valueInfo: String get() = "'$signalName=$currentTextValue'"
+
+    // ======================= 转换方法们 =========================
     /** 将物理值转换为16进制总线值;
      *
      * 公式: 物理值 = 原始值 * factor + offset  */
@@ -158,7 +162,7 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
      *
      * 公式: 物理值 = 原始值 * factor + offset   */
     fun hexToPhy(hexValue: Long) : Double = hexValue.hexToPhy(factor, offset)
-    /* 这里必须要将物理值转换为总线值：因为有时候存在值描述和精度偏移量混用的情况, 例如 '0~100' 表示车速，'0xFF' 表示无效；
+    /* 这里必须要将物理值转换为总线值：因为有时候存在值描述和精度偏移量混用的情况, 例如 '0~100' 的物理值 表示车速，总线值 '0xFF' 表示无效；
      * 故此时, 若需要综合计算值是否在值描述中，必须转换为总线值。
      * 也就是说，值描述中的索引，必须是总线值(忽略精度偏移量)，而不是物理值。 */
     /** 将物理值转换为文本值;
@@ -172,6 +176,6 @@ interface CanSignal: IValueTable, IDbcElement, IGridRowData, CanAccessor {
     fun hexToText(hexValue: Long): String = hexValue.toInt().hexToText(valueTable)
     /** 将文本值转换为16进制总线值 */
     fun textToHex(text: String): Long = text.textToHex(valueTable).toLong()
-
+    /** 总线值不等于无效值时, 值有效 */
     override val validity: Boolean get() = currentHexValue != invalidValueHex
 }

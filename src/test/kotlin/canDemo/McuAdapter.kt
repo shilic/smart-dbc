@@ -1,5 +1,7 @@
 package canDemo
 
+import demoData.getRandomArray
+import demoData.msg1_Id
 import io.github.shilic.smartDbc.can.contract.*
 import io.github.shilic.smartDbc.can.models.canFrame.contract.*
 import io.github.shilic.smartDbc.can.models.canFrame.models.*
@@ -9,7 +11,7 @@ import kotlin.coroutines.*
 
 
 /**
- * 增强的 MCU 适配器，支持协程化的后台监听循环
+ * 增强的 MCU 适配器，支持协程化的后台监听循环。
  *
  * 设计原则：
  * 1. 使用 AtomicReference 保证监听器的线程安全访问
@@ -18,17 +20,32 @@ import kotlin.coroutines.*
  * 4. 提供明确的启动/停止控制
  */
 object McuAdapter : IMcu, CoroutineScope {
+
+    /** 真实的业务环境下, 应该是使用适配器模式, 外部适配器持有一个真实的MCU组件
+     *
+     * 再向外边，实现框架需求的接口，从而实现解耦。
+     *
+     * 这里，我模拟一个真实的MCU组件
+     * */
+    object ActualMcu  {
+        fun nativeSend(canFrame: CanFrame) {
+            println("底层 MCU 发送报文: ${canFrame.display}")
+        }
+        fun nativeRegister(canListener: CanListener) {
+            println("底层 MCU 注册监听器: ${canListener.listenerName}")
+        }
+        fun nativeUnRegister(canListener: CanListener) {
+            println("底层 MCU 注销监听器: ${canListener.listenerName}")
+        }
+    }
     // 使用 AtomicReference 确保线程安全的监听器访问
     private val listenerRef = AtomicReference<CanListener?>(null)
-
     // 使用原子引用存储 Job，确保线程安全的启动/停止
     private val monitoringJobRef = AtomicReference<Job?>(null)
-
     // 自定义协程作用域，使用 IO 调度器（适合设备通信）
     // 注意：object 是全局单例，这个协程会一直运行直到应用进程结束
     // 如果你需要更精细的生命周期控制，建议从外部传入 CoroutineScope
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO
-
     // 监听循环是否运行的标志
     val isMonitoring: Boolean get() = monitoringJobRef.get()?.isActive == true
 
@@ -53,14 +70,8 @@ object McuAdapter : IMcu, CoroutineScope {
                     // 获取当前监听器（线程安全）
                     val currentListener = listenerRef.get()
 
-                    // 如果监听器存在，调用它
-                    currentListener?.onListening(
-                        // TODO 改为随机数据
-                        CanFrameData(
-                            0x123,
-                            byteArrayOf(0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08)
-                        )
-                    )
+                    // 如果监听器存在，调用它, 传入随机数据
+                    currentListener?.onListening(CanFrameData(msg1_Id, getRandomArray()))
 
                     // 延迟指定间隔，但保持可取消性
                     delay(intervalMs)
@@ -98,20 +109,20 @@ object McuAdapter : IMcu, CoroutineScope {
     }
 
     override fun nativeSend(canFrame: CanFrame) {
-        println("MCU 发送报文: ${canFrame.display}")
+        ActualMcu.nativeSend(canFrame)
     }
 
     override fun nativeRegister(canListener: CanListener) {
         // 原子操作设置监听器
         listenerRef.set(canListener)
-        println("监听器注册: ${canListener.listenerName}")
+        ActualMcu.nativeRegister(canListener)
     }
 
     override fun nativeUnRegister(canListener: CanListener) {
         // 比较并交换，确保只移除匹配的监听器
         listenerRef.getAndUpdate { current ->
             if (current?.listenerName == canListener.listenerName) {
-                println("监听器注销: ${canListener.listenerName}")
+                ActualMcu.nativeUnRegister(canListener)
                 null
             } else {
                 current
@@ -119,12 +130,11 @@ object McuAdapter : IMcu, CoroutineScope {
         }
     }
 
-    /**
-     * 清理所有资源
-     */
+    /** 清理所有资源 */
     fun destroy() {
         stopMonitoring()
         listenerRef.set(null)
-        (coroutineContext[Job] as? Job)?.cancel("McuAdapter 销毁")
+        //(coroutineContext[Job] as? Job)?.cancel("McuAdapter 销毁")
+        coroutineContext[Job]?.cancel("McuAdapter 销毁")
     }
 }

@@ -99,7 +99,8 @@ data class CanFrameData (
 
     override fun toString(): String = display
     companion object {
-        fun empty(canMsgId: Int) = CanFrameData(canMsgId, ByteArray(8))
+        /** 创建一个空的 CAN 帧 */
+        fun empty(canMsgId: Int, length: Int = 8) = CanFrameData(canMsgId, ByteArray(length))
     }
 }
 /** 使用扩展函数，快速创建一个 CanFrameData  */

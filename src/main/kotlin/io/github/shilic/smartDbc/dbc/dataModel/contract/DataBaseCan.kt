@@ -65,10 +65,11 @@ interface DataBaseCan: IGridSpecificSheet, IGridRowData, IDbcElement  {
     fun getSignal(msgId: Int, signalName: String): CanSignal? = msgMap[CanMessage.msgIdToKey(msgId)]?.signalMap?.get(signalName)
 
     // ========================= 调试方法 ===============================
-    /** 基本信息 */
+    /** [DataBaseCan] 基本调试信息 */
     val baseInfo: String get() = "${DataBaseCan::class.simpleName}(${::dbcTag.name}=$dbcTag, " +
             "${::version.name}=$version, ${::dbcComment.name}=$dbcComment, " +
                 "nodeSet.size=${nodeSet.size}, ${::baudRate.name}=$baudRate, msgMap.size=${msgMap.size})"
+    /** [DataBaseCan] 值调试信息 */
     @Suppress("UNUSED")
     val valueInfo: String get() = "${DataBaseCan::class.simpleName}($dbcTag).Values = \n${msgMap.values.map { it -> "\t${it.valueInfo}\n" }}"
 }

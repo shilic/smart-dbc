@@ -84,12 +84,14 @@ interface CanMessage : IGridRowData, IDbcElement, SubDataOwner  {
      * */
     val commentLine: String get() = "$CM_ $BO_ $longIdCode \"$msgComment\";"
     // ========================= 调试方法 ==========================
+    /** [CanMessage] 基本调试信息 */
     val baseInfo: String get() = "${CanMessage::class.simpleName}(${::msgName.name}='$msgName', " +
             "${::msgId.name}=${msgIdToKey(msgId)}, ${::msgIdType.name}=$msgIdType, " +
             "${::genMsgSendType.name}=$genMsgSendType, ${::msgCycleTime.name}=$msgCycleTime, " +
             "${::msgLength.name}=$msgLength, ${::msgComment.name}=$msgComment, " +
             "${::nodeName.name}='$nodeName', ${::msgReceiveNodeSet.name}=$msgReceiveNodeSet, signalMap.size=${signalMap.size})"
-    val valueInfo: String get() = "(${CanMessage::class.simpleName}($msgName).Values=${signalMap.values.map { it.valueInfo }})"
+    /** [CanMessage] 值调试信息 */
+    val valueInfo: String get() = "(${CanMessage::class.simpleName}($dbcKey).Values=${signalMap.values.map { it.valueInfo }})"
     operator fun get(signalName: String): CanSignal? = signalMap[signalName]
     companion object {
         /** 根据 id 转 key 字符串 */

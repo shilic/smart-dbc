@@ -22,7 +22,7 @@ import io.github.shilic.smartDbc.dbc.dataModel.dataEnums.*
 
 // -------------------- 对于 dbc  ----------------------
 /** 解码报文: 输入 CanFrame 报文, 将数据解析到DBC和绑定对象中； */
-fun DataBaseCan.decodeCanFrame(canFrame: CanFrame) = this[canFrame.msgId]?.decodeBytes(canFrame.data)
+fun DataBaseCan.decodeCanFrame(canFrame: CanFrame) = this[canFrame.msgId]?.decodeCanFrame(canFrame)
 /** 解码报文: 输入 Bytes 报文, 将数据解析到DBC和绑定对象中； */
 fun DataBaseCan.decodeBytes(msgId: Int, data: ByteArray) = this[msgId]?.decodeBytes(data)
 /** 编码报文: 输出 CanFrame 报文, 将DBC中的数据编码成报文； */
@@ -32,9 +32,14 @@ fun DataBaseCan.encodeBytes(msgId: Int, newOwner: Any? = null): ByteArray = this
 
 
 // -------------------- 对于 msg, 不关心报文ID，只关心数据输入输出 --------------------------
-/** 解码报文: 输入 CanFrame 报文; 将数据解析到 CanMessage 和绑定对象中； */
+/** 解码报文: 输入 CanFrame 报文; 将数据解析到 CanMessage 和绑定对象中；
+ *
+ * 函数会查找到报文ID，然后进行解码。如果报文ID不存在，则不执行。
+ * */
 fun CanMessage.decodeCanFrame(canFrame: CanFrame) = takeIf { this.msgId == canFrame.msgId }?.decodeBytes(canFrame.data)
-/** 解码报文: 输入 bytes 报文; 将数据解析到 CanMessage 和绑定对象中； */
+/** 解码报文: 输入 bytes 报文; 将数据解析到 CanMessage 和绑定对象中；
+ *
+ * 这里没有判断报文ID, 会直接将所有收到的报文进行一个解析*/
 fun CanMessage.decodeBytes(canData: ByteArray) {
     // 1. 将字节数组转换为bits数组, 不需要处理摩托罗拉格式。
     val bits: ByteArray = canData.toBits()
