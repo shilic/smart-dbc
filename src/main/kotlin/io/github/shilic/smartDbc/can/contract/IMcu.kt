@@ -12,6 +12,6 @@ interface IMcu {
     fun nativeSend(canFrame: CanFrame)
     /** 本地注册监听 */
     fun nativeRegister(canListener: CanListener)
-    /** 本地取消注册监听 */
-    fun nativeUnRegister(canListener: CanListener)
+    /** 本地取消注册监听;  取消监听时, 则不需要传入其他参数了，直接取消。 */
+    fun nativeUnRegister()
 }

@@ -118,16 +118,9 @@ object McuAdapter : IMcu, CoroutineScope {
         ActualMcu.nativeRegister(canListener)
     }
 
-    override fun nativeUnRegister(canListener: CanListener) {
+    override fun nativeUnRegister() {
         // 比较并交换，确保只移除匹配的监听器
-        listenerRef.getAndUpdate { current ->
-            if (current?.listenerName == canListener.listenerName) {
-                ActualMcu.nativeUnRegister(canListener)
-                null
-            } else {
-                current
-            }
-        }
+        listenerRef.getAndUpdate { null }
     }
 
     /** 清理所有资源 */
