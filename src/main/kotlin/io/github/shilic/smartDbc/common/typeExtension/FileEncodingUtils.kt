@@ -11,7 +11,7 @@ typealias InputStreamProvider = () -> InputStream
 typealias EncodingDetector = InputStreamProvider.() -> Charset?
 val DefaultCharset : Charset = Charset.forName("GBK")
 /** 获取文件编码 */
-val File.encoding get() = { this@encoding.inputStream() }.detectEncoding()
+val File.encoding get() = this@encoding::inputStream.detectEncoding()
 /**文件编码检测器, 通过传入一个输入流提供者, 以及任意多个编码检测器;
  * 依次调用检测器进行检测, 返回第一个非空的编码结果, 如果所有检测器都返回null, 则返回null;
  * 函数会反复调用文件流提供者。
