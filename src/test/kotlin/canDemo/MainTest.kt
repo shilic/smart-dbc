@@ -44,7 +44,7 @@ class MainTest: CanListener {
             // 步骤6：实现监听器接口, 在监听器中, 使用DBC对象来解码报文
 
             // 步骤7：注册监听器
-            mcu.nativeRegister(this@MainTest)
+            nativeRegister(this@MainTest)
         }
     }
     /** 测试程序入口函数 */

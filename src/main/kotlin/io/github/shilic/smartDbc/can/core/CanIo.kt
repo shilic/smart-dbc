@@ -14,8 +14,8 @@ import kotlin.reflect.full.memberProperties
  *
  * 使用单例模式, 对外提供统一入口
  */
-object CanIo : IMcu by CanIo.mcu {
-    val mcu: IMcu get() = mcuAdapter ?: error("没有注册 IMcu 服务，无法发送报文")
+object CanIo : IMcu {
+    private val mcu: IMcu get() = mcuAdapter ?: error("没有注册 IMcu 服务，无法发送报文")
     /** 持有底层 [IMcu] 服务，需要由外部自行实例化，并注册到CanIo中。再通过该字段绑定监听事件。 */
     var mcuAdapter: IMcu? = null
     /** 持有只读DBC的可变集合(框架只需要只读DBC), 需要由外部自行实例化，并添加DBC进来 */
@@ -88,4 +88,10 @@ object CanIo : IMcu by CanIo.mcu {
         // 使用报文ID + 信号名称，快速查找一个信号；速度会快很多。
         else -> dbcMap.values.firstNotNullOfOrNull { dbc -> dbc.getSignal(canBind.msgId, canBind.signalName) }
     }
+
+    override fun nativeSend(canFrame: CanFrame) = mcu.nativeSend(canFrame)
+
+    override fun nativeRegister(canListener: CanListener) = mcu.nativeRegister(canListener)
+
+    override fun nativeUnRegister() = mcu.nativeUnRegister()
 }
