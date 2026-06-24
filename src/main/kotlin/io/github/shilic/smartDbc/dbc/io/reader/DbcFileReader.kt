@@ -11,40 +11,52 @@ import io.github.shilic.smartDbc.dbc.dataModel.models.*
 
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileInputStream
 import java.nio.charset.Charset
 import kotlin.collections.associateTo
 
 /** DBC文件解析器。通过.dbc后缀的文件, 解析为DBC对象。 */
 class DbcFileReader {
     /** 传入文件流 */
-    val inputStream: FileInputStream
+    private val inputStreamProvider: InputStreamProvider
     /** 打开文件时的编码, 只读, 可根据文件自动判断应该用何种编码打开; 默认 Charset.forName("GBK")
      *
      * 此处代码是为了 解决 使用 TSMaster 打开 CANoe 编辑过的dbc文件导致的乱码问题; 因为 CANoe 使用 GBK 编码, 而 TSMaster 使用 UTF-8 编码。
      * */
     val encoding: Charset
     // ---------------- java风格构造函数, 用于精确控制构造行为 ----------------
-
-    /** 通过文件路径初始化一个 'DBC文件解析器' */
-    constructor(filePath: String) : this(File(filePath))
-    /** 通过文件对象初始化一个 'DBC文件解析器' */
-    constructor(file: File) {
+    /** 通过文件流提供者初始化一个 'DBC文件解析器';
+     *
+     * 将会打开文件两次：
+     *
+     * 第一次打开文件, 判断文件的正确编码; 第二次打开文件, 使用正确编码来读取文件的文本内容 。
+     *
+     * */
+    @Suppress("unused")
+    constructor(inputStreamProvider: InputStreamProvider, defaultEncoding: Charset? = null) {
+        // 打开文件两次, 第一次用来判断文件编码
+        this.encoding = defaultEncoding ?: inputStreamProvider.detectEncoding() ?: DefaultCharset
+        // 第二次打开文件，创建文件输入流
+        this.inputStreamProvider = inputStreamProvider
+    }
+    /** 通过文件对象初始化一个 'DBC文件解析器'
+     *
+     * 使用此方法，能校验文件的类型必须是DBC文件，并使用正确的编码打开文件。
+     *
+     *
+     * */
+    constructor(file: File, defaultEncoding: Charset? = null) {
         require(file.exists()) { "${DbcFileReader::class.simpleName}：文件\"${file.name}\"不存在" }
         require(file.isFile) { "${DbcFileReader::class.simpleName}：确保\"${file.name}\"是文件，而不是目录" }
         require(file.name.lowercase().endsWith(".dbc")) { "${DbcFileReader::class.simpleName}：文件\"${file.name}\"后缀名必须是 .dbc " }
-        this.inputStream = file.inputStream()
-        this.encoding = inputStream.encoding ?: Charset.forName("GBK")
-    }
-    /** 直接通过文件输入流的方式初始化一个 'DBC文件解析器' */
-    constructor(inputStream: FileInputStream) {
-        this.inputStream = inputStream
-        this.encoding = inputStream.encoding ?: Charset.forName("GBK")
+        // 打开文件两次, 第一次用来判断文件编码
+        this.encoding = defaultEncoding ?: file.encoding ?: DefaultCharset
+        // 第二次打开文件，创建文件输入流；打开文件两次，是为了解决 TSMaster 创建的dbc文件乱码问题,
+        this.inputStreamProvider = file::inputStream
     }
     /** 主函数: 解析 DBC;
      *
      * 自动使用正确的文本文件编码; */
-    fun read() : DataBaseCanImp = inputStream.reader(encoding).buffered().use { parseLines(it) }
+    fun read() : DataBaseCanImp = inputStreamProvider().reader(encoding).buffered().use { parseLines(it) }
     /** 匹配标题的正则表达式。*/
     val startRegex = Regex("""^(?<start>${VERSION}|${BU_colon}|${BO_}|${SG_}|${BO_TX_BU_}|${CM_}|${BA_DEF_}|${BA_DEF_DEF_}|${BA_}|${VAL_})\s+""")
     /** 逐行解析 */
@@ -295,7 +307,7 @@ class DbcFileReader {
         range?.takeIf { it.isNotBlank() }?.let {
             when (valueType) {
                 StringType -> Unit
-                // 解析形如： BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","Event","IfActive","CE","CA";
+                /* 解析形如： BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","Event","IfActive","CE","CA"; */
                 Enumeration -> attribute.valueTable = parseRangeToEnumMap(range)
                 // 解析形如: BA_DEF_ SG_  "GenSigInactiveValue" INT -5 65535;
                 IntegerType, FloatType, HexType -> {
@@ -384,7 +396,7 @@ class DbcFileReader {
         val name = matchGroups["name"]!!.value.trim().also { it.requireWord() }
         val value = matchGroups["value"]?.value?.trim()?.takeIf { it.isNotBlank() } ?: error("自定义属性的默认值不可以为空")
 
-        var attribute : DbcAttributeDefinitionImp = dbc.attributeMap[name] ?: error("在DBC中, 找不到属性定义: $name")
+        val attribute : DbcAttributeDefinitionImp = dbc.attributeMap[name] ?: error("在DBC中, 找不到属性定义: $name")
         attribute.defaultValue = when (attribute.valueType) {
             // 字符串类型需要去掉 左右 引号，并且去除空白字符
             StringType -> value.trim().also { it.requireStartsAndEnds("\"") } .removeSurrounding("\"").trim()
@@ -451,7 +463,7 @@ class DbcFileReader {
         val matchGroups = baRegex.find(line)?.groups ?: error("识别自定义属性值的正则表达式识别异常")
         val name = matchGroups["name"]!!.value.trim().also { it.requireWord() }
         // 通过名字寻找自定义属性
-        var attribute = dbc.attributeMap[name] ?: error("在DBC中, 找不到属性定义: $name")
+        val attribute = dbc.attributeMap[name] ?: error("在DBC中, 找不到属性定义: $name")
         // 根据作用域来判断属性值, 再分别调用不同的正则表达式
         when (attribute.scope) {
             // 网络类型的作用域，在DBC文件中没有明着写作用域，因此只能通过属性作用域来判断作用域

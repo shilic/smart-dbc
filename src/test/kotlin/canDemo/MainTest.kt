@@ -8,6 +8,7 @@ import io.github.shilic.smartDbc.can.core.CanIo
 import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 import io.github.shilic.smartDbc.dbc.dataModel.contract.DataBaseCan
 import io.github.shilic.smartDbc.dbc.io.reader.DbcFileReader
+import java.io.File
 import kotlin.test.Test
 
 class MainTest: CanListener {
@@ -28,7 +29,7 @@ class MainTest: CanListener {
             /* 步骤2：创建 DBC ;
             * 方法返回的是可变的DBC, 但是使用不可变的最上层接口来接收，避免副作用;
             * 这就是kotlin的设计哲学 */
-            val dbc: DataBaseCan = DbcFileReader(ExampleDbcPath3).read().apply {
+            val dbc: DataBaseCan = DbcFileReader(File(ExampleDbcPath3)).read().apply {
                 // 设置DBC标签, 这里需要和数据模型上用DbcBinding绑定的DBC标签一致。
                 dbcTag = dbcTag1
                 dbcComment = "DBC描述"
@@ -41,6 +42,7 @@ class MainTest: CanListener {
             // 步骤5：注册 MCU
             mMcu = McuAdapter
             // 步骤6：实现监听器接口, 在监听器中, 使用DBC对象来解码报文
+
             // 步骤7：注册监听器
             mcu.nativeRegister(this@MainTest)
         }

@@ -18,7 +18,7 @@ class DbcDemo {
     fun dbcFileReaderTest() {
         println("\n--------------- dbcFileReaderTest 测试开始 -----------------\n")
         // 读取 DBC 文件
-        val dbc: DataBaseCanImp = DbcFileReader(File(ExampleDbcPath3).inputStream()).read()
+        val dbc: DataBaseCanImp = DbcFileReader({ File(ExampleDbcPath3).inputStream() }).read()
 
         // 你可以在这里对DBC对象做一些编辑
 
@@ -31,7 +31,7 @@ class DbcDemo {
     fun dbcFileWriterTest() {
         println("\n--------------- dbcFileWriterTest 测试开始 -----------------\n")
         // 读取 DBC 文件
-        val dbc: DataBaseCanImp = DbcFileReader(File(ExampleDbcPath3).inputStream()).read()
+        val dbc: DataBaseCanImp = DbcFileReader({ File(ExampleDbcPath3).inputStream() }).read()
 
         // 你可以在这里对DBC对象做一些编辑
 
