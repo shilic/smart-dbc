@@ -4,8 +4,7 @@ import io.github.shilic.smartDbc.can.binds.*
 import io.github.shilic.smartDbc.can.contract.*
 import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
-import io.github.shilic.smartDbc.valueConverter.decodeCanFrame
-import io.github.shilic.smartDbc.valueConverter.encodeCanFrame
+import io.github.shilic.smartDbc.valueConverter.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
@@ -15,10 +14,10 @@ import kotlin.reflect.full.memberProperties
  *
  * 使用单例模式, 对外提供统一入口
  */
-object CanIo {
-    val mcu: IMcu get() = mMcu ?: error("没有注册 IMcu 服务，无法发送报文")
+object CanIo : IMcu by CanIo.mcu {
+    val mcu: IMcu get() = mcuAdapter ?: error("没有注册 IMcu 服务，无法发送报文")
     /** 持有底层 [IMcu] 服务，需要由外部自行实例化，并注册到CanIo中。再通过该字段绑定监听事件。 */
-    var mMcu: IMcu? = null
+    var mcuAdapter: IMcu? = null
     /** 持有只读DBC的可变集合(框架只需要只读DBC), 需要由外部自行实例化，并添加DBC进来 */
     val dbcMap: MutableMap<String, DataBaseCan> = mutableMapOf()
     /** 持有数据模型 */

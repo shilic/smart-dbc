@@ -40,7 +40,7 @@ class MainTest: CanListener {
             bind(msg1)
             //println("modelMap.size = ${modelMap.size}")
             // 步骤5：注册 MCU
-            mMcu = McuAdapter
+            mcuAdapter = McuAdapter
             // 步骤6：实现监听器接口, 在监听器中, 使用DBC对象来解码报文
 
             // 步骤7：注册监听器
