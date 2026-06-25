@@ -110,5 +110,7 @@ object CanIo : IMcu {
     }
     override fun transmit(canFrame: CanFrame) = mcuAdapter.transmit(canFrame)
     override fun register(canListener: CanListener) = mcuAdapter.register(canListener)
+    override fun unRegister(canListener: CanListener) = mcuAdapter.unRegister(canListener)
+
     override fun unRegisterAll() = mcuAdapter.unRegisterAll()
 }

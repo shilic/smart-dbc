@@ -12,6 +12,8 @@ interface IMcu {
     fun transmit(canFrame: CanFrame)
     /** 注册监听函数 */
     fun register(canListener: CanListener)
+    /** 取消注册监听函数 */
+    fun unRegister(canListener: CanListener)
     /** 取消所有的注册监听; */
     fun unRegisterAll()
 }

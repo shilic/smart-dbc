@@ -16,7 +16,12 @@ object DefaultMcuAdapter: IMcu {
     override fun register(canListener: CanListener) {
         println("$logTag: 注册监听器失败, MCU适配器未实现, 请在CanIo中注册MCU适配器")
     }
-    override fun unRegisterAll() {
+
+    override fun unRegister(canListener: CanListener) {
         println("$logTag: 取消注册监听器失败, MCU适配器未实现, 请在CanIo中注册MCU适配器")
+    }
+
+    override fun unRegisterAll() {
+        println("$logTag: 取消所有的注册监听失败, MCU适配器未实现, 请在CanIo中注册MCU适配器")
     }
 }
