@@ -14,7 +14,7 @@ plugins {
 // 项目组 ID。 组的名称必须命名为 io.github.你的github名称
 group = "io.github.shilic"
 // 项目版本
-version = "1.0.4"
+version = "1.0.5"
 
 // 仓库们, 构建脚本会在里边定义的仓库中寻找依赖
 repositories {
