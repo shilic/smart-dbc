@@ -30,7 +30,7 @@ object CanIo : IMcu {
         // 步骤3：将 DBC 添加到 DBC 管理器中
         dbcMap[dbc.dbcTag] = dbc
         // 步骤4：绑定数据模型(需要在绑定DBC之后)，框架会自动将数据模型中的字段与DBC中的信号绑定
-        binds(*models)
+        models.forEach { model -> bind(model) }
         // 步骤5：注册 MCU 适配器(拥有CAN收发的能力)
         this.mcuAdapter = mcuAdapter
         // 步骤6：由外部组件实现监听器接口 CanListener
