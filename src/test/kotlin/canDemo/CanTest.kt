@@ -41,7 +41,7 @@ class CanTest : CanListener {
         // 步骤3：创建 CAN 通信适配器
         with(McuAdapter) {
             // 步骤4：注册监听器
-            nativeRegister(this@CanTest)
+            register(this@CanTest)
             // 步骤5：启动监听 (这里会使用内置的随机数据进行测试)
             startMonitoring()
             // 延长JVM时间 (尽可能多的打印测试数据)
@@ -74,7 +74,7 @@ class CanTest : CanListener {
         // 快速编码报文
         val canFrame = dbc.encodeCanFrame(msg1_Id)
         // 发送报文
-        McuAdapter.nativeSend(canFrame)
+        McuAdapter.transmit(canFrame)
         println("\n--------------- CanTest测试结束 -----------------\n")
     }
 }

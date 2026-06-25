@@ -19,7 +19,7 @@ version = "1.0.3"
 // 仓库们, 构建脚本会在里边定义的仓库中寻找依赖
 repositories {
     mavenCentral()
-    /* 如果你想使用自己在github中的发布库，则必须在这里设置maven地址，同样需要从环境变量获取个人访问令牌。
+    /* 使用在github中的发布库，则必须在这里设置maven地址，同样需要从环境变量获取个人访问令牌。
     这样，gradle就能从该仓库查询该软件包了，然后就会自动下载 dependencies 中相关的依赖 */
     maven {
         name = "GitHubPackages"

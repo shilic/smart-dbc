@@ -108,17 +108,17 @@ object McuAdapter : IMcu, CoroutineScope {
         monitoringJobRef.set(null)
     }
 
-    override fun nativeSend(canFrame: CanFrame) {
+    override fun transmit(canFrame: CanFrame) {
         ActualMcu.nativeSend(canFrame)
     }
 
-    override fun nativeRegister(canListener: CanListener) {
+    override fun register(canListener: CanListener) {
         // 原子操作设置监听器
         listenerRef.set(canListener)
         ActualMcu.nativeRegister(canListener)
     }
 
-    override fun nativeUnRegister() {
+    override fun unRegisterAll() {
         // 比较并交换，确保只移除匹配的监听器
         listenerRef.getAndUpdate { null }
     }

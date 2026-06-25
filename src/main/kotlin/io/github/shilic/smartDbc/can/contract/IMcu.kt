@@ -8,10 +8,10 @@ import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
  *
  * */
 interface IMcu {
-    /** 本地发送 */
-    fun nativeSend(canFrame: CanFrame)
-    /** 本地注册监听 */
-    fun nativeRegister(canListener: CanListener)
-    /** 本地取消注册监听;  取消监听时, 则不需要传入其他参数了，直接取消。 */
-    fun nativeUnRegister()
+    /** 传输CAN报文 */
+    fun transmit(canFrame: CanFrame)
+    /** 注册监听函数 */
+    fun register(canListener: CanListener)
+    /** 取消所有的注册监听; */
+    fun unRegisterAll()
 }

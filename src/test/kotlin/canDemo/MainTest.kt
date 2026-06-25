@@ -44,7 +44,7 @@ class MainTest: CanListener {
             // 步骤6：实现监听器接口, 在监听器中, 使用DBC对象来解码报文
 
             // 步骤7：注册监听器
-            nativeRegister(this@MainTest)
+            register(this@MainTest)
         }
     }
     /** 测试程序入口函数 */
@@ -89,7 +89,7 @@ class MainTest: CanListener {
             msg1sig8 = 110.00
         }
         // 快速发送报文, 这里我们的第二个参数为空，会使用默认的数据模型中的数据进行发送
-        CanIo.send(msg1_Id)
+        CanIo.transmit(msg1_Id)
         // 对应报文  byteArrayOf(7, 8, 9, 10, 211.toByte(), 121, 200.toByte(), 100)
         println("期望的报文为: ${data8_2.toHexStr()}")
 
@@ -104,7 +104,7 @@ class MainTest: CanListener {
             msg1sig8 = 111.40,
         )
         // 快速发送报文, 这里的参数为新的数据模型对象, 会使用新数据进行发送
-        CanIo.send(msg1_Id, newMsg)
+        CanIo.transmit(msg1_Id, newMsg)
         // 对应报文  byteArrayOf(15, 16, 17, 18, 111.toByte(), 112, 113.toByte(), 114)
         // 浮点型在转换时, 存在一定误差，所以发送的值会不一样
         println("期望的报文为: ${data8_4.toHexStr()}")
