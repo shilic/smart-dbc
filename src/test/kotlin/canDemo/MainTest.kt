@@ -23,12 +23,21 @@ class MainTest: CanListener {
     }
     init {
         with(CanIo) {
+            /* 步骤1: 使用 @DbcBinding 注解和 @CanBinding 注解来绑定数据模型, 详细见数据类 */
+            /* 步骤2：创建 DBC; kotlin 的设计哲学 : 使用不可变的最上层接口来接收，避免副作用;*/
             val dbc: DataBaseCan = DbcFileReader(File(ExampleDbcPath3)).read().apply {
                 // 设置DBC标签, 这里需要和数据模型上用DbcBinding绑定的DBC标签一致。
                 dbcTag = dbcTag1
                 dbcComment = "DBC描述"
             }
-            init(dbc, McuAdapter,  Message1())
+            // 步骤3：将 DBC 添加到 DBC 管理器中
+            dbcMap[dbc.dbcTag] = dbc
+            // 步骤4：绑定数据模型(需要在绑定DBC之后)，框架会自动将数据模型中的字段与DBC中的信号绑定
+            bind(Message1())
+            bind(CCSToAC1())
+            bind(ACToCCS1())
+            // 步骤5：注册 MCU 适配器(拥有CAN收发的能力)
+            this.mcuAdapter = McuAdapter
             // 步骤6：实现监听器接口, 在监听器中, 使用DBC对象来解码报文
             // 步骤7：注册监听器
             register(this@MainTest)

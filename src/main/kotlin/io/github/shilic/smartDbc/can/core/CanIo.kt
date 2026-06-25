@@ -22,28 +22,7 @@ object CanIo : IMcu {
     val dbcMap: MutableMap<String, DataBaseCan> = mutableMapOf()
     /** 持有数据模型 */
     val modelMap: MutableMap<KClass<*>, Any> = mutableMapOf()
-
-    /** 初始化 CanIo 框架组件 */
-    inline fun <reified T : Any> init(dbc: DataBaseCan, mcuAdapter: IMcu, vararg models: T) {
-        /* 步骤1: 使用 @DbcBinding 注解和 @CanBinding 注解来绑定数据模型, 详细见数据类 */
-        /* 步骤2：创建 DBC; kotlin 的设计哲学 : 使用不可变的最上层接口来接收，避免副作用;*/
-        // 步骤3：将 DBC 添加到 DBC 管理器中
-        dbcMap[dbc.dbcTag] = dbc
-        // 步骤4：绑定数据模型(需要在绑定DBC之后)，框架会自动将数据模型中的字段与DBC中的信号绑定
-        models.forEach { model -> bind(model) }
-        // 步骤5：注册 MCU 适配器(拥有CAN收发的能力)
-        this.mcuAdapter = mcuAdapter
-        // 步骤6：由外部组件实现监听器接口 CanListener
-        // 步骤7：注册监听器
-    }
-    /**
-     * 批量绑定数据模型;
-     *
-     * 绑定成功后，框架会自动将数据模型中的字段与DBC中的信号进行绑定。
-     *
-     * @param models 数据模型
-     */
-    inline fun <reified T : Any> binds(vararg models: T) = models.forEach { model -> bind(model) }
+    
     /**
      * 绑定数据模型;
      *
