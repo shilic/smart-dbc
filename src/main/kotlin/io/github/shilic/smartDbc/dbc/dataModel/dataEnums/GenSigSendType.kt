@@ -31,19 +31,19 @@ enum class GenSigSendType (
     @GridColumnBind(headerText = "Cyclic", pattern = "Cyclic|CYCLIC|cyclic|Cycle|cycle|CYCLE")
     Cyclic (0, "Cyclic", "0" ),
     /** [GenSigSendType.OnWrite] 写入型， 值 = 1 */
-    @GridColumnBind(headerText = "OnWrite", pattern = "(OnWrite|onWrite)((?!((With|with|WITH)\\s*(Repetition|REPETITION|repetition)))")
+    @GridColumnBind(headerText = "OnWrite", pattern = "(OnWrite|onWrite)(?!((With|with|WITH)\\s*(Repetition|REPETITION|repetition)))")
     OnWrite (1, "OnWrite", "1"),
     /**  [GenSigSendType.OnWriteWithRepetition] 写入型(重复型) ， 值 = 2 */
     @GridColumnBind(headerText = "OnWrite", pattern = "(OnWrite|onWrite)\\s*(With|with|WITH)\\s*(Repetition|REPETITION|repetition)")
     OnWriteWithRepetition (2, "OnWriteWithRepetition", "2"),
     /** [GenSigSendType.OnChange] 变化型 ，值 = 3 */
-    @GridColumnBind(headerText = "OnChange", pattern = "(OnChange|onChange)((?!((With|with|WITH)\\s*(Repetition|REPETITION|repetition)))")
+    @GridColumnBind(headerText = "OnChange", pattern = "(OnChange|onChange)(?!((With|with|WITH)\\s*(Repetition|REPETITION|repetition)))")
     OnChange (3, "OnChange", "3"),
     /** [GenSigSendType.OnChangeWithRepetition] 变化型(重复型) ，值 = 4 */
     @GridColumnBind(headerText = "OnChangeWithRepetition", pattern = "(OnChange|onChange)\\s*(With|with|WITH)\\s*(Repetition|REPETITION|repetition)")
     OnChangeWithRepetition (4, "OnChangeWithRepetition", "4"),
     /** [GenSigSendType.IfActive] 激活型 ，值 = 5 */
-    @GridColumnBind(headerText = "IfActive", pattern = "(IfActive|ifActive)((?!((With|with|WITH)\\s*(Repetition|REPETITION|repetition)))")
+    @GridColumnBind(headerText = "IfActive", pattern = "(IfActive|ifActive)(?!((With|with|WITH)\\s*(Repetition|REPETITION|repetition)))")
     IfActive (5, "IfActive", "5"),
     /** [GenSigSendType.IfActiveWithRepetition] 激活型(重复型) ，值 = 6 */
     @GridColumnBind(headerText = "IfActiveWithRepetition", pattern = "(IfActive|ifActive)\\s*(With|with|WITH)\\s*(Repetition|REPETITION|repetition)")

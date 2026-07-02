@@ -26,15 +26,14 @@ open class DataBaseCanImp: MDbc<CanMessageImp, CanSignalImp, DbcAttributeDefinit
     override var attributeMap: MutableMap<String, DbcAttributeDefinitionImp> = mutableMapOf()
     override var attributeValueMap: MutableMap<String, DbcAttributeData> = mutableMapOf()
 
+    // +++++++++++++++ 实现 IGridSpecificSheet 接口 ++++++++++++++
+    @GridColumnBind(headerText = "DBC页面名称", pattern = "DBC页面名称", valueType = GridValueType.Text)
+    override var specificSheetName: String = ""
+
     // ------------------------ 子数据 ------------------------
     @GridColumnBind(headerText = "CAN1", valueType = GridValueType.SpecificSheet)
     override var msgMap: MutableMap<String, CanMessageImp> = mutableMapOf()
     override val independentSigMsg: CanMessageImp get() = msgMap.getOrPut(IndependentSigMsgKey) { getIndependentSigMsg() }
-
-
-    // +++++++++++++++ 实现 IGridSpecificSheet 接口 ++++++++++++++
-    @GridColumnBind(headerText = "DBC页面名称", pattern = "DBC页面名称", valueType = GridValueType.Text)
-    override var specificSheetName: String = ""
 
     // +++++++++++++ IGridRowData 接口实现 +++++++++++++++
     override var gridFather: String = ""

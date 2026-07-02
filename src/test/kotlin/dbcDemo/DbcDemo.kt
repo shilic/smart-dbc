@@ -2,6 +2,7 @@ package dbcDemo
 import demoData.*
 import io.github.shilic.smartDbc.dbc.dataModel.models.CanProtocolImp
 import io.github.shilic.smartDbc.dbc.dataModel.models.DataBaseCanImp
+import io.github.shilic.smartDbc.dbc.dataModel.models.DbcBaseInfo
 import io.github.shilic.smartDbc.dbc.io.reader.*
 import io.github.shilic.smartDbc.dbc.io.writer.*
 import io.github.shilic.smartGrid.core.GridReader
@@ -46,22 +47,41 @@ class DbcDemo {
         DbcFileWriter(dbc).safeWrite(outPath)
         println("\n--------------- dbcFileWriterTest 测试结束 -----------------\n")
     }
+    /** 测试从excel表中读取整车协议 */
     @Test
-    fun dbcDataTest() {
+    fun canProtocolsGridReaderTest() {
         println("-------------- 测试整车DBC协议 ------------")
-        // 路径使用相对路径
-        val filePath = "src/test/resources/excel/DBC模版.xlsx"
-        // 使用路径实例化一个 workbook 并解析出数据。如果你想使用其他表格组件，使用适配器模式，让新组件实现 Workbook 系列接口即可实现任意表格的解析，不局限于EXCEL表格。
-        val canProtocols: MutableMap<String, CanProtocolImp> = GridReader(ExampleExcelPath1.workbook()).read(CanProtocolImp::class)
-        println("canProtocols: ${canProtocols.toGsonString()}")
+        val canProtocol: CanProtocolImp = DbcGridReader(ExampleExcelPath1).readProtocol().values.first()
+        canProtocol.dbcMap.values.forEach { dbc ->
+            val outPath = "output/${dbc.dbcTag}.dbc"
+            DbcFileWriter(dbc).safeWrite(outPath)
+        }
+        println("canProtocol: ${canProtocol.toGsonString()}")
+    }
+    /** 测试从excel表中读取整车协议 */
+    @Test
+    fun dbcMapGridReaderTest() {
+        val dbcMap : MutableMap<String, DataBaseCanImp> = DbcGridReader({ File(ExampleExcelPath1).inputStream()}).read()
+        dbcMap.values.forEach { dbc ->
+            val outPath = "output/${dbc.dbcTag}.dbc"
+            DbcFileWriter(dbc).safeWrite(outPath)
+        }
     }
     /** 测试从excel协议表格读取DBC协议 */
     @Test
     fun dbcGridReaderTest() {
         println("\n--------------- dbcGridReaderTest 测试开始 -----------------\n")
-        val dbc = DbcGridReader(ExampleExcelPath1.workbook()).read("CAN1")
+        val dbc = DbcGridReader(ExampleExcelPath1.workbook()).read(
+            sheetName = "CAN1",
+            dbcBaseInfo = DbcBaseInfo(
+                dbcTag = "CAN1",
+                version = "1.0.0",
+                dbcComment = "CAN1",
+                baudRate = 500
+            )
+        )
         println("dbc = ${dbc.toGsonString()}")
-        val outPath = "output/CAN1.dbc"
+        val outPath = "output/${dbc.dbcTag}.dbc"
         DbcFileWriter(dbc).safeWrite(outPath)
         println("\n--------------- dbcGridReaderTest 测试结束 -----------------\n")
     }

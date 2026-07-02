@@ -1,6 +1,6 @@
 import java.util.Properties
 
-// 从 GRADLE_USER_HOME 读取凭证（复用同一份）
+// 从环境变量 GRADLE_USER_HOME 读取凭证（复用同一份）
 val globalProps = Properties().apply {
     gradle.gradleUserHomeDir.resolve("gradle.properties").takeIf { it.exists() }?.reader()?.use { load(it) }
 }
@@ -30,7 +30,6 @@ repositories {
             password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
             println("username=$username,password=$password")
         }
-
     }
 }
 
@@ -156,13 +155,15 @@ dependencies {
     // 处理xlsx文件（Office Open XML格式）
     implementation("org.apache.poi:poi-ooxml:5.4.0")
 
+    // 识别文件编码
     implementation("com.github.albfernandez:juniversalchardet:2.4.0")
+    // 序列化框架
     implementation("com.google.code.gson:gson:2.10.1")
 
     // ========== 反射 引入 kotlin-reflect ==========
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
 
-    // =============== 引入 kotlin 协程 ==============
+    // =============== 测试项目引入 kotlin 协程 ==============
     // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
