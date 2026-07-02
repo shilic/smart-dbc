@@ -1,8 +1,6 @@
 # smart-dbc
 
-> 车载通信中间件 —— 更聪明的 DBC，用于读写 DBC 文件，以及基于 DBC 做快速 CAN 报文编解码。
-
-smart-dbc 是一个**车载通信中间件**（Kotlin/JVM 库），提供完整的 **DBC 文件解析、生成、编辑** 能力，并在此基础上封装了一套 **CAN 运行时框架**，支持通过注解将数据模型字段与 DBC 信号自动绑定，实现 CAN 报文的快速编解码。适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。
+smart-dbc 是一个CAN协议的**车载通信中间件**（Kotlin/JVM 库），提供完整的 **DBC 文件解析、生成、编辑** 能力，并在此基础上封装了一套 **CAN 运行时框架**，支持通过注解将数据模型字段与 DBC 信号自动绑定，**实现 CAN 报文的快速编解码**。适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。
 
 ---
 
@@ -33,9 +31,10 @@ smart-dbc 发布在 **GitHub Packages**，需先在 `build.gradle.kts` 中添加
 
 ```kotlin
 repositories {
+    mavenCentral()
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/shilic/smart-dbc")
+        url = uri("https://maven.pkg.github.com/shilic/*")
         credentials {
             username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
             password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
@@ -44,13 +43,15 @@ repositories {
 }
 ```
 
-> GitHub Packages 要求提供个人访问令牌（classic token，勾选 `read:packages`）。请将令牌配置到环境变量 `GITHUB_TOKEN` 或 `~/.gradle/gradle.properties` 中，**切勿提交到仓库**。
+> GitHub Packages 要求提供个人访问令牌（classic token，勾选 `read:packages`）。请将令牌配置到环境变量 `GITHUB_TOKEN` 或 `~/.gradle/gradle.properties`文件 中，**切勿提交到仓库**。
 
 ### 添加依赖
 
 ```kotlin
 dependencies {
-    implementation("io.github.shilic:smart-dbc:1.0.0")
+    implementation("io.github.shilic:smart-dbc:1.0.7")
+    implementation("io.github.shilic:smart-grid:1.0.1")
+    implementation("io.github.shilic:numeric-converter:1.0.2")
 }
 ```
 
@@ -86,7 +87,7 @@ smart-dbc/
 │   ├── common/                         // 通用工具
 │   │   ├── customComponents/           // 自定义组件（IntEnum 等）
 │   │   ├── tool/                       // CAN 工具 / 通用工具函数
-│   │   └── typeExtension/              // Kotlin 标准类型扩��
+│   │   └── typeExtension/              // Kotlin 标准类型扩展函数
 │   │
 │   ├── dbc/                            // DBC 数据模型与 IO
 │   │   ├── attributes/                 // DBC 自定义属性（BA_DEF_ / BA_）
@@ -127,22 +128,19 @@ smart-dbc/
 
 ## 使用说明
 
-smart-dbc 提供了两种使用模式：**直接模式**（操作 DBC 对象）和 **绑定模式**（注解驱动的数据模型绑定）。
+smart-dbc 提供了三种使用模式： **直接模式**（操作 DBC 对象）和 **绑定模式**（注解驱动的数据模型绑定）。以及DBC文件编辑。
 
 ### 模式一：直接操作 DBC 对象
 
 适用于快速上手、无需预先定义数据模型的场景。
 
 ```kotlin
-import io.github.shilic.smartDbc.dbc.dataModel.contract.DataBaseCan
-import io.github.shilic.smartDbc.dbc.io.reader.DbcFileReader
-import io.github.shilic.smartDbc.valueConverter.*
-import java.io.File
+// 更详细的使用步骤请参考 src/test/kotlin/canDemo/CanTest.kt 文件
 
-// 1. 读取 DBC 文件
-val dbc: DataBaseCan = DbcFileReader(File("example.dbc").inputStream()).read()
+// 1. 读取 DBC 文件；自动根据里边的内容生成对应的报文和信号的对象。
+val dbc: DataBaseCan = DbcFileReader({ File("example.dbc").inputStream() }).read()
 
-// 2. 解码 CAN 报文
+// 2. 解码 CAN 报文; 自动将报文解析到对应的信号中。
 dbc.decodeCanFrame(canFrame)
 
 // 3. 按消息 ID 查看解析结果
@@ -156,27 +154,32 @@ dbc[0x18ABAB01, "msg1_sig1"]?.also {
 
 // 5. 修改信号值并编码发送
 dbc[0x18ABAB01, "msg1_sig1"]?.currentPhyValue = 10.0
+// 快速编码报文
 val frame = dbc.encodeCanFrame(0x18ABAB01)
+// 调用第三方API模拟发送
 mcu.nativeSend(frame)
 ```
 
 ### 模式二：注解绑定（推荐）
 
-适用于已有数据模型的工程，通过注解将字段与 DBC 信号自动关联。
+适用于已有数据模型的工程，通过注解将字段与 DBC 信号自动关联。适用于更进阶的玩法，例如可以和`Viewmodel`联动。
 
 **第 1 步：定义数据模型**
 
 ```kotlin
+// 定义一个数据类，用于映射DBC中的报文；在类上使用DbcBinding注解绑定这个数据类属于哪一个DBC
 @DbcBinding(["myDbcTag"])
 data class Message1(
+    // 使用CanBinding注解，绑定这个字段(属性)，映射到DBC文件中的哪一个信号。
     @CanBinding(0x18ABAB01, "msg1_sig1")
     var msg1sig1: Int = 0,
 
     @CanBinding(0x18ABAB01, "msg1_sig2")
     var msg1sig2: Double = 0.0,
 
-    // ...更多信号绑定
+    // ...更多信号绑定，建议一个数据模型严格绑定DBC中一个ID的报文，实现精准映射。
 ) : CanCopyable<Message1> {
+    // 可选，实现一个克隆接口，kotlin数据类自带克隆，这里只是演示。可以与 Viewmodel 等其他组件联动
     override fun copyNew() = this.copy()
 }
 ```
@@ -184,27 +187,48 @@ data class Message1(
 **第 2 步：初始化框架**
 
 ```kotlin
+// 更详细的用法请参考 src/test/kotlin/canDemo/MainTest.kt
 import io.github.shilic.smartDbc.can.core.CanIo
 
+// 在框架组件CanIo的作用域上调用
 CanIo.apply {
     // 注册 DBC
-    val dbc = DbcFileReader(File("example.dbc").inputStream()).read().apply {
+    val dbc = DbcFileReader({ File("example.dbc").inputStream() }).read().apply {
+        // 设置DBC标签, 这里需要和数据模型上用DbcBinding绑定的DBC标签一致。
         dbcTag = "myDbcTag"
     }
+    // 将 DBC 添加到 DBC 管理器中(绑定DBC, 使其拥有CAN解析的能力)
     dbcMap[dbc.dbcTag] = dbc
 
-    // 绑定数据模型（自动反射绑定所有 @CanBinding 字段）
+    // 绑定数据模型 (需要在绑定DBC之后)（自动反射绑定所有 @CanBinding 字段）
     bind(Message1())
+    // 有多个数据模型则反复绑定
+    bind(Message2())
 
-    // 注册 MCU 适配器
-    mMcu = MyMcuAdapter
-
-    // 注册 CAN 监听器
-    mcu.nativeRegister(myListener)
+    // 注册 MCU 适配器 (使其拥有CAN收发的能力) (需要你自己根据具体的CAN收发组件去实现，通常会是你的嵌入式设备厂家提供这样一个组件给你，你自己适配进来)
+    mcuAdapter = MyMcuAdapter
 }
 ```
 
-**第 3 步：发送报文**
+**第3步：监听报文**
+
+```kotlin
+// 更详细的用法请参考 src/test/kotlin/canDemo/MainTest.kt
+
+// 注册 CAN 监听器
+CanIo.register(MyListener)
+object MyListener : CanListener {
+    // 调用函数进行解码，将报文解码到DBC中。
+    CanIo.decodeCanFrame(canFrame)
+    val msg = CanIo.getModel<Message1>()?.also { println(it) }
+    // 如果你使用了 viewmodel ，可以在这里使用刚才获取的数据类对 viewmodel 进行联动。
+    // 或者：直接让 viewmodel 实现 CanListener 接口，并将 viewmodel 注册进来。
+}
+```
+
+
+
+**第 4 步：发送报文**
 
 ```kotlin
 // 直接修改绑定模型的字段值
@@ -214,19 +238,25 @@ msg?.apply {
     msg1sig2 = 22.0
 }
 
-// 一条命令完成编码 + 发送
+// 一条命令完成编码 + 发送 (使用绑定的默认数据类进行发送)
 CanIo.send(0x18ABAB01)
+
+// 或者指定新的数据类进行报文的发送, 这里就可以和 viewmodel 联动了
+val newMsg = msg?.copy (msg1sig1 = 15,msg1sig2 = 16)
+CanIo.send(0x18ABAB01, newMsg)
 ```
 
-### DBC 文件写入
+### DBC 文件编辑
 
 ```kotlin
-val dbc = DbcFileReader(File("input.dbc").inputStream()).read()
+// 读取 DBC 文件, 自动处理 GBK 编码和 UTF-8 编码, 避免文件乱码
+val dbc: DataBaseCanImp = DbcFileReader({ File(ExampleDbcPath3).inputStream() }).read()
 
-// 对 dbc 对象进行编辑...
+// 你可以在这里对DBC对象做一些编辑
+// 例如添加信号，添加报文，添加自定义属性等等。你可以在此基础之上编写界面，来完成DBC文件的编辑。
 
-// 安全写入（自动避免覆盖已有文件）
-DbcFileWriter(dbc).safeWrite("output.dbc")
+// 将DBC对象再次序列化回 .dbc 文件中; 安全写入（自动避免覆盖已有文件）
+DbcFileWriter(dbc).safeWrite(ExampleDbcPath3)
 ```
 
 ---
@@ -234,7 +264,7 @@ DbcFileWriter(dbc).safeWrite("output.dbc")
 ## 功能特性
 
 - ✅ 完整的 DBC 关键字解析：`VERSION`、`BU_`、`BO_`、`SG_`、`CM_`、`VAL_`、`BA_DEF_`、`BA_DEF_DEF_`、`BA_`、`BO_TX_BU_`
-- ✅ 自动检测文件编码（GBK / UTF-8）
+- ✅ 自动检测文件编码（GBK / UTF-8），避免打开文件时乱码
 - ✅ 支持 Intel、Motorola MSB、Motorola LSB 三种字节序
 - ✅ 支持 Standard (11-bit) 和 Extended (29-bit) CAN ID
 - ✅ 支持 CAN FD 帧
@@ -247,6 +277,11 @@ DbcFileWriter(dbc).safeWrite("output.dbc")
 ---
 
 ## 版本更新
+
+### v1.0.7 (2026-6-25)
+
+- 已经在安卓的 `Compose UI`上完成了技术验证
+- 修复了诸多BUG
 
 ### v1.0.0（2026-06-16）
 

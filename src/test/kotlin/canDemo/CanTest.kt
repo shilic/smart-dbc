@@ -1,8 +1,6 @@
 package canDemo
 
-import demoData.ExampleDbcPath3
-import demoData.dbcTag1
-import demoData.msg1_Id
+import demoData.*
 import io.github.shilic.smartDbc.can.contract.CanListener
 import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 import io.github.shilic.smartDbc.dbc.dataModel.contract.DataBaseCan
