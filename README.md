@@ -108,7 +108,7 @@ repositories {
 ```kotlin
 dependencies {
     // 本框架 smart-dbc  
-    implementation("io.github.shilic:smart-dbc:1.0.8")
+    implementation("io.github.shilic:smart-dbc:1.0.9")
     // 本框架的传递依赖 smart-grid 
     implementation("io.github.shilic:smart-grid:1.0.1")
     // 本框架的传递依赖 numeric-converter 
@@ -639,7 +639,7 @@ class MainActivity : ComponentActivity() {
 
 ## 版本更新
 
-### V1.0.8 (2026.7.2)
+### V1.0.9 (2026.7.2)
 
 - 适配了Excel协议转换为DBC文件的功能
 
