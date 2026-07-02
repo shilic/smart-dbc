@@ -19,43 +19,61 @@ footer: 让CAN报文编解码像读写POJO一样简单
 copyright: Apache-2.0
 ---
 
-# CAN协议车载通信中间件smart-dbc集成手册
+# CAN协议车载通信中间件`smart-dbc`集成手册
 
 ## 关于本项目
 
+`smart-dbc` 是一个CAN协议**车载通信中间件**（`Kotlin`/`JVM` 库），提供完整的 **DBC 文件转换、解析、生成、编辑** 能力，并在此基础上封装了一套 **CAN 通信框架**；支持通过注解将数据模型字段与 DBC 信号自动绑定，**实现 CAN 报文的快速编解码 **(从总线值到物理值, 以及从物理值到总线值)。适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。使用`Kotlin`编写，同时兼容 `java`和`kotlin`。
+
+## 行业痛点
+
+在汽车电子行业，**DBC（CAN Database）**是一种文件格式，用于描述 `CAN `总线上的消息和信号的布局规则。简单说，`DBC` 就是 `CAN `通信的"字典"——没有它，你拿到一串 `0x1A2B3C4D...` 的十六进制报文，根本不知道它们代表发动机转速还是车门状态。
+
+行业中处理 `DBC `的痛点很明显：
+
+1. `CANoe `/ `CANalyzer `可以图形化查看，但**无法集成到嵌入式终端**（如车载大屏、TBOX）
+2. 部分开源库只支持**读取**，不能编辑并**写回** DBC 文件，并且有的并不支持从`excel`表转换。`Java`这边开源库很少，并且封装程度很低，用起来不顺手。很多只支持上位机和脚本，并不支持车载大屏APP。
+4. 做 `CAN` 报文编解码时，每个信号都要**手写移位运算**，几十个信号反复写、容易出错。
+5. 不同工具链之间 `DBC` 文件的**中文编码不一致**（`CANoe `用 `GBK`，`TSMaster `用 `UTF-8`），互相打开就乱码
 
 
-`smart-dbc` 是一个CAN协议**车载通信中间件**（`Kotlin`/`JVM` 库），提供完整的 **DBC 文件解析、生成、编辑** 能力，并在此基础上封装了一套 **CAN 通信框架**，支持通过注解将数据模型字段与 DBC 信号自动绑定，**实现 CAN 报文的快速编解码 **(从总线值到物理值, 以及从物理值到总线值)。适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。使用`Kotlin`编写，同时兼容 `java`和`kotlin`。
 
+------
 
+## 其他开源方案(可选阅读)
 
+**DBC 开源库总览（按语言）**
 
+| 库名                                                         | 语言类型              | DBC 编辑                      | 格式转换                                       | CAN 编解码                                                   |
+| ------------------------------------------------------------ | --------------------- | ----------------------------- | ---------------------------------------------- | ------------------------------------------------------------ |
+| [cantools](https://github.com/cantools/cantools)             | Python（脚本/上位机） | ✅ 可改信号/消息并写回 dbc     | ⚠️ 主要吃 DBC/KCD/SYM/ARXML，出 DBC             | 🥇 最完整（Motorola/Intel、mux、container、truncated、生成 C 源码） |
+| [canmatrix](https://github.com/StaflSystems/canmatrix)       | Python（脚本/上位机） | ✅ 强编辑 + 批量改             | 🥇 最强（DBC/KCD/ARXML/SYM/XLS/LDF/ODX 全互转） | ⚠️ 基础编解码有，拼 payload 得自己补                          |
+| [opendbc]([GitHub - commaai/opendbc: a Python API for your car · GitHub](https://github.com/commaai/opendbc)) | Python + C++ 头       | ❌ 不侧重编辑（随车 DBC 为主） | ❌                                              | ✅ Python 侧= cantools；C++ 头嵌 MCU                          |
+| [dbcc](https://github.com/dschanoeh/dbcc)                    | C（代码生成器）       | ❌ 编辑靠改源 DBC              | ❌                                              | ✅ DBC→C 编译，零运行时，嵌入式                               |
+| [candied](https://github.com/lewiswon/candied)               | TS/JS（前端/Node）    | ✅ 可创建/修改/写回 DBC        | ❌                                              | ✅ 基础编解码齐（字节序/signed/enum），浮点/container 弱      |
+| [dbc-can](https://www.npmjs.com/package/dbc-can)             | TS/JS（前端/Node）    | ✅ 链式 API 建 DBC             | ❌                                              | ✅ 加载+编解码                                                |
+| [dbc-rs](https://crates.io/crates/dbc-rs)                    | Rust（no_std 可用）   | ❌ 偏解析+编解码               | ❌                                              | ✅ 嵌入式 Rust 编解码齐，forbid unsafe                        |
+| [CAN-do-parser](https://github.com/zhiwei55/CAN-do-parser)   | Java（服务端/工具）   | ❌                             | ❌                                              | ✅ byte[] → 物理量                                            |
 
-```
-在汽车电子行业，**DBC（CAN Database）**是 Vector 公司定义的一种文本格式，用于描述 CAN 总线上的消息和信号的布局规则。简单说，DBC 就是 CAN 通信的"字典"——没有它，你拿到一串 `0x1A2B3C4D...` 的十六进制报文，根本不知道它们代表发动机转速还是车门状态。
+> **首先，不是重复造轮子。**
 
-行业中处理 DBC 的痛点很明显：
+由上述表格可见，`python`类的库，功能都挺强大的，可编辑DBC，可格式转换，可CAN编解码；但是这一类主要用于脚本和上位机，对于车载环境无能无力。
 
-1. CANoe / CANalyzer 可以图形化查看，但**无法集成到嵌入式终端**（如车载大屏、TBOX）
-2. 开源库大多只支持**读取**，不能编辑并**写回** DBC 文件
-3. 对 **Motorola 字节序**的支持要么缺失、要么有 bug
-4. 做 CAN 报文编解码时，每个信号都要**手写移位运算**，几十个信号反复写、容易出错
-5. 不同工具链之间 DBC 文件的**中文编码不一致**（CANoe 用 GBK，TSMaster 用 UTF-8），互相打开就乱码
+但是，业界确实也有`Java`语言的框架，那就是 [CAN-do-parser](https://github.com/zhiwei55/CAN-do-parser)，但是本框架目前已经貌似停止维护了，并且抽象程度和封装程度都很低，和优雅是一点也谈不上，语法还都是面向过程式的，使用起来肯定是不顺手的。
 
-smart-dbc 的定位是一个**车载通信中间件**。它的目标有三件事：完整读写 DBC、基于 DBC 自动完成 CAN 报文编解码、通过注解将信号绑定到业务字段。
-```
+所有就有了本项目，一个使用`kotlin`编写的全新项目，兼容`kotlin`和`java`，拥有完整的 **DBC 文件转换、解析、生成、编辑** 能力，支持 **CAN 报文的快速编解码**，可快速集成在车载大屏APP上(已完成实际验证)。
 
-
+------
 
 ## 应用场景
 
-本框架功能极其强大，应用场景包括以下：
+本框架功能极其强大，应用场景包括但不限于以下：
 
-**车载**：将其部署到车载大屏HMI应用上，快速实现车载CAN通信；
-
-**DBC编辑**：基于此框架编写UI界面，实现一个类似于`CANbd++`的DBC编辑器，以及支持将`Excel`格式的CAN协议快速转换为`DBC`文件；
-
-**上位机/CAN监控**：将本框架集成到你的上位机中，实现类似于`CANoe Trace窗口`的CAN报文监听页面。
+- **车载大屏APP**：将其部署到车载大屏HMI应用上，快速实现车载CAN通信；
+- **DBC编辑**：你可以基于此框架编写UI界面，实现一个类似于`CANbd++`的DBC编辑器
+- **Excel转换**：支持将`Excel`格式的CAN协议快速转换为`DBC`文件；
+- **上位机/CAN监控**：将本框架集成到你的上位机中，实现类似于`CANoe Trace窗口`的CAN报文监听页面。
+- **脚本**：你可以基于本项目编写CAN总线仿真脚本，仿真总线信号。
 
 ---
 
@@ -118,7 +136,7 @@ dependencies {
 
 ### 克隆源码
 
-如果你需要
+如果你需要深度定制，可以克隆源码，自行修改。。
 
 ```bash
 git clone https://github.com/shilic/smart-dbc.git
