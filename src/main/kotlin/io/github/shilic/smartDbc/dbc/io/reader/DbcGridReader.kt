@@ -20,11 +20,9 @@ class DbcGridReader(val workbook: Workbook) {
      *
      * 需要在excel表格中使用 'CanProtocol_Info' 和 'DbcList' 标注需要解析的协议sheet。
      * */
-    fun readProtocol(): MutableMap<String, CanProtocolImp> =
-        GridReader(workbook).read(CanProtocolImp::class).also { result ->
-            result.values.forEach { protocol ->
-                protocol.dbcMap.values.forEach { it.propagateLongIdCode() }
-            }
+    fun readProtocol(): CanProtocolImp =
+        GridReader(workbook).read(CanProtocolImp::class).values.first().also { result ->
+            result.dbcMap.values.forEach { it.propagateLongIdCode() }
         }
     /** 从多个DBC sheet 页面, 获取多个可编辑的 [DataBaseCanImp];
      *

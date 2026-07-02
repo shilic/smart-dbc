@@ -1,3 +1,24 @@
+---
+title:  CAN协议车载通信中间件smart-dbc集成手册
+icon: fa6-solid:car
+author: 诚
+date: 2025-07-02
+category:
+  - Kotlin
+  - 车载通信
+  - DBC
+tag:
+  - CAN总线
+  - DBC
+  - Motorola
+  - 车载中间件
+  - Kotlin
+sticky: false
+star: true
+footer: 让CAN报文编解码像读写POJO一样简单
+copyright: Apache-2.0
+---
+
 # CAN协议车载通信中间件smart-dbc集成手册
 
 ## 关于本项目
@@ -32,7 +53,7 @@ smart-dbc 的定位是一个**车载通信中间件**。它的目标有三件事
 
 **车载**：将其部署到车载大屏HMI应用上，快速实现车载CAN通信；
 
-**DBC编辑**：基于此框架编写UI界面，实现一个类似于`CANbd++`的DBC编辑器，以及将`Excel`格式的CAN协议快速转换为`DBC`文件；
+**DBC编辑**：基于此框架编写UI界面，实现一个类似于`CANbd++`的DBC编辑器，以及支持将`Excel`格式的CAN协议快速转换为`DBC`文件；
 
 **上位机/CAN监控**：将本框架集成到你的上位机中，实现类似于`CANoe Trace窗口`的CAN报文监听页面。
 
@@ -86,13 +107,18 @@ repositories {
 
 ```kotlin
 dependencies {
-    implementation("io.github.shilic:smart-dbc:1.0.7")
+    // 本框架 smart-dbc  
+    implementation("io.github.shilic:smart-dbc:1.0.8")
+    // 本框架的传递依赖 smart-grid 
     implementation("io.github.shilic:smart-grid:1.0.1")
+    // 本框架的传递依赖 numeric-converter 
     implementation("io.github.shilic:numeric-converter:1.0.2")
 }
 ```
 
 ### 克隆源码
+
+如果你需要
 
 ```bash
 git clone https://github.com/shilic/smart-dbc.git
@@ -167,7 +193,7 @@ smart-dbc/
 
 ## 快速上手
 
-smart-dbc 提供两种基础使用模式（直接模式 / 注解绑定）以及 DBC 文件编辑能力。下方还有一个完整的 Android Compose UI 实战案例。
+`smart-dbc` 提供两种基础使用模式（直接模式 / 注解绑定）以及 DBC 文件编辑，将Excel表转换为DBC的能力。下方还有一个完整的 Android Compose UI 实战案例。
 
 ### 模式一：直接操作 DBC 对象
 
@@ -176,24 +202,24 @@ smart-dbc 提供两种基础使用模式（直接模式 / 注解绑定）以及 
 ```kotlin
 // 更详细的用法请参考 src/test/kotlin/canDemo/CanTest.kt 文件
 
-// 1. 读取 DBC 文件；自动根据里边的内容生成对应的报文和信号的对象。
+// 1. 读取 DBC 文件；DBC对象中使用树形结构保存了DBC文件中的所有信息。
 val dbc: DataBaseCan = DbcFileReader({ File("example.dbc").inputStream() }).read()
 
-// 2. 解码 CAN 报文; 自动将报文解析到对应的信号中。
+// 2. 解码 CAN 报文只需一行; 自动将CAN报文解析为物理值，并保存到DBC对应的信号中。
 dbc.decodeCanFrame(canFrame)
 
-// 3. 按消息 ID 查看解析结果
+// 3. 按消息 ID 查看解析结果，内置索引器快速查找报文
 dbc[0x18ABAB01]?.also { println(it.valueInfo) }
 
-// 4. 按 (消息ID, 信号名) 精确定位某个信号
+// 4. 按 (消息ID, 信号名) 精确定位某个信号，使用内置二维索引器简化查找语法
 dbc[0x18ABAB01, "msg1_sig1"]?.also {
     println("物理值 = ${it.currentPhyValue}")
     println("文本值 = ${it.currentTextValue}")
 }
 
-// 5. 修改信号值并编码发送
+// 5. 修改信号值并编码发送。内部同时保存了物理值、总线值、文本值3种不同类型的值，给一个赋值可附带同时给其他两个一起赋值。
 dbc[0x18ABAB01, "msg1_sig1"]?.currentPhyValue = 10.0
-// 快速编码报文
+// 快速编码报文。一行代码即可将指定ID的报文转换为CAN帧。
 val frame = dbc.encodeCanFrame(0x18ABAB01)
 // 调用第三方API模拟发送
 mcu.nativeSend(frame)
@@ -209,7 +235,7 @@ mcu.nativeSend(frame)
 // 定义一个数据类，用于映射DBC中的报文；在类上使用DbcBinding注解绑定这个数据类属于哪一个DBC
 @DbcBinding(["myDbcTag"])
 data class Message1(
-    // 使用CanBinding注解，绑定这个字段(属性)，映射到DBC文件中的哪一个信号。
+    // 使用CanBinding注解，绑定这个字段(属性)，映射到DBC文件中的一个信号。
     @CanBinding(0x18ABAB01, "msg1_sig1")
     var msg1sig1: Int = 0,
 
@@ -285,7 +311,7 @@ val newMsg = msg?.copy (msg1sig1 = 15,msg1sig2 = 16)
 CanIo.transmit(0x18ABAB01, newMsg)
 ```
 
-### DBC 文件编辑(支持通过excel表转换为dbc)
+### DBC 文件编辑
 
 ```kotlin
 // 读取 DBC 文件, 自动处理 GBK 编码和 UTF-8 编码, 避免文件乱码
@@ -297,9 +323,33 @@ val dbc: DataBaseCanImp = DbcFileReader({ File(ExampleDbcPath3).inputStream() })
 // 将DBC对象再次序列化回 .dbc 文件中; 安全写入（自动避免覆盖已有文件）
 DbcFileWriter(dbc).safeWrite(ExampleDbcPath3)
 
-// 支持通过excel表转换为dbc
-
 ```
+
+### Excel转换为DBC
+
+```kotlin
+// 同时转换多个Sheet为DBC
+val dbcMap : MutableMap<String, DataBaseCanImp> = DbcGridReader({ File(ExampleExcelPath1).inputStream()}).read()
+
+// 又或者使用我封装好的整车协议对象, 用于描述整车协议
+val canProtocol: CanProtocolImp = DbcGridReader(ExampleExcelPath1).readProtocol()
+
+// 又或者转换指定 sheet 为 DBC
+val dbc: DataBaseCanImp = DbcGridReader(ExampleExcelPath1.workbook()).read(
+    sheetName = "CAN1",
+    dbcBaseInfo = DbcBaseInfo(
+        dbcTag = "CAN1",
+        version = "1.0.0",
+        dbcComment = "CAN1",
+        baudRate = 500
+    )
+)
+
+// 你可以在这里对DBC对象做一些编辑
+// 例如添加信号，添加报文，添加自定义属性等等。你可以在此基础之上编写界面，来完成DBC文件的编辑。
+```
+
+
 
 ---
 
@@ -588,6 +638,10 @@ class MainActivity : ComponentActivity() {
 ---
 
 ## 版本更新
+
+### V1.0.8 (2026.7.2)
+
+- 适配了Excel协议转换为DBC文件的功能
 
 ### v1.0.7 (2026-6-25)
 

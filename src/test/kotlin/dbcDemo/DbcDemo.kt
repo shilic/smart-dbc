@@ -51,7 +51,7 @@ class DbcDemo {
     @Test
     fun canProtocolsGridReaderTest() {
         println("-------------- 测试整车DBC协议 ------------")
-        val canProtocol: CanProtocolImp = DbcGridReader(ExampleExcelPath1).readProtocol().values.first()
+        val canProtocol: CanProtocolImp = DbcGridReader(ExampleExcelPath1).readProtocol()
         canProtocol.dbcMap.values.forEach { dbc ->
             val outPath = "output/${dbc.dbcTag}.dbc"
             DbcFileWriter(dbc).safeWrite(outPath)
