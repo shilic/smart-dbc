@@ -6,7 +6,7 @@ import io.github.shilic.smartGrid.core.*
 
 @GridSheetBind(sheetName = "CanProtocol_Info", pattern = "CanProtocol_Info", gridSheetType = GridSheetType.Single)
 open class CanProtocolImp: MutableCanProtocol<DataBaseCanImp, CanMessageImp, CanSignalImp, DbcAttributeDefinitionImp> {
-    // +++++++++++++++++  IGridRowData 接口实现  +++++++++++++++++
+    // +++++++++++++++++  IMutableGridRowData 接口实现  +++++++++++++++++
     override var gridFather: String = ""
     override var gridRowIndex: Int? = null
 

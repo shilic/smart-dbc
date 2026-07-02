@@ -11,6 +11,10 @@ const val ExampleDbcPath3 = "src/test/resources/DBC/Example(副本).dbc"
 const val GBKDbcPath = "src/test/resources/DBC/大屏协议（测试版2）GBK编码.dbc"
 const val UTF8DbcPath = "src/test/resources/DBC/大屏协议（测试版2）UTF-8编码.dbc"
 
+const val ExampleExcelPath1 = "src/test/resources/Excel/DBC模版.xlsx"
+
+
+
 /** 对应 BO_ 2561387265 message1: 8 Vector__XXX */
 const val msg1_Id = 0x18ABAB01
 const val msg2_Id = 0x18ABAB02

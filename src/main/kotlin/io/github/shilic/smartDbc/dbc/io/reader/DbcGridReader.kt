@@ -2,26 +2,34 @@ package io.github.shilic.smartDbc.dbc.io.reader
 
 import io.github.shilic.smartDbc.dbc.dataModel.models.*
 import io.github.shilic.smartGrid.core.*
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
+import io.github.shilic.smartGrid.utils.*
+import org.apache.poi.ss.usermodel.*
+import java.io.File
+import java.io.InputStream
 
-/**  DBC协议解析器。通过DBC的excel协议文件, 解析为DBC对象。 */
-class DbcGridReader(private val workbook: Workbook) {
+/** DBC协议解析器。通过DBC的excel协议文件, 解析为DBC对象。 */
+class DbcGridReader(val workbook: Workbook) {
+    companion object {
+        operator fun invoke(filePath: String) = DbcGridReader(filePath.workbook())
+        operator fun invoke(file: File) = DbcGridReader(file.workbook())
+        operator fun invoke(inputStream: InputStream) = DbcGridReader(inputStream.workbook())
+        operator fun invoke(provider: () -> InputStream) = DbcGridReader(provider().workbook())
+    }
     /** 获取可编辑的整车协议 Protocol 。
      *
      * 需要在excel表格中使用 'CanProtocol_Info' 和 'DbcList' 标注需要解析的协议sheet。
      * */
-    fun createProtocol(): MutableMap<String, CanProtocolImp> = GridReader(workbook).read(CanProtocolImp::class)
+    fun readProtocol(): MutableMap<String, CanProtocolImp> = GridReader(workbook).read(CanProtocolImp::class)
     /** 从多个DBC sheet 页面, 获取多个可编辑的CanDbc;
      *
      * 需要在excel表格中使用 'DbcList' 标注需要解析的协议sheet。
      * */
-    fun createDbc(): MutableMap<String, DataBaseCanImp> = GridReader(workbook).read(DataBaseCanImp::class)
+    fun read(): MutableMap<String, DataBaseCanImp> = GridReader(workbook).read(DataBaseCanImp::class)
     /** 从单个DBC sheet 页面, 获取可编辑的CanDbc;
      *
      * 使用此方法可以将任意的协议页面解析成 DataBaseCanImp
      * */
-    fun createDbc(sheetName: String, dbcBaseInfo: DbcBaseInfo? = null): DataBaseCanImp {
+    fun read(sheetName: String, dbcBaseInfo: DbcBaseInfo? = null): DataBaseCanImp {
         val sheet: Sheet = workbook.getSheet(sheetName) ?: error("没有找到名为 '${sheetName}' 的DBC协议")
         val rowIndex = Ref(0)
         return DataBaseCanImp().apply {

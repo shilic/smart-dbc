@@ -77,6 +77,8 @@ buildNumber.properties
 
 # ------------- 编译输出 -------------
 # 编译产生的类文件
+out/
+output/
 *.class
 **/*.class
 

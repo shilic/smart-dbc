@@ -5,10 +5,8 @@ import java.io.File
 import java.io.InputStream
 import java.nio.charset.Charset
 
-/** 输入流提供者; 调用者通过反复调用该方法, 从而实现反复打开一个文件 */
-typealias InputStreamProvider = () -> InputStream
 /** 定义编码检测策略类型; 会调用输入流提供者得到文件流之后, 检测文件编码 */
-typealias EncodingDetector = InputStreamProvider.() -> Charset?
+typealias EncodingDetector = (() -> InputStream).() -> Charset?
 val DefaultCharset : Charset = Charset.forName("GBK")
 /** 获取文件编码 */
 val File.encoding get() = this@encoding::inputStream.detectEncoding()
@@ -16,7 +14,7 @@ val File.encoding get() = this@encoding::inputStream.detectEncoding()
  * 依次调用检测器进行检测, 返回第一个非空的编码结果, 如果所有检测器都返回null, 则返回null;
  * 函数会反复调用文件流提供者。
  * */
-fun InputStreamProvider.detectEncoding (vararg detectors: EncodingDetector = arrayOf(universalDetector, bomDetector)): Charset? =
+fun (() -> InputStream).detectEncoding (vararg detectors: EncodingDetector = arrayOf(universalDetector, bomDetector)): Charset? =
     detectors.asSequence().map { this@detectEncoding.it() }.firstOrNull { it != null }
 /** BOM检测器 */
 val bomDetector : EncodingDetector = {

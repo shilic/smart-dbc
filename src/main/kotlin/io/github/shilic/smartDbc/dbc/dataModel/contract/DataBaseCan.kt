@@ -32,7 +32,7 @@ interface DataBaseCan: IGridSpecificSheet, IGridRowData, IDbcElement  {
     // ------------------------ 子数据 ------------------------
     /** 消息列表，键为消息ID的16进制表示，值为消息对象 */
     val msgMap: Map<String, CanMessage>
-    /** 一个消息对象，用于添加信号时使用, 保存没有依赖的信号; 不允许外部修改 */
+    /** 一个消息对象，用于添加信号时使用, 保存没有依赖的信号; 你可以往里边添加和删除信号, 但是应用无法修改。 */
     val independentSigMsg : CanMessage?
 
     // +++++++++++++++ 实现 IGridSpecificSheet 接口, 用于精确定位表格位置。 ++++++++++++++

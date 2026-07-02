@@ -146,7 +146,7 @@ dependencies {
 
     // ========== 引入自定义依赖 ==========
     // 使用该语句，调用自己在 GitHubPackages 上发布的软件包; smart-grid 用于从表格识别数据进来。
-    implementation("io.github.shilic:smart-grid:1.0.1")
+    implementation("io.github.shilic:smart-grid:1.0.2")
     // 使用该语句，调用自己在 GitHubPackages 上发布的软件包; numeric-converter 用于规范网络字节数据。
     implementation("io.github.shilic:numeric-converter:1.0.2")
 

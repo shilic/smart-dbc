@@ -72,7 +72,7 @@ open class CanSignalImp: MSig {
     override var gridRowIndex: Int? = null
 
     // ++++++++++++ IValueTable (值描述接口) 实现 ++++++++++++++
-    @GridColumnBind(headerText = "ValueTable", pattern = "值描述|ValueTable|((value|Value|VALUE)\\s*(TABLE|Table|table))|((Signal|signal|SIGNAL|sig|Sig|SIG)\\s*(Value|value|VALUE)\\s*(Description|description))", valueType = GridValueType.Text)
+    @GridColumnBind(headerText = "ValueTable", pattern = "值描述|ValueTable|((value|Value|VALUE)\\s*(TABLE|Table|table))|((Signal|signal|SIGNAL|sig|Sig|SIG)\\s*(Value|value|VALUE)\\s*(Description|description))", valueType = GridValueType.ValueTable)
     override var valueTable: MutableMap<Int, String> = mutableMapOf()
     @Transient
     override var aValue: String = ""
