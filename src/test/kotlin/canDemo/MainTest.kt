@@ -25,7 +25,7 @@ class MainTest: CanListener {
         with(CanIo) {
             /* 步骤1: 使用 @DbcBinding 注解和 @CanBinding 注解来绑定数据模型, 详细见数据类 */
             /* 步骤2：创建 DBC; kotlin 的设计哲学 : 使用不可变的最上层接口来接收，避免副作用;*/
-            val dbc: DataBaseCan = DbcFileReader(File(ExampleDbcPath3)).read().apply {
+            val dbc: DataBaseCan = DbcFileReader { File(ExampleDbcPath3).inputStream() }.read().apply {
                 // 设置DBC标签, 这里需要和数据模型上用DbcBinding绑定的DBC标签一致。
                 dbcTag = dbcTag1
                 dbcComment = "DBC描述"

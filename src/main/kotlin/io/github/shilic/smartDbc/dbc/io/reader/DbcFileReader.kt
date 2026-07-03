@@ -17,20 +17,20 @@ import kotlin.collections.associateTo
 
 /** DBC文件解析器。通过.dbc后缀的文件, 解析为DBC对象。 */
 class DbcFileReader (
-    /** 文件流提供者 */
+    /** 指定文件编码, 可以为空，由文件流提供者自行检测文件编码 */
+    val encoding: Charset? = null,
+    /** 文件流提供者, 通过函数的方式提供, 可以优雅地打开文件两次 */
     private val provider: () -> InputStream,
+) {
     /** 打开文件时的编码, 只读, 可根据文件自动判断应该用何种编码打开; 默认回退 Charset.forName("GBK")
      *
      * 此处代码是为了 解决 使用 TSMaster 打开 CANoe 编辑过的dbc文件导致的乱码问题; 因为 CANoe 使用 GBK 编码, 而 TSMaster 使用 UTF-8 编码。
      * */
-    val encoding: Charset = provider.detectEncoding() ?: DefaultCharset
-) {
+    val aEncoding: Charset = encoding ?: provider.encoding() ?: DefaultCharset
     /** 构造函数重载 */
     companion object {
-        operator fun invoke(
-            path: String,
-            encoding: Charset = File(path).encoding ?: DefaultCharset
-        ): DbcFileReader = DbcFileReader(File(path), encoding)
+        operator fun invoke(path: String, encoding: Charset = File(path).encoding ?: DefaultCharset): DbcFileReader =
+            DbcFileReader(file = File(path), encoding = encoding)
         /** 通过文件对象初始化一个 'DBC文件解析器'
          *
          * 使用此方法，能校验文件的类型是否是DBC文件，并使用正确的编码打开文件。
@@ -40,13 +40,13 @@ class DbcFileReader (
             require(file.isFile) { "${DbcFileReader::class.simpleName}：确保\"${file.name}\"是文件，而不是目录" }
             require(file.name.lowercase().endsWith(".dbc")) { "${DbcFileReader::class.simpleName}：文件\"${file.name}\"后缀名必须是 .dbc " }
             // 第二次打开文件，创建文件输入流；打开文件两次，是为了解决 TSMaster 创建的dbc文件乱码问题,
-            return DbcFileReader(file::inputStream, encoding)
+            return DbcFileReader(encoding = encoding, provider = file::inputStream)
         }
     }
     /** 主函数: 解析 DBC;
      *
      * 自动使用正确的文本文件编码; */
-    fun read() : DataBaseCanImp = provider().reader(encoding).buffered().use { parseLines(it) }
+    fun read() : DataBaseCanImp = provider().reader(aEncoding).buffered().use { parseLines(it) }
     /** 匹配标题的正则表达式。*/
     val startRegex = Regex("""^(?<start>${VERSION}|${BU_colon}|${BO_}|${SG_}|${BO_TX_BU_}|${CM_}|${BA_DEF_}|${BA_DEF_DEF_}|${BA_}|${VAL_})\s+""")
     /** 逐行解析 */

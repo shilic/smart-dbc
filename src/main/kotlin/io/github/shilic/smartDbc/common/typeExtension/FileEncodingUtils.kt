@@ -9,13 +9,13 @@ import java.nio.charset.Charset
 typealias EncodingDetector = (() -> InputStream).() -> Charset?
 val DefaultCharset : Charset = Charset.forName("GBK")
 /** 获取文件编码 */
-val File.encoding get() = this@encoding::inputStream.detectEncoding()
+val File.encoding get() = this@encoding::inputStream.encoding()
 /**文件编码检测器, 通过传入一个输入流提供者, 以及任意多个编码检测器;
  * 依次调用检测器进行检测, 返回第一个非空的编码结果, 如果所有检测器都返回null, 则返回null;
  * 函数会反复调用文件流提供者。
  * */
-fun (() -> InputStream).detectEncoding (vararg detectors: EncodingDetector = arrayOf(universalDetector, bomDetector)): Charset? =
-    detectors.asSequence().map { this@detectEncoding.it() }.firstOrNull { it != null }
+fun (() -> InputStream).encoding(vararg detectors: EncodingDetector = arrayOf(universalDetector, bomDetector)): Charset? =
+    detectors.asSequence().map { this@encoding.it() }.firstOrNull { it != null }
 /** BOM检测器 */
 val bomDetector : EncodingDetector = {
     this().use { inputStream ->
