@@ -28,7 +28,7 @@ repositories {
         credentials {
             username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
             password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
-            println("username=$username,password=$password")
+            //println("username=$username,password=$password")
         }
     }
 }
@@ -47,8 +47,9 @@ tasks.register<Jar>("javadocJar") {
 
 // 定义发布内容 (在添加 `maven-publish` 之后，需要同步一下gradle更改才不会语法报错)
 publishing {
-    // 配置远程仓库们, 可以同时配置多个远程仓库
+    // 推到哪里 ? 配置远程仓库们, 可以同时配置多个远程仓库
     repositories {
+        // 发布到 GitHubPackages
         maven {
             // 仓库名称 (固定参数 GitHubPackages, 不可变动 ; 该存储库指向 GitHub Packages)
             name = "GitHubPackages"
@@ -100,6 +101,7 @@ publishing {
     publications {
         // 1. 定义名为 maven 的发布内容
         create<MavenPublication>("maven") {
+            // artifactId = rootProject.name
             // kotlin("jvm") 插件内部会应用 java 插件，所以软件组件名统一叫 "java"，没有 "kotlin" 这个组件。
             // 这不是"不可变"，而是 JVM 类库的标准写法——Java 和 Kotlin 都是同一个 `components["java"]。
             from(components["java"])

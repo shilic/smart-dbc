@@ -2,7 +2,7 @@
 title:  CAN协议车载通信中间件smart-dbc集成手册
 icon: fa6-solid:car
 author: 诚
-date: 2025-07-02
+date: 2026-07-02
 category:
   - Kotlin
   - 车载通信
@@ -322,7 +322,7 @@ msg?.apply {
 }
 
 // 一条命令完成编码 + 发送 (使用绑定的默认数据类进行发送)
-CanIo.send(0x18ABAB01)
+CanIo.transmit(0x18ABAB01)
 
 // 或者指定新的数据类进行报文的发送, 这里就可以和 viewmodel 联动了
 val newMsg = msg?.copy (msg1sig1 = 15,msg1sig2 = 16)
@@ -409,9 +409,9 @@ smart-dbc 已在真实的 Android Compose 车载项目（HMI）中完成技术�
 按接收和发送拆分数据类，一个数据类严格对应 DBC 中一个 ID 的报文：
 
 ```kotlin
-// 接收模型示例：电机状态（30+ 个信号，示例省略部分）
+// 接收模型示例：状态1（30+ 个信号，示例省略部分）
 @DbcBinding([DbcTag])
-data class RunningStatusMsg(
+data class Msg1(
     @CanBinding(RunningStatusMsgId, "status1")
     var status1: Int = 0,
     @CanBinding(RunningStatusMsgId, "status2")
@@ -419,13 +419,13 @@ data class RunningStatusMsg(
     // ... 省略其他 N 个开关量、传感器...
 )
 
-// 发送模型示例：主控指令
+// 发送模型示例：指令
 @DbcBinding([DbcTag])
-data class MainCmdMsg(
+data class Cmd1(
     @CanBinding(MainCommandMsgId, "Motor_start")
-    var motorStart: Int = 0,
+    var start: Int = 0,
     @CanBinding(MainCommandMsgId, "Motor_stop")
-    var motorStop: Int = 0,
+    var stop: Int = 0,
     // ... 省略其他代码
 )
 ```
@@ -509,35 +509,34 @@ ViewModel 直接实现 `CanListener`，通过 `StateFlow` 将 CAN 数据"翻译"
 ```kotlin
 /* 伪代码 */
 class CanViewModel : ViewModel(), CanListener {
-    override val listenerName = "CanViewModel"
     // ================== 接收侧：N 个 StateFlow（每个报文一个） ==================
     // 非常标准的 一个 ViewModel + StateFlow 的写法，你在网上可以找到大量这样写法的代码
-    private val mRunningStatusMsg = MutableStateFlow(RunningStatusMsg())
-    val runningStatus: StateFlow<RunningStatusMsg> = mRunningStatusMsg
-    private val mMotorFaultMsg = MutableStateFlow(MotorFaultMsg())
-    val motorFault: StateFlow<MotorFaultMsg> = mMotorFaultMsg
+    private val mMsg1 = MutableStateFlow(Msg1())
+    val msg1: StateFlow<Msg1> = mMsg1
+    private val mMsg2 = MutableStateFlow(Msg2())
+    val msg2: StateFlow<Msg2> = mMsg2
     // ... 省略其他 StateFlow ...
     // ================== 发送侧：N 个 StateFlow ==================
-    val mainCmd    = MutableStateFlow(MainCmdMsg())
-    val speedCmd   = MutableStateFlow(SpeedCmdMsg())
+    val cmd1= MutableStateFlow(Cmd1())
+    val Cmd2   = MutableStateFlow(Cmd2())
     // ... 省略其他 StateFlow ...
     // smart-dbc 解码后回调此方法（运行在 IO 线程）(最终会注册给CAN设备厂家提供的监听函数中)
     override fun onListening(canFrame: CanFrame) {
         when (canFrame.msgId) {
-            RunningStatusMsgId ->
-                mRunningStatusMsg.update { CanIo.getModel<RunningStatusMsg>()!!.copy() }
-            MotorFaultMsgId ->
-                mMotorFaultMsg.update { CanIo.getModel<MotorFaultMsg>()!!.copy() }
+            MsgId1 ->
+                msg1.update { CanIo.getModel<Msg1>()!!.copy() }
+            MsgId2 ->
+                msg2.update { CanIo.getModel<Msg2>()!!.copy() }
             // ... 匹配其他 msgId
         }
     }
     // 周期性发送（100ms 间隔），UI 只需更新 StateFlow，循环自动取最新值
-    fun startPeriodicSend() {
+    fun start() {
         // ... 省略
         job = viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
-                CanIo.transmit(MainCommandMsgId, mainCmd.value)
-                CanIo.transmit(SpeedCommandMsgId, speedCmd.value)
+                CanIo.transmit(Command1MsgId, cmd1.value)
+                CanIo.transmit(Command2MsgId, Cmd2.value)
                 // ... 省略
                 delay(100.milliseconds)
             }
@@ -558,26 +557,29 @@ class CanViewModel : ViewModel(), CanListener {
 任何 Composable 函数通过 `.collectAsState()` 即可消费实时 CAN 数据：
 
 ```kotlin
-/* 示例代码 */
+/* 伪代码  */
 @Composable
-fun MotorStatusScreen(can: CanViewModel) {
+fun StatusScreen(can: CanViewModel) {
      // 从 ViewModel 收集 CAN 实时状态
-    val runningStatus by can.runningStatus.collectAsState()
-    val motorFault by can.motorFault.collectAsState()
+    val runningStatus by can.msg1.collectAsState()
+    val motorFault by can.fault.collectAsState()
     // 状态指示灯：绿色=1（到位），灰色=0（未到位）
     SwitchShow("xxxx",  runningStatus.status1 == 1)
     SwitchShow("xxxx", runningStatus.status2 == 1)
+    
+    // 如果有double类型的物理值，框架将自动处理摩托罗拉格式和英特尔格式，以及精度偏移量。消费值的时候直接使用即可，完全屏蔽解析过程。
+    Panel("xxxx", runningStatus.seepd)
     // 故障码：非 0 即故障
     if (motorFault.faultCode1 != 0) FaultShow(motorFault)
 }
 @Composable
 fun CmdScreen(can: CanViewModel) {
     // 从 ViewModel 收集 CAN 实时状态
-    val mainCmd by can.mainCmd.collectAsState()
+    val cmd1 by can.cmd1.collectAsState()
     // 用户按下按钮 → 更新 StateFlow → 后台循环自动发送
-    BtnItem("举升", onPress = {
-        can.mainCmd.update(mainCmd.copy(
-            loadingBodyLift = 1,
+    BtnItem("启动", onPress = {
+        can.cmd1.update(cmd1.copy(
+            start = 1,
         ))
     })
 }
@@ -626,13 +628,11 @@ class MainActivity : ComponentActivity() {
 
 在设备端，我们连接好模拟电源，CAN卡，车载大屏，以及USB的调试端口。如下图所示，界面成功按照`ZCANPRO` 中的报文进行了显示，验证无误。
 
-![车载大屏展示数据](./assets/image-20260702152537180.png)
+![车载大屏展示数据](./assets/image-20260702152537180.jpg)
 
 ### 通过车载大屏按键发送报文, `ZCANPRO` 模拟接收
 
-在车载大屏上，我们按下按键，如下图所示，一个按键按下，其他按键则禁用。
-
-![image-20260702153421454](./assets/image-20260702153421454.png)
+在车载大屏上，我们按下按键，则模拟发送报文。
 
 ![image-20260702153604813](./assets/image-20260702153604813.png)
 
@@ -649,6 +649,7 @@ class MainActivity : ComponentActivity() {
 - ✅ **支持 `CAN FD` 帧**
 - ✅ 自定义 DBC 属性读写和创建（五种值类型：INT / FLOAT / STRING / ENUM / HEX）
 - ✅ **`Excel` 表格导入 `DBC` 协议定义（通过 `smart-grid`）**
+- ✅ **完全解耦CAN通信层和应用层，任何CAN通信协议的变化都不需要修改应用层代码，每层各自独立更新，互不影响。更新CAN通信协议，只需要重新导入DBC文件即可。**
 - ✅ 注解驱动的数据模型绑定（`@CanBinding` / `@DbcBinding`）
 - ✅ **`Kotlin` 只读/可变接口分离，遵循 `Kotlin` 设计哲学**
 - ✅ 安全的文件写入（自动生成不重名文件，避免覆盖）
@@ -656,6 +657,10 @@ class MainActivity : ComponentActivity() {
 ---
 
 ## 版本更新
+
+### V1.0.10 (2026.7.3)
+
+- 优化：将部分语法改成`kotlin`风格, 使用默认参数, 并将函数参数放最后一个位置。
 
 ### V1.0.9 (2026.7.2)
 
