@@ -4,7 +4,7 @@ import java.util.Properties
 val globalProps = Properties().apply {
     gradle.gradleUserHomeDir.resolve("gradle.properties").takeIf { it.exists() }?.reader()?.use { load(it) }
 }
-
+// ===== 1. 引入插件 =====
 plugins {
     kotlin("jvm") version "2.1.0"
     /* 应用 maven-publish 插件;
@@ -47,7 +47,7 @@ tasks.register<Jar>("javadocJar") {
 
 // 定义发布内容 (在添加 `maven-publish` 之后，需要同步一下gradle更改才不会语法报错)
 publishing {
-    // 推到哪里 ? 配置远程仓库们, 可以同时配置多个远程仓库
+    // ===== 4. 配置远程仓库; 推到哪里 ? =====
     repositories {
         // 发布到 GitHubPackages
         maven {
@@ -83,7 +83,7 @@ publishing {
                 password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
             }
         }
-        // 可以添加多个仓库
+        // 可以同时配置多个远程仓库
         /*
         maven {
             name = "MyNexus"
@@ -95,11 +95,11 @@ publishing {
         }
         */
     }
-    /* 定义一个标准的发布内容
-     * 一个项目可以定义多个发布内容 (Multiple Publications)，例如发布不同的构件或为不同的用途提供不同的元数据。
+    // ===== 3. 配置标准的发布内容 =====
+    /*  一个项目可以定义多个发布内容 (Multiple Publications)，例如发布不同的构件或为不同的用途提供不同的元数据。
      * 例如: 基本的jar(可调用代码)、 源码(可深入源码DEBUG)、 java-docs(可查看文档)  */
     publications {
-        // 1. 定义名为 maven 的发布内容
+        // 定义名为 maven 的发布内容
         create<MavenPublication>("maven") {
             // artifactId = rootProject.name
             // kotlin("jvm") 插件内部会应用 java 插件，所以软件组件名统一叫 "java"，没有 "kotlin" 这个组件。
