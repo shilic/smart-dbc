@@ -103,6 +103,13 @@ copyright: Apache-2.0
 `smart-dbc` 发布在 **GitHub Packages**中，需先在 `build.gradle.kts` 中添加仓库：
 
 ```kotlin
+import java.util.Properties
+
+// 从 GRADLE_USER_HOME 读取凭证（复用同一份），也就是从 ~/.gradle/gradle.properties 读取配置
+val globalProps = Properties().apply {
+    gradle.gradleUserHomeDir.resolve("gradle.properties").takeIf { it.exists() }?.reader()?.use { load(it) }
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -112,8 +119,8 @@ repositories {
         url = uri("https://maven.pkg.github.com/shilic/*")
         // 访问令牌
         credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
+            password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
         }
     }
 }
