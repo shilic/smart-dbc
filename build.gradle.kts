@@ -35,12 +35,14 @@ repositories {
 
 // 源码包 (可深入源码DEBUG)
 tasks.register<Jar>("sourcesJar") {
+    description = "源码包 (可深入源码DEBUG)"
     archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
 }
 
 // Javadoc 包 (可查看注释)
 tasks.register<Jar>("javadocJar") {
+    description = "Javadoc 包 (可查看注释)"
     archiveClassifier.set("javadoc")
     from(tasks.javadoc.get().outputs)
 }
