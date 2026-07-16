@@ -36,10 +36,12 @@ class DbcGridReader(val workbook: Workbook) {
      *
      * 使用此方法可以将任意的协议页面解析成 [DataBaseCanImp]
      * */
-    fun  read(sheetName: String, dbcBaseInfo: DbcBaseInfo? = null): DataBaseCanImp {
+    fun read(sheetName: String, dbcBaseInfo: DbcBaseInfo? = null): DataBaseCanImp {
         val sheet: Sheet = workbook.getSheet(sheetName) ?: error("没有找到名为 '${sheetName}' 的DBC协议")
         val rowIndex = Ref(0)
         return DataBaseCanImp().apply {
+            dbcTag = sheetName
+            dbcComment = sheetName
             dbcBaseInfo?.let { this.setDbcBaseInfo(it) }
             // 使用 smart-grid 组件, 从名为 sheetName 的 sheet 读取 CanMessage
             msgMap =  GridReader(workbook).readBySheet(sheet, CanMessageImp::class, GridSheetType.Dictionary, rowIndex, null)

@@ -5,6 +5,7 @@ import io.github.shilic.smartDbc.can.contract.CanListener
 import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 import io.github.shilic.smartDbc.dbc.dataModel.contract.DataBaseCan
 import io.github.shilic.smartDbc.dbc.io.reader.DbcFileReader
+import io.github.shilic.smartDbc.dbc.io.reader.toDbc
 import io.github.shilic.smartDbc.valueConverter.*
 import org.junit.jupiter.api.Test
 
@@ -17,7 +18,7 @@ class CanTest : CanListener {
     /* 步骤1：创建 DBC ;
      * 构造方法返回的是可变的DBC, 但是使用不可变的最上层接口来接收，避免副作用;
      * 这就是kotlin的设计哲学 */
-    val dbc: DataBaseCan = DbcFileReader(ExampleDbcPath3).read().apply {
+    val dbc: DataBaseCan = ExampleDbcPath3.toDbc().apply {
         dbcTag = dbcTag1
         dbcComment = "DBC描述"
     }

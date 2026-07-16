@@ -26,14 +26,19 @@ object CanIo : IMcu {
     /**
      * 绑定数据模型;
      *
+     * 使用 [DbcBinding] 注解和 [CanBinding] 注解进行绑定。
+     *
      * 绑定成功后，框架会自动将数据模型中的字段与DBC中的信号进行绑定。
      *
      * @param model 数据模型
+     * @Deprecated 使用 binding 替代
      */
+    @Deprecated("使用 binding 替代", ReplaceWith("binding(model)"))
     inline fun <reified T : Any> bind(model: T) {
         // ------------------------- 前期校验 -------------------------
         val kClass : KClass<T> = T::class
-        val dbcBind: DbcBinding = kClass.findAnnotation<DbcBinding>() ?: error("'${kClass.simpleName}'类型需要标记'${DbcBinding::class.simpleName}'注解, 才可以绑定")
+        val dbcBind: DbcBinding = kClass.findAnnotation<DbcBinding>()
+            ?: error("'${kClass.simpleName}'类型需要标记'${DbcBinding::class.simpleName}'注解, 才可以绑定")
         // 验证DBC必须先提前注册; 在已经注册的DBC标签中，搜索类型上标注的DBC标签; 要求标注的DBC必须注册进来。
         val missingDbcTags = dbcBind.dbcTags.filter { it !in dbcMap }
         require(missingDbcTags.isEmpty()) { "没有提前在${CanIo::class.simpleName}对象中注册以下DBC标签:${missingDbcTags}" }
@@ -45,6 +50,42 @@ object CanIo : IMcu {
             // 使用绑定信息，到DBC中进行查找，查找到对应的信号
             val signal: CanSignal = findSignal(canBind)
                 ?: error("没有在注册DBC中找到 字段'${property}'的'${CanBinding::class.simpleName}'注解上标注的信号:${canBind.signalName}")
+            // 将持有者和字段绑定到DBC对象中
+            signal.let {
+                it.originalOwnerType = kClass
+                it.originalOwner = model
+                it.originalProperty = property
+            }
+            // 保存绑定好的数据模型
+            modelMap[kClass] = model
+        }
+        println("$logTag: 对象绑定完成, 已经成功将 '$kClass' 类型绑定至DBC中")
+    }
+    /**
+     * 绑定数据模型;
+     *
+     * 使用 [CanMessageBinding] 注解和 [CanSignalBinding] 注解进行绑定。
+     *
+     * 绑定成功后，框架会自动将数据模型中的字段与DBC中的信号进行绑定。
+     *
+     * @param model 数据模型
+     */
+    inline fun <reified T : Any> binding(model: T) {
+        // ------------------------- 前期校验 -------------------------
+        val kClass : KClass<T> = T::class
+        val msgBind: CanMessageBinding = kClass.findAnnotation<CanMessageBinding>()
+            ?: error("'${kClass.simpleName}'类型需要标记'${CanMessageBinding::class.simpleName}'注解, 才可以绑定")
+        // 验证DBC必须先提前注册; 在已经注册的DBC标签中，搜索类型上标注的DBC标签; 要求标注的DBC必须注册进来。
+        val dbc = dbcMap[msgBind.dbcTag] ?: error("没有提前在${CanIo::class.simpleName}对象中注册以下DBC标签:${msgBind.dbcTag}")
+        val msg = dbc[msgBind.msgId] ?: error("没有在注册DBC中找到 报文ID:${CanMessage.msgIdToKey(msgBind.msgId)}")
+
+        // ------------- 遍历所有字段, 然后执行绑定操作, 允许只读字段绑定 ------------------
+        kClass.memberProperties.forEach { property ->
+            // 拿到字段上的绑定信息，没有就跳过这一次循环。
+            val sigBind = property.findAnnotation<CanSignalBinding>() ?: return@forEach
+            // 使用绑定信息，到DBC中进行查找，查找到对应的信号
+            val signal: CanSignal = msg[sigBind.signalName]
+                ?: error("没有在注册DBC中找到 字段'${property}'的'${CanSignalBinding::class.simpleName}'注解上标注的信号:${sigBind.signalName}")
             // 将持有者和字段绑定到DBC对象中
             signal.let {
                 it.originalOwnerType = kClass

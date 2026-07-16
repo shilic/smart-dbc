@@ -24,7 +24,7 @@ class DbcDemo {
     fun dbcFileReaderTest() {
         println("\n--------------- dbcFileReaderTest 测试开始 -----------------\n")
         // 读取 DBC 文件
-        val dbc: DataBaseCanImp = DbcFileReader { File(ExampleDbcPath3).inputStream() }.read()
+        val dbc: DataBaseCanImp = ExampleDbcPath3.toDbc()
 
         // 你可以在这里对DBC对象做一些编辑
 
@@ -37,7 +37,7 @@ class DbcDemo {
     fun dbcFileWriterTest() {
         println("\n--------------- dbcFileWriterTest 测试开始 -----------------\n")
         // 读取 DBC 文件, 自动处理 GBK 编码和 UTF-8 编码, 避免文件乱码
-        val dbc: DataBaseCanImp = DbcFileReader { File(ExampleDbcPath3).inputStream() }.read()
+        val dbc: DataBaseCanImp = File(ExampleDbcPath3)::inputStream.toDbc()
 
         // 你可以在这里对DBC对象做一些编辑
         // 例如添加信号，添加报文，添加自定义属性等等。你可以在此基础之上编写界面，来完成DBC文件的编辑。
@@ -64,7 +64,7 @@ class DbcDemo {
     /** 测试从excel表中读取整车协议 */
     @Test
     fun dbcMapGridReaderTest() {
-        val dbcMap: MutableMap<String, DataBaseCanImp> = DbcGridReader { File(ExampleExcelPath1).inputStream()}.read()
+        val dbcMap: MutableMap<String, DataBaseCanImp> = File(ExampleExcelPath1)::inputStream.getDbcMap()
         // 批量转换为DBC文件
         dbcMap.values.forEach { dbc ->
             val outPath = "output/${dbc.dbcTag}.dbc"
@@ -75,7 +75,7 @@ class DbcDemo {
     @Test
     fun dbcGridReaderTest() {
         println("\n--------------- dbcGridReaderTest 测试开始 -----------------\n")
-        val dbc = DbcGridReader(ExampleExcelPath1.workbook()).read(
+        val dbc = ExampleExcelPath1.getDbc(
             sheetName = "CAN1",
             dbcBaseInfo = DbcBaseInfo(
                 dbcTag = "CAN1",

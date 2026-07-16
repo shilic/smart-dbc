@@ -7,7 +7,7 @@ import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 /**
  * 默认的MCU适配器，当用户没有注册MCU适配器时，使用这个适配器
  */
-object DefaultMcuAdapter: IMcu {
+internal object DefaultMcuAdapter: IMcu {
     val logTag: String = "${DefaultMcuAdapter::class.simpleName}"
 
     override fun transmit(canFrame: CanFrame) {
