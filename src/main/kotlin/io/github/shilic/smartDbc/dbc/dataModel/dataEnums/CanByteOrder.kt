@@ -33,7 +33,7 @@ enum class CanByteOrder (
         fun createBy(dbcValue: String) = when(dbcValue) {
             ONE -> Intel
             ZERO -> MotorolaMSB
-            else -> error("数值 0 表示MotorolaMSB, 数值 1 表示Intel, 其余的均为非法值，无法转换为排列格式")
+            else -> error("数值 0 表示 MotorolaMSB, 数值 1 表示 Intel, 其余的均为非法值，无法转换为排列格式")
         }
     }
 }
