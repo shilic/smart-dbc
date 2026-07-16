@@ -37,6 +37,10 @@ interface MutableDataBaseCan<M, S, A> : DataBaseCan, IMutableGridRowData, IMutab
     // =========================  索引器们  ===========================
     /** 添加报文 */
     fun set(canMsg: M) = msgMap.put(canMsg.dbcKey, canMsg)
+    /** 添加报文 */
+    operator fun set(messageTag: String, canMsg: M) = msgMap.put(messageTag, canMsg)
+    /** 添加报文 */
+    operator fun set(msgId: Int, canMsg: M) = msgMap.put(CanMessage.msgIdToKey(msgId), canMsg)
     /** 根据报文标签获取报文 */
     override operator fun get(messageTag: String): M? = msgMap[messageTag]
     /** 根据消息ID获取消息 */
