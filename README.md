@@ -87,9 +87,9 @@ copyright: Apache-2.0
 
 **核心传递依赖**（由 Gradle 自动拉取）：
 
-- `io.github.shilic:smart-grid:1.0.1` — Excel 表格数据读取
-- `io.github.shilic:numeric-converter:1.0.2` — 网络字节数据转换
-- `org.apache.poi:poi:5.3.0` / `poi-ooxml:5.4.0` — Excel 文件处理
+- `io.github.shilic:smart-grid:1.0.3` — Excel 表格数据读取
+- `io.github.shilic:smart-network-byte:1.0.0` — 网络字节数据转换
+- `org.apache.poi:poi:5.5.1` / `poi-ooxml:5.5.1` — Excel 文件处理
 - `com.github.albfernandez:juniversalchardet:2.4.0` — 文件编码自动检测
 - `org.jetbrains.kotlin:kotlin-reflect:1.9.0` — 反射支持（注解绑定）
 - `com.google.code.gson:gson:2.10.1` — JSON 序列化
@@ -640,7 +640,7 @@ class MainActivity : ComponentActivity() {
 
 ### V1.0.11 (2026.7.20)
 
-- 优化：将软件包发布到了`maven central`中，现在可以更方便的添加依赖了
+- 优化：将软件包发布从 `Github Packages` 改为了`maven central`，现在可以更方便的添加依赖了
 
 ### V1.0.10 (2026.7.3)
 
@@ -668,10 +668,6 @@ class MainActivity : ComponentActivity() {
 ---
 
 ## 常见问题（FAQ）
-
-**Q: 为什么拉取依赖时报 401/403？**
-
-A: GitHub Packages 需要认证。请确保已在环境变量或 `~/.gradle/gradle.properties` 中配置了有效的 GitHub 个人访问令牌（classic token，需勾选 `read:packages` 权限）。
 
 **Q: DBC 文件中文注释乱码？**
 
