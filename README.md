@@ -116,7 +116,7 @@ dependencies {
 
 ### 克隆源码
 
-如果你需要深度定制，可以克隆源码，自行修改。。
+如果你需要深度定制，可以克隆源码，自行修改。
 
 ```bash
 git clone https://github.com/shilic/smart-dbc.git
@@ -443,7 +443,7 @@ fun CanIo.initialize(context: Context) {
 
 这一步骤需要引入CAN卡厂家实现的CAN通信软件包来实现，他们一般在软件包里边实现了一些最基本的CAN收发操作，但是不会给你集成CAN报文的快速编解码；如果是在你的车载大屏上，一般是他们提供一个AIDL封装的组件；如果是在`Windows`上，则一般是一个DLL，例如周立功和同星的二次开发DLL，如需使用本框架，还需要你自己写一层`JNI`来适配（***或许是后续更新方向？***）。
 
-如下图所示，则是车载大屏厂家提供的AIDL工具包。
+如下图所示，则是车载大屏厂家提供的`AIDL工具包`。
 
 ![车载大屏厂家提供的AIDL工具包](./assets/image-20260702150430079.png)
 
@@ -614,11 +614,11 @@ class MainActivity : ComponentActivity() {
 
 在车载大屏上，我们按下按键，则模拟发送报文。
 
-![image-20260702153604813](./assets/image-20260702153604813.png)
+![车载大屏上模拟按键按下](./assets/image-20260702153604813.png)
 
 如下图`ZCANPRO`的仿真面板所示，按下按键之后，相关报文自动变为1，松开后，报文则自动变为0 。
 
-![image-20260702153950600](./assets/image-20260702153950600.png)
+![ZCANPRO的仿真面板](./assets/image-20260702153950600.png)
 
 ## 功能特性
 
@@ -648,7 +648,7 @@ class MainActivity : ComponentActivity() {
 
 ### V1.0.9 (2026.7.2)
 
-- 适配了Excel协议转换为DBC文件的功能
+- 新增：适配了Excel协议转换为DBC文件的功能
 
 ### v1.0.7 (2026-6-25)
 
@@ -660,7 +660,6 @@ class MainActivity : ComponentActivity() {
 - 新增：完整的 DBC 文件解析与生成
 - 新增：CAN 报文编解码（Intel / Motorola 字节序）
 - 新增：注解驱动的数据模型绑定框架
-- 新增：Excel 表格导入 DBC 协议
 - 新增：自定义 DBC 属性支持
 - 新增：CAN FD 帧支持
 - 首次正式发布
@@ -689,10 +688,11 @@ A: 请确认 DBC 中信号的字节序定义是否正确（Motorola 为 `0`，In
 
 ---
 
-## 作者
+## 作者及项目地址
 
-- **诚（shilic）** — [https://github.com/shilic](https://github.com/shilic)
+- **诚（`shilic`）**： [https://github.com/shilic](https://github.com/shilic)
 - 邮箱：985478238@qq.com
+- 项目地址：[https://github.com/shilic/smart-dbc](https://github.com/shilic/smart-dbc)
 
 ---
 
