@@ -1,6 +1,5 @@
 import java.util.Properties
 
-// ===== 1. 引入插件 =====
 plugins {
     kotlin("jvm") version "2.2.0"
     /* 对应 publishing 节点; 使用传统方式发布软件包 */
@@ -19,6 +18,10 @@ plugins {
 group = "io.github.shilic"
 /* 版本号  !!! 严禁 -SNAPSHOT */
 version = "1.0.11"
+val mDescription = "smart-dbc 是一个CAN协议车载通信中间件（Kotlin/JVM 库），提供完整的 DBC 文件转换、解析、生成、编辑 能力，" +
+        "并在此基础上封装了一套 CAN 通信框架；" +
+        "支持通过注解将数据模型字段与 DBC 信号自动绑定，实现 CAN 报文的快速编解码 (从总线值到物理值, 以及从物理值到总线值)。" +
+        "适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。使用Kotlin编写，同时兼容 java和kotlin。"
 
 /** 从 settings.gradle.kts 文件取值过来 */
 val artifactId: String = rootProject.name
@@ -27,10 +30,7 @@ val myGit: String = "github.com/shilic/$artifactId"
 /** 复用我的POM */
 val myPom: MavenPom.() -> Unit = {
     name = artifactId
-    description = "smart-dbc 是一个CAN协议车载通信中间件（Kotlin/JVM 库），提供完整的 DBC 文件转换、解析、生成、编辑 能力，" +
-            "并在此基础上封装了一套 CAN 通信框架；" +
-            "支持通过注解将数据模型字段与 DBC 信号自动绑定，实现 CAN 报文的快速编解码 (从总线值到物理值, 以及从物理值到总线值)。" +
-            "适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。使用Kotlin编写，同时兼容 java和kotlin。"
+    description = mDescription
     url = "https://$myGit"
     licenses {
         license {
