@@ -1,177 +1,132 @@
 import java.util.Properties
 
-// 从环境变量 GRADLE_USER_HOME 读取凭证（复用同一份）
-val globalProps = Properties().apply {
-    gradle.gradleUserHomeDir.resolve("gradle.properties").takeIf { it.exists() }?.reader()?.use { load(it) }
-}
 // ===== 1. 引入插件 =====
 plugins {
-    kotlin("jvm") version "2.1.0"
-    /* 应用 maven-publish 插件;
-   * 将项目发布到 本地maven仓库、远程maven仓库、GitHub Packages仓库 都需要使用该插件 */
+    kotlin("jvm") version "2.2.0"
+    /* 对应 publishing 节点; 使用传统方式发布软件包 */
     `maven-publish`
+    // 添加原生签名插件，用于GPG签名
+    signing
+    /* 使用社区插件 com.vanniktech.maven.publish 发布软件包:
+    * JVM : 必须 17 以上 (在项目结构中修改SDK级别, 不是修改语言级别)，
+    * Kotlin : 2.2.0以上；
+    * gradle : com.vanniktech.maven.publish 插件 0.36.0 调用了 ProjectLayout.getSettingsDirectory() 方法，该方法在 Gradle 8.12 才引入;
+    * 我TM服了。*/
+    id("com.vanniktech.maven.publish") version "0.36.0"
 }
-// 项目组 ID。 组的名称必须命名为 io.github.你的github名称
+/* ======================= 填写个人信息 ============================= */
+/* 组织机构的名称必须是 io.github.<你的github名称>，除非你有你自己的域名; maven中心会校验你是否拥有这个域名，否则一律挂到 github 下 */
 group = "io.github.shilic"
-// 项目版本
-version = "1.0.10"
+/* 版本号  !!! 严禁 -SNAPSHOT */
+version = "1.0.11"
 
+/** 从 settings.gradle.kts 文件取值过来 */
+val artifactId: String = rootProject.name
+/** 提取个人的链接，方便统一修改 */
+val myGit: String = "github.com/shilic/$artifactId"
+/** 复用我的POM */
+val myPom: MavenPom.() -> Unit = {
+    name = artifactId
+    description = "smart-dbc 是一个CAN协议车载通信中间件（Kotlin/JVM 库），提供完整的 DBC 文件转换、解析、生成、编辑 能力，" +
+            "并在此基础上封装了一套 CAN 通信框架；" +
+            "支持通过注解将数据模型字段与 DBC 信号自动绑定，实现 CAN 报文的快速编解码 (从总线值到物理值, 以及从物理值到总线值)。" +
+            "适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。使用Kotlin编写，同时兼容 java和kotlin。"
+    url = "https://$myGit"
+    licenses {
+        license {
+            name = "The Apache License, Version 2.0"
+            url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+    }
+    developers {
+        developer {
+            id = "诚"
+            name = "诚"
+            email = "985478238@qq.com"
+        }
+    }
+    scm {
+        url = "https://$myGit"
+        connection = "scm:git:git://$myGit.git"
+        developerConnection = "scm:git:ssh://$myGit.git"
+    }
+}
 // 仓库们, 构建脚本会在里边定义的仓库中寻找依赖
 repositories {
     mavenCentral()
-    /* 使用在github中的发布库，则必须在这里设置maven地址，同样需要从环境变量获取个人访问令牌。
-    这样，gradle就能从该仓库查询该软件包了，然后就会自动下载 dependencies 中相关的依赖 */
-    maven {
-        name = "GitHubPackages"
-        // 替换 OWNER 为你的 GitHub 用户名或组织名（小写）
-        url = uri("https://maven.pkg.github.com/shilic/*")
-        credentials {
-            username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
-            password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
-            //println("username=$username,password=$password")
+}
+/* 使用 mavenPublishing 发布到 Maven Central，签名、源码包、文档包均由插件自动处理 */
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+    coordinates(group.toString(), artifactId, version.toString())
+    pom(myPom)
+}
+/* 追加 GitHubPackages 发布目标; com.vanniktech.maven.publish 插件 已经打包了发布内容，所以这里只需要追加远程仓库。 */
+afterEvaluate {
+    /* 从 GRADLE_USER_HOME 读取全局 gradle.properties (存放 git 凭证) !!! 不要把密钥放到仓库里上传到 github */
+    val globalProps: Properties = Properties().apply {
+        gradle.gradleUserHomeDir.resolve("gradle.properties")
+            .takeIf(File::exists)?.reader()?.use(::load)
+    }
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/shilic/${artifactId}")
+                credentials {
+                    username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
+                    password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
+                }
+            }
+            /*  // 使用 Gitea 自建的远程仓库
+             maven {
+                 // 使用 Gitea 自建的远程仓库，名称强制指定为 Gitea
+                 name = "Gitea"
+                 url = uri("http://你的内网网址:你的端口号/api/packages/你的gitea名/maven")
+                 // http 链接需要强制使用 isAllowInsecureProtocol = true
+                 isAllowInsecureProtocol = true
+                 // 设置仓库凭证
+                 credentials(HttpHeaderCredentials::class) {
+                     // Gitea 规定，名称强制为 Authorization
+                     name = "Authorization"
+                     // Gitea 的个人访问令牌和 github 类似，到网站上自己去生成一个。
+                     value = "token ${globalProps.getProperty("gitea.token")}"
+                 }
+                 // 以下代码为固定的
+                 authentication {create("header", HttpHeaderAuthentication::class)}
+             }
+             */
         }
     }
 }
-
-// 源码包 (可深入源码DEBUG)
-tasks.register<Jar>("sourcesJar") {
-    description = "源码包 (可深入源码DEBUG)"
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
-}
-
-// Javadoc 包 (可查看注释)
-tasks.register<Jar>("javadocJar") {
-    description = "Javadoc 包 (可查看注释)"
-    archiveClassifier.set("javadoc")
-    from(tasks.javadoc.get().outputs)
-}
-
-// 定义发布内容 (在添加 `maven-publish` 之后，需要同步一下gradle更改才不会语法报错)
-publishing {
-    // ===== 4. 配置远程仓库; 推到哪里 ? =====
-    repositories {
-        // 发布到 GitHubPackages
-        maven {
-            // 仓库名称 (固定参数 GitHubPackages, 不可变动 ; 该存储库指向 GitHub Packages)
-            name = "GitHubPackages"
-            // 仓库 github URL
-            url = uri("https://maven.pkg.github.com/shilic/smart-dbc")
-            // 设置仓库凭证
-            credentials {
-                /* 使用 GitHubPackages 发布，需要准备用户名和个人访问令牌(GITHUB_TOKEN) 。
-                 * 和 maven 的.m2/settings.xml 文件类似；将 github 个人访问令牌放到环境变量中,再让gradle获取。
-                 * 我准备了 4 种方式:
-                 * 1. 使用 github 官方的 build.gradle.kts 的写法: 设置环境变量。
-                 *     请参考 https://docs.github.com/zh/actions/tutorials/publish-packages/publish-java-packages-with-gradle
-                 * 在我的电脑的环境变量中，设置 GITHUB_ACTOR 和 GITHUB_TOKEN 两个常量。设置了变量之后，需要重启IDE使其生效。
-                 * 然后使用 System.getenv("GITHUB_ACTOR") 方式获取。
-                 * 2. 使用C盘下的  C:\Users\Administrator\.gradle\gradle.properties 文件 读取github名称和令牌；
-                 *     你需要在里边设置 gpr.user 和 gpr.key两个变量，名称可以随便起。
-                 * 然后通过下边语句来获取，
-                 //    val globalProps2 = Properties().apply {
-                 //           File(System.getProperty("user.home"), ".gradle/gradle.properties")
-                 //          .takeIf { it.exists() }?.inputStream()?.use { load(it) }
-                 //       }
-                 * 3. 有的教程会推荐使用 project.findProperty("gpr.key") 语句来设置github个人访问令牌。
-                 *     请参考: https://blog.csdn.net/qq_41187124/article/details/156274030
-                 * 实测该命令会从项目的根目录的 gradle.properties 文件读取，但是该文件需要上传到 github ，
-                 * 这会暴露自己的令牌，显然这是不合适的做法。请不要使用该语句。
-                 *
-                 * 特别注意，不要在仓库中泄漏个人访问令牌, 不要上传到 github 中，请放到环境变量中。
-                 * */
-                // 4. 使用推荐的写法，从 GRADLE_USER_HOME 读取全局 gradle.properties (存放 git 凭证)
-                username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
-                password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
-            }
-        }
-        // 可以同时配置多个远程仓库
-        /*
-        maven {
-            name = "MyNexus"
-            url = uri("https://nexus.company.com/repository/maven-releases/")
-            credentials {
-                username = "your_username"
-                password = "your_password"
-            }
-        }
-        */
-    }
-    // ===== 3. 配置标准的发布内容 =====
-    /*  一个项目可以定义多个发布内容 (Multiple Publications)，例如发布不同的构件或为不同的用途提供不同的元数据。
-     * 例如: 基本的jar(可调用代码)、 源码(可深入源码DEBUG)、 java-docs(可查看文档)  */
-    publications {
-        // 定义名为 maven 的发布内容
-        create<MavenPublication>("maven") {
-            // artifactId = rootProject.name
-            // kotlin("jvm") 插件内部会应用 java 插件，所以软件组件名统一叫 "java"，没有 "kotlin" 这个组件。
-            // 这不是"不可变"，而是 JVM 类库的标准写法——Java 和 Kotlin 都是同一个 `components["java"]。
-            from(components["java"])
-            // 打包源码包
-            artifact(tasks["sourcesJar"])
-            // 打包注释包
-            artifact(tasks["javadocJar"])
-            // 可以在这里自定义 POM 内容
-            pom {
-                name = "smart-dbc"
-                description = "更聪明的DBC，用于读写DBC，以及基于DBC做快速CAN报文编解码"
-                url.set("https://github.com/shilic/smart-dbc")
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("诚")
-                        name.set("诚")
-                        email.set("985478238@qq.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/shilic/smart-dbc.git")
-                    developerConnection.set("scm:git:ssh://github.com/shilic/smart-dbc.git")
-                    url.set("https://github.com/shilic/smart-dbc")
-                }
-            }
-        }
-    }
-}
-
-// 项目依赖
+/* 项目依赖 */
 dependencies {
     // ========== 核心依赖 ==========
     implementation(kotlin("stdlib"))
-
     // ========== 测试依赖 ==========
     testImplementation(kotlin("test"))
-
     // ========== 引入自定义依赖 ==========
-    // 使用该语句，调用自己在 GitHubPackages 上发布的软件包; smart-grid 用于从表格识别数据进来。
-    implementation("io.github.shilic:smart-grid:1.0.2")
-    // 使用该语句，调用自己在 GitHubPackages 上发布的软件包; numeric-converter 用于规范网络字节数据。
-    implementation("io.github.shilic:numeric-converter:1.0.2")
+    // smart-grid 用于从表格识别数据进来。
+    implementation("io.github.shilic:smart-grid:1.0.3")
+    // smart-network-byte 用于规范网络字节数据。
+    implementation("io.github.shilic:smart-network-byte:1.0.0")
 
     // ========== 引入excel依赖 ==========
     // 核心功能: 处理xlsx文件
-    implementation("org.apache.poi:poi:5.3.0")
+    implementation("org.apache.poi:poi:5.5.1")
     // 处理xlsx文件（Office Open XML格式）
-    implementation("org.apache.poi:poi-ooxml:5.4.0")
-
+    implementation("org.apache.poi:poi-ooxml:5.5.1")
     // 识别文件编码
     implementation("com.github.albfernandez:juniversalchardet:2.4.0")
     // 序列化框架
     implementation("com.google.code.gson:gson:2.10.1")
-
     // ========== 反射 引入 kotlin-reflect ==========
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
-
     // =============== 测试项目引入 kotlin 协程 ==============
     // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
-
 tasks.test {
     useJUnitPlatform()
 }

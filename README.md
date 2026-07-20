@@ -98,46 +98,19 @@ copyright: Apache-2.0
 
 ## 安装与部署
 
-### 添加仓库
-
-`smart-dbc` 发布在 **GitHub Packages**中，需先在 `build.gradle.kts` 中添加仓库：
-
-```kotlin
-import java.util.Properties
-
-// 从 GRADLE_USER_HOME 读取凭证（复用同一份），也就是从 ~/.gradle/gradle.properties 读取配置
-val globalProps = Properties().apply {
-    gradle.gradleUserHomeDir.resolve("gradle.properties").takeIf { it.exists() }?.reader()?.use { load(it) }
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        // name : 固定为 GitHubPackages
-        name = "GitHubPackages"
-        // url : 仓库地址
-        url = uri("https://maven.pkg.github.com/shilic/*")
-        // 访问令牌
-        credentials {
-            username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
-            password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
-        }
-    }
-}
-```
-
-> GitHub Packages 要求提供个人访问令牌（classic token，勾选 `read:packages`）。请将令牌配置到环境变量 `GITHUB_TOKEN` 或 `~/.gradle/gradle.properties`文件 中，**切勿提交到仓库**。
-
 ### 添加依赖
 
+`smart-dbc` 已经发布在`maven central`中，直接在 `build.gradle.kts` 中依赖即可：
+
 ```kotlin
+// `build.gradle.kts` 
 dependencies {
     // 本框架 smart-dbc  
-    implementation("io.github.shilic:smart-dbc:1.0.9")
-    // 本框架的传递依赖 smart-grid 
-    implementation("io.github.shilic:smart-grid:1.0.1")
-    // 本框架的传递依赖 numeric-converter 
-    implementation("io.github.shilic:numeric-converter:1.0.2")
+    implementation("io.github.shilic:smart-dbc:1.0.11")
+    // smart-grid 用于从表格识别数据进来。
+    implementation("io.github.shilic:smart-grid:1.0.3")
+    // smart-network-byte 用于规范网络字节数据。
+    implementation("io.github.shilic:smart-network-byte:1.0.0")
 }
 ```
 
