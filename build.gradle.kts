@@ -14,8 +14,7 @@ plugins {
     id("com.vanniktech.maven.publish") version "0.36.0"
 }
 /* ======================= 填写个人信息 ============================= */
-/* 组织机构的名称必须是 io.github.<你的github名称>，除非你有你自己的域名; maven中心会校验你是否拥有这个域名，否则一律挂到 github 下 */
-group = "io.github.shilic"
+val githubUser = "shilic"
 /* 版本号  !!! 严禁 -SNAPSHOT */
 version = "1.0.11"
 val mDescription = "smart-dbc 是一个CAN协议车载通信中间件（Kotlin/JVM 库），提供完整的 DBC 文件转换、解析、生成、编辑 能力，" +
@@ -23,6 +22,8 @@ val mDescription = "smart-dbc 是一个CAN协议车载通信中间件（Kotlin/J
         "支持通过注解将数据模型字段与 DBC 信号自动绑定，实现 CAN 报文的快速编解码 (从总线值到物理值, 以及从物理值到总线值)。" +
         "适用于汽车电子、车载网络等需要处理 CAN 总线协议的业务场景。使用Kotlin编写，同时兼容 java和kotlin。"
 
+/* 组织机构的名称必须是 io.github.<你的github名称>，除非你有你自己的域名; maven中心会校验你是否拥有这个域名，否则一律挂到 github 下 */
+group = "io.github.$githubUser"
 /** 从 settings.gradle.kts 文件取值过来 */
 val artifactId: String = rootProject.name
 /** 提取个人的链接，方便统一修改 */
@@ -51,7 +52,7 @@ val myPom: MavenPom.() -> Unit = {
         developerConnection = "scm:git:ssh://$myGit.git"
     }
 }
-// 仓库们, 构建脚本会在里边定义的仓库中寻找依赖
+/* 仓库们, 构建脚本会在里边定义的仓库中寻找依赖 */
 repositories {
     mavenCentral()
 }
@@ -73,7 +74,7 @@ afterEvaluate {
         repositories {
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/shilic/${artifactId}")
+                url = uri("https://maven.pkg.github.com/$githubUser/${artifactId}")
                 credentials {
                     username = globalProps.getProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
                     password = globalProps.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
