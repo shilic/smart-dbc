@@ -11,6 +11,7 @@ import java.io.InputStream
  * 将 DBC 文件的路径解析为[DataBaseCanImp]数据库。
  * 仅支持 `.dbc` 后缀的文件，内部委托给[File.toDbc]。
  * @return 解析后的[DataBaseCanImp]数据库实例
+ * @since 1.0.11
  */
 fun String.toDbc(): DataBaseCanImp = File(this).toDbc()
 
