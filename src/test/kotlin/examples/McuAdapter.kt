@@ -1,4 +1,4 @@
-package canDemo
+package examples
 
 import demoData.getRandomArray
 import demoData.msg1_Id

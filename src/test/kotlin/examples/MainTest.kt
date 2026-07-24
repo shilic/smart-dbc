@@ -1,4 +1,4 @@
-package canDemo
+package examples
 
 import demoData.*
 import demoData.dbcTag1
@@ -7,7 +7,6 @@ import io.github.shilic.smartDbc.can.contract.CanListener
 import io.github.shilic.smartDbc.can.core.CanIo
 import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 import io.github.shilic.smartDbc.dbc.dataModel.contract.DataBaseCan
-import io.github.shilic.smartDbc.dbc.io.reader.DbcFileReader
 import io.github.shilic.smartDbc.dbc.io.reader.toDbc
 import java.io.File
 import kotlin.test.Test

@@ -165,7 +165,7 @@ smart-dbc/
 │   └── valueConverter/                 // 信号值转换（物理值 ↔ 十六进制）
 │
 ├── src/test/kotlin/
-│   ├── canDemo/                        // CAN 框架使用示例（含模拟 MCU）
+│   ├── examples/                        // CAN 框架使用示例（含模拟 MCU）
 │   ├── dbcDemo/                        // DBC 文件读写示例
 │   ├── demoData/                       // 测试用数据模型
 │   └── toolTest/                       // 工具函数测试
@@ -198,7 +198,7 @@ smart-dbc/
 适用于快速上手、无需预先定义数据模型的场景。
 
 ```kotlin
-// 更详细的用法请参考 src/test/kotlin/canDemo/CanTest.kt 文件
+// 更详细的用法请参考 src/test/kotlin/examples/CanTest.kt 文件
 
 // 1. 读取 DBC 文件；DBC对象中使用树形结构保存了DBC文件中的所有信息。
 val dbc: DataBaseCan = File("example.dbc")::inputStream.toDbc()
@@ -250,7 +250,7 @@ data class Message1(
 **第 2 步：初始化框架**
 
 ```kotlin
-// 更详细的用法请参考 src/test/kotlin/canDemo/MainTest.kt
+// 更详细的用法请参考 src/test/kotlin/examples/MainTest.kt
 import io.github.shilic.smartDbc.can.core.CanIo
 
 // 在框架组件CanIo的作用域上调用
@@ -276,7 +276,7 @@ CanIo.apply {
 **第3步：监听报文**
 
 ```kotlin
-// 更详细的用法请参考 src/test/kotlin/canDemo/MainTest.kt
+// 更详细的用法请参考 src/test/kotlin/examples/MainTest.kt
 
 // 注册 CAN 监听器
 CanIo.register(MyListener)

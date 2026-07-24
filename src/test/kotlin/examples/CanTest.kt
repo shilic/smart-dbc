@@ -1,10 +1,9 @@
-package canDemo
+package examples
 
 import demoData.*
 import io.github.shilic.smartDbc.can.contract.CanListener
 import io.github.shilic.smartDbc.can.models.canFrame.contract.CanFrame
 import io.github.shilic.smartDbc.dbc.dataModel.contract.DataBaseCan
-import io.github.shilic.smartDbc.dbc.io.reader.DbcFileReader
 import io.github.shilic.smartDbc.dbc.io.reader.toDbc
 import io.github.shilic.smartDbc.valueConverter.*
 import org.junit.jupiter.api.Test
