@@ -59,7 +59,7 @@ copyright: Apache-2.0
 
 由上述表格可见，`python`类的库，功能都挺强大的，可编辑DBC，可格式转换，可CAN编解码；但是这一类主要用于脚本和上位机，对于车载环境无能无力。
 
-但是，业界确实也有`Java`语言的框架，那就是 [CAN-do-parser](https://github.com/zhiwei55/CAN-do-parser)，但是本框架目前已经貌似停止维护了，并且抽象程度和封装程度都很低，和优雅是一点也谈不上，语法还都是面向过程式的，使用起来肯定是不顺手的。
+但是，业界确实也有`Java`语言的框架，那就是 [CAN-do-parser](https://github.com/zhiwei55/CAN-do-parser)，但是本框架目前已经貌似停止维护了，并且抽象程度和封装程度都很低，用起来不顺手。
 
 所有就有了本项目，一个使用`kotlin`编写的全新项目，兼容`kotlin`和`java`，拥有完整的 **DBC 文件转换、解析、生成、编辑** 能力，支持 **CAN 报文的快速编解码**，可快速集成在车载大屏APP上(已完成实际验证)。
 
@@ -165,7 +165,7 @@ smart-dbc/
 │   └── valueConverter/                 // 信号值转换（物理值 ↔ 十六进制）
 │
 ├── src/test/kotlin/
-│   ├── examples/                        // CAN 框架使用示例（含模拟 MCU）
+│   ├── canDemo/                        // CAN 框架使用示例（含模拟 MCU）
 │   ├── dbcDemo/                        // DBC 文件读写示例
 │   ├── demoData/                       // 测试用数据模型
 │   └── toolTest/                       // 工具函数测试
@@ -198,7 +198,7 @@ smart-dbc/
 适用于快速上手、无需预先定义数据模型的场景。
 
 ```kotlin
-// 更详细的用法请参考 src/test/kotlin/examples/CanTest.kt 文件
+// 更详细的用法请参考 src/test/kotlin/canDemo/CanTest.kt 文件
 
 // 1. 读取 DBC 文件；DBC对象中使用树形结构保存了DBC文件中的所有信息。
 val dbc: DataBaseCan = File("example.dbc")::inputStream.toDbc()
@@ -250,7 +250,7 @@ data class Message1(
 **第 2 步：初始化框架**
 
 ```kotlin
-// 更详细的用法请参考 src/test/kotlin/examples/MainTest.kt
+// 更详细的用法请参考 src/test/kotlin/canDemo/MainTest.kt
 import io.github.shilic.smartDbc.can.core.CanIo
 
 // 在框架组件CanIo的作用域上调用
@@ -276,7 +276,7 @@ CanIo.apply {
 **第3步：监听报文**
 
 ```kotlin
-// 更详细的用法请参考 src/test/kotlin/examples/MainTest.kt
+// 更详细的用法请参考 src/test/kotlin/canDemo/MainTest.kt
 
 // 注册 CAN 监听器
 CanIo.register(MyListener)
