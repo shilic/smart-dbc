@@ -33,9 +33,9 @@ class MainTest: CanListener {
             // 步骤3：将 DBC 添加到 DBC 管理器中
             dbcMap[dbc.dbcTag] = dbc
             // 步骤4：绑定数据模型(需要在绑定DBC之后)，框架会自动将数据模型中的字段与DBC中的信号绑定
-            binding(Message1())
-            binding(CCSToAC1())
-            binding(ACToCCS1())
+            binding(Message1::class)
+            binding(CCSToAC1::class)
+            binding(ACToCCS1::class)
             // 步骤5：注册 MCU 适配器(拥有CAN收发的能力)
             this.mcuAdapter = McuAdapter
             // 步骤6：实现监听器接口, 在监听器中, 使用DBC对象来解码报文

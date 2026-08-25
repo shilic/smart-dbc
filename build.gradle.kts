@@ -123,7 +123,7 @@ dependencies {
     // 序列化框架
     implementation("com.google.code.gson:gson:2.10.1")
     // ========== 反射 引入 kotlin-reflect ==========
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    implementation(kotlin("reflect"))
     // =============== 测试项目引入 kotlin 协程 ==============
     // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
