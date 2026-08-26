@@ -14,9 +14,9 @@ import kotlin.reflect.full.*
 object CanIo: ICanIo {
     override val logTag : String = "${CanIo::class.simpleName}"
     /** 持有底层 MCU适配器 ，需要由外部自行实例化，并注册到CanIo中。再通过该字段绑定监听事件。 */
-    override var mcuAdapter: IMcu = DefaultMcuAdapter
+    override var mcuAdapter : IMcu = DefaultMcuAdapter
     /** 持有只读DBC的可变集合(框架只需要只读DBC), 需要由外部自行实例化，并添加DBC进来 */
-    override val dbcMap: MutableMap<String, DataBaseCan> = mutableMapOf()
+    override val dbcMap : MutableMap<String, DataBaseCan> = mutableMapOf()
     /** 持有数据模型 */
     override val modelMap: MutableMap<KClass<*>, Any> = mutableMapOf()
     
@@ -30,7 +30,7 @@ object CanIo: ICanIo {
      * @param model 数据模型
      * @Deprecated 使用 binding 替代
      */
-    @Deprecated("使用 binding 替代", ReplaceWith("binding(model)"))
+    @Deprecated("使用 binding 替代", ReplaceWith("binding(kClass)"))
     inline fun <reified T : Any> bind(model: T) {
         // ------------------------- 前期校验 -------------------------
         val kClass : KClass<T> = T::class
@@ -40,7 +40,7 @@ object CanIo: ICanIo {
         val missingDbcTags = dbcBind.dbcTags.filter { it !in dbcMap }
         require(missingDbcTags.isEmpty()) { "没有提前在${CanIo::class.simpleName}对象中注册以下DBC标签:${missingDbcTags}" }
 
-        // ------------- 遍历所有字段, 然后执行绑定操作, 允许只读字段绑定 ------------------
+        // ------------- 遍历所有字段, 然后执行绑定操作, 允许只读字段绑定(只读字段无法写入，但是可以读取) ------------------
         kClass.memberProperties.forEach { property ->
             // 拿到字段上的绑定信息，没有就跳过这一次循环。
             val canBind = property.findAnnotation<CanBinding>() ?: return@forEach
@@ -73,5 +73,6 @@ object CanIo: ICanIo {
     }
     // ================== 模型操作 ======================
     /** 获取绑定的模型 */
+    @Deprecated("请使用getModel(kClass : KClass<T>)替代", ReplaceWith("getModel(kClass)"))
     inline fun <reified T : Any> getModel(): T? = modelMap[T::class] as? T
 }

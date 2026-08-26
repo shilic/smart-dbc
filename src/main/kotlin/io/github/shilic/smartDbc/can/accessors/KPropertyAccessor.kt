@@ -35,7 +35,7 @@ interface KPropertyAccessor {
      * 数据类型，只有 Unsigned、Signed、Float、Double 四种; 故外部干脆直接统一成 Double 类型，再转换为对应的数据类型，最后再进行设置。
      * */
     fun setPropertyValue(value: Double, newOwner: Any? = null) {
-        var aOwner: Any? = newOwner ?: originalOwner
+        val aOwner: Any? = newOwner ?: originalOwner
         // 只有三个都不为空，才会继续执行后面的代码
         if (originalProperty == null || aOwner == null || originalOwnerType == null) { return }
         // 在非空的情况下，判断类型是否一致
@@ -54,7 +54,7 @@ interface KPropertyAccessor {
      *
      * 如果没有绑定字段和接受者，则返回 null ;*/
     fun getPropertyValue(newOwner: Any? = null): Double? {
-        var aOwner: Any? = newOwner ?: originalOwner
+        val aOwner: Any? = newOwner ?: originalOwner
         // 只有三个都不为空，才会继续执行后面的代码
         if (originalProperty == null || aOwner == null || originalOwnerType == null) { return null }
         // 在非空的情况下，判断类型是否一致

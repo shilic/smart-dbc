@@ -1,16 +1,12 @@
 package io.github.shilic.smartDbc.can.contract
 
 import io.github.shilic.smartDbc.can.binds.*
-import io.github.shilic.smartDbc.can.core.CanIo
 import io.github.shilic.smartDbc.can.models.canFrame.contract.*
 import io.github.shilic.smartDbc.dbc.dataModel.contract.*
 import io.github.shilic.smartDbc.valueConverter.*
-import kotlin.collections.set
-import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.full.safeCast
+import kotlin.collections.*
+import kotlin.reflect.*
+import kotlin.reflect.full.*
 
 interface ICanIo : IMcu {
     val logTag : String
@@ -19,22 +15,28 @@ interface ICanIo : IMcu {
     /** 持有只读DBC的可变集合(框架只需要只读DBC), 需要由外部自行实例化，并添加DBC进来 */
     val dbcMap: Map<String, DataBaseCan>
     /** 持有数据模型 */
-    val modelMap: Map<KClass<*>, Any>
-    /** Java 兼容版：接受 Class<T> 绑定 */
-    fun <T : Any> binding(clazz: Class<T>): T  {
-        val kClass :KClass<T> = clazz.kotlin
-        return binding(kClass)
-    }
+    val modelMap: MutableMap<KClass<*>, Any>
+    /**绑定核心方法（Java 兼容版：接受 [Class]<[T]> 绑定）
+     *
+     * 传入kotlin的类型进来, 反射遍历所有字段并绑定到对应的信号上。
+     *
+     * */
+    fun <T : Any> binding(clazz: Class<T>): T  = binding(clazz.kotlin)
+    /**绑定核心方法。
+     *
+     * 传入kotlin的类型进来, 反射遍历所有字段并绑定到对应的信号上。
+     *
+     * */
     fun <T : Any> binding(kClass : KClass<T>) : T {
         val model : T = try {
             kClass.createInstance()
         } catch (_ : IllegalArgumentException) {
-            error("传入框架的数据类 ${kClass.simpleName} 需要有一个无参构造。")
+            error("传入框架的数据类 '${kClass.simpleName}' 需要有一个无参构造。")
         }
         val msgBind: CanMessageBinding = kClass.findAnnotation<CanMessageBinding>()
             ?: error("'${kClass.simpleName}'类型需要标记'${CanMessageBinding::class.simpleName}'注解, 才可以绑定")
         // 验证DBC必须先提前注册; 在已经注册的DBC标签中，搜索类型上标注的DBC标签; 要求标注的DBC必须注册进来。
-        val dbc = CanIo.dbcMap[msgBind.dbcTag] ?: error("没有提前在${CanIo::class.simpleName}对象中注册以下DBC标签:${msgBind.dbcTag}")
+        val dbc = dbcMap[msgBind.dbcTag] ?: error("没有提前在${ICanIo::class.simpleName}对象中注册以下DBC标签:${msgBind.dbcTag}")
         val msg = dbc[msgBind.msgId] ?: error("没有在注册DBC中找到 报文ID:${CanMessage.msgIdToKey(msgBind.msgId)}")
 
         // ------------- 遍历所有字段, 然后执行绑定操作, 允许只读字段绑定 ------------------
@@ -51,9 +53,9 @@ interface ICanIo : IMcu {
                 it.originalProperty = property
             }
             // 保存绑定好的数据模型
-            CanIo.modelMap[kClass] = model
+            modelMap[kClass] = model
         }
-        println("${CanIo.logTag}: 对象绑定完成, 已经成功将 '$kClass' 类型绑定至DBC中")
+        println("${logTag}: 对象绑定完成, 已经成功将 '$kClass' 类型绑定至DBC中")
         return model
     }
     // ================== 模型操作 ======================
