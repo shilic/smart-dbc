@@ -30,7 +30,4 @@ fun File.nextAvailableFile(): File {
  *
  * 字符串版本的扩展，行为与 File 版本一致。
  */
-fun String.nextAvailablePath(): String {
-    val file = File(this)
-    return file.nextAvailableFile().absolutePath
-}
+fun String.nextAvailablePath(): String = File(this).nextAvailableFile().absolutePath
