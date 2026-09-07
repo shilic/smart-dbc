@@ -52,6 +52,10 @@ jobs:
       - name: 设置 Gradle 并缓存依赖
         uses: gradle/actions/setup-gradle@v4
 
+      # Windows 开发环境下 gradlew 常丢失可执行位，运行前强制加上，避免 Permission denied
+      - name: 确保 gradlew 可执行
+        run: chmod +x gradlew
+
       # 发布到 Maven Central（GPG 签名 + 凭证通过环境变量注入）
       # 若需发布后自动 close+release，可改用 ./gradlew publishAndReleaseToMavenCentral
       - name: 发布到 Maven Central

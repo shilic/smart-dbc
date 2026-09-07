@@ -29,6 +29,10 @@ jobs:
       - name: 设置 Gradle 并缓存依赖
         uses: gradle/actions/setup-gradle@v4
 
+      # Windows 开发环境下 gradlew 常丢失可执行位，运行前强制加上，避免 Permission denied
+      - name: 确保 gradlew 可执行
+        run: chmod +x gradlew
+
       # 编译主/测试源码 + 运行全部单元测试 + 打包。
       # src/test/kotlin/examples/ 下的示例代码同属 test 源集，会一并编译通过。
       - name: 编译 + 测试
