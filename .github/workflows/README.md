@@ -124,7 +124,7 @@ BREAKING CHANGE: 删除了 tsfifo_receive_can_message_list，调用方需迁移
 
 - 用祈使句（动词开头）：`修复` 而不是 `修复了`
 - 简短（≤ 50 字符），结尾不加句号
-- 中文 subject 可以，但 `type:` 前缀必须是标准英文
+- 中文 subject 可以，但 `type:` 前缀必须是标准英文 
 
 ### 示例
 
