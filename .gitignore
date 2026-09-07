@@ -84,6 +84,7 @@ output/
 
 # 打包文件
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.zip
