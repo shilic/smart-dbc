@@ -15,7 +15,7 @@ plugins {
 }
 /* ======================= 填写个人信息 ============================= */
 val githubUser = "shilic"
-/* 版本号  !!! 严禁 -SNAPSHOT */
+/* 版本号  !!! 严禁 -SNAPSHOT ；严禁手动修改版本号，使用github action自动修改版本号。 */
 version = "1.1.4" // x-release-please-version
 val mDescription = "smart-dbc 是一个CAN协议车载通信中间件（Kotlin/JVM 库），提供完整的 DBC 文件转换、解析、生成、编辑 能力，" +
         "并在此基础上封装了一套 CAN 通信框架；" +
