@@ -14,7 +14,9 @@ on:
 
 permissions:
   contents: write
+  # 机器人需要有PR权限和写入包的权限
   pull-requests: write
+  packages: write
 
 jobs:
   # 阶段1：release-please 维护 release PR，合并后打 tag + 生成 CHANGELOG
