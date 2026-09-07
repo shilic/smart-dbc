@@ -163,6 +163,14 @@ git commit -m "feat!: 删除旧版 getModel(Class) 重载，统一用 KClass"
 
 > `GITHUB_TOKEN` 无需手动配置，GitHub 自动注入。
 
+> ⚠️ **GPG 私钥的坑**：`GPG_PRIVATE_KEY` 必须是**真实换行**的 armored 文本(`Github Secrets`会自动换行, 不同于`~/.gradle/gradle.properties`文件)。不要直接复制 `~/.gradle/gradle.properties` 里 `signingInMemoryKey` 的值——那是 Java Properties 的 `\n\` 转义格式，贴进 secret 后私钥就坏了，发布时会报 `Could not read PGP secret key`。正确做法是用命令重新导出：
+>
+> ```bash
+> gpg --armor --export-secret-keys <你的KEY_ID>
+> ```
+>
+> 把输出（含真实换行）完整粘贴进 secret。`GPG_PASSPHRASE` 填生成密钥时设置的密码。
+
 ### 2. 首次推送
 
 把新增的这些文件提交并 push 到 GitHub：
@@ -216,7 +224,7 @@ git push
 | publish 被跳过 / 提示 `This job was skipped` | 正常：只有合并 release-please 开的 release PR 才触发发布，合并普通分支不会。若 release 已存在但发布失败过，需本地手动补发 `./gradlew publishToMavenCentral` |
 | 一直不开 release PR | 提交里没有 `feat:` / `fix:`，或 commit 格式不规范 |
 | release-please 报 `not permitted to create or approve pull requests` | 仓库未开启 Actions 创建 PR 权限，见第六节「前置条件」 |
-| publish 失败：签名错误 | `GPG_PRIVATE_KEY` 不是 armored 格式，或 `GPG_PASSPHRASE` 不对 |
+| publish 失败：签名错误 / `Could not read PGP secret key` | `GPG_PRIVATE_KEY` 是坏的（多半复制了 `gradle.properties` 里 `\n\` 转义文本）。用 `gpg --armor --export-secret-keys` 重新导出真实换行文本重贴 |
 | publish 失败：401 | Maven Central token 无效或权限不足 |
 | Qodana 工作流红叉 | 缺少 `QODANA_TOKEN` |
 
