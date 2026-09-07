@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/shilic/smart-dbc/compare/v1.1.4...v1.1.5) (2026-09-07)
+
+
+### 文档
+
+* 补齐 CI/CD 踩坑记录 ([d2411c4](https://github.com/shilic/smart-dbc/commit/d2411c4beffa4ceeca8e0147fa3dca0626b91708))
+
 ## [1.1.4](https://github.com/shilic/smart-dbc/compare/v1.1.3...v1.1.4) (2026-09-07)
 
 
