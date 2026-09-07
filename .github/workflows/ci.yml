@@ -1,0 +1,100 @@
+name: CI
+
+# 博客《SDK的设计哲学》第八章 —— CI 质量门禁
+# 每次 push / PR 到 master 都会触发，全部通过才建议合并。
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # 基础门禁：编译 + 单元测试。当前即可运行，无需额外插件。
+  build-test:
+    name: 构建 + 单元测试
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      # 构建脚本要求 Gradle 运行在 JDK 17 以上（vanniktech 插件要求）；
+      # 源码仍通过 jvmToolchain(8) 编译为 Java 8 字节码，两者不冲突。
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: 设置 Gradle 并缓存依赖
+        uses: gradle/actions/setup-gradle@v4
+
+      # 编译主/测试源码 + 运行全部单元测试 + 打包。
+      # src/test/kotlin/examples/ 下的示例代码同属 test 源集，会一并编译通过。
+      - name: 编译 + 测试
+        run: ./gradlew build
+
+  # =========================================================================
+  # 以下为博客第八章要求、但 build.gradle.kts 尚未接入插件的质量门禁，
+  # 先以注释占位。接入对应插件后，取消注释即可启用（缩进已按可直接运行排版）。
+  # =========================================================================
+
+  # 门禁1：单元测试覆盖率 >= 80%
+  # 依赖插件：jacoco（build.gradle.kts 的 plugins 块加 `jacoco`，或使用 kover）
+  #
+  # coverage:
+  #   name: 覆盖率 >= 80%
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-java@v4
+  #       with:
+  #         distribution: temurin
+  #         java-version: 17
+  #     - uses: gradle/actions/setup-gradle@v4
+  #     - run: ./gradlew jacocoTestReport jacocoTestCoverageVerification
+
+  # 门禁2：静态代码扫描
+  # 依赖插件：io.gitlab.arturbosch.detekt
+  #
+  # detekt:
+  #   name: 静态代码扫描
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-java@v4
+  #       with:
+  #         distribution: temurin
+  #         java-version: 17
+  #     - uses: gradle/actions/setup-gradle@v4
+  #     - run: ./gradlew detekt
+
+  # 门禁3：依赖冲突 / 安全漏洞扫描
+  # 依赖插件：org.owasp.dependency-check
+  #
+  # dependency-scan:
+  #   name: 依赖漏洞扫描
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-java@v4
+  #       with:
+  #         distribution: temurin
+  #         java-version: 17
+  #     - uses: gradle/actions/setup-gradle@v4
+  #     - run: ./gradlew dependencyCheckAnalyze
+
+  # 门禁4：二进制兼容性检查（用上一个版本的调用方代码跑当前 SDK）
+  # 依赖插件：com.github.siom79.japicmp
+  #
+  # compatibility:
+  #   name: 二进制兼容性检查
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-java@v4
+  #       with:
+  #         distribution: temurin
+  #         java-version: 17
+  #     - uses: gradle/actions/setup-gradle@v4
+  #     - run: ./gradlew japicmp
