@@ -141,6 +141,8 @@ git commit -m "feat!: 删除旧版 getModel(Class) 重载，统一用 KClass"
 
 ## 六、首次配置（只需做一次）
 
+> **前置条件（仓库权限）**：进入 `Settings → Actions → General → Workflow permissions`，选择「Read and write permissions」，并勾选「Allow GitHub Actions to create and approve pull requests」。否则 release-please 无法创建 release PR，会报 `not permitted to create or approve pull requests`。
+
 ### 1. 配置 Secrets
 
 进入对应的 `github` 仓库: `Settings → Secrets and variables → Actions → New repository secret`，添加：
@@ -206,6 +208,7 @@ git push
 |---|---|
 | 合并 release PR 后没发布 | 检查 secrets 是否齐全，尤其 GPG 签名相关 |
 | 一直不开 release PR | 提交里没有 `feat:` / `fix:`，或 commit 格式不规范 |
+| release-please 报 `not permitted to create or approve pull requests` | 仓库未开启 Actions 创建 PR 权限，见第六节「前置条件」 |
 | publish 失败：签名错误 | `GPG_PRIVATE_KEY` 不是 armored 格式，或 `GPG_PASSPHRASE` 不对 |
 | publish 失败：401 | Maven Central token 无效或权限不足 |
 | Qodana 工作流红叉 | 缺少 `QODANA_TOKEN` |
