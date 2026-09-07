@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.3](https://github.com/shilic/smart-dbc/compare/v1.1.2...v1.1.3) (2026-09-07)
+
+
+### 问题修复
+
+* 修复CD流程，补充 GPG 签名环境变量 ([ffec5af](https://github.com/shilic/smart-dbc/commit/ffec5af0b3a9700e663692a6ff19d451eaa02cc9))
+
+
+### 文档
+
+* 补充 GPG 私钥格式注意事项 ([fa79b82](https://github.com/shilic/smart-dbc/commit/fa79b827ce51dc3745491939dd93940d794bd9a2))
+
+
+### 持续集成
+
+* GitHub Packages 发布步骤补充 GPG 签名环境变量 ([8c36b28](https://github.com/shilic/smart-dbc/commit/8c36b28d81b3ee24c85febab344bb57a4c57ed5b))
+
 ## [1.1.2](https://github.com/shilic/smart-dbc/compare/v1.1.1...v1.1.2) (2026-09-07)
 
 
