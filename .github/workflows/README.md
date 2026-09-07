@@ -88,6 +88,12 @@ release-please 自动开 release PR（内含新版本号 + CHANGELOG）
 
 **你唯一的手动动作是：合并 release PR。**
 
+> ⚠️ **这里最容易误解**：「合并 release PR」特指 release-please **自动创建**的那个 PR（标题形如 `chore(master): release x.y.z`）。
+>
+> - **只有合并它**，release-please 才会真正创建 release（打 tag），并把 `release_created` 置为 `true`，从而触发 publish job。
+> - **合并普通分支**（例如 `dev` → `master`）**不会触发发布**，那只是同步代码。
+> - 判断标准：publish job 的触发条件是 `release_created == 'true'`，只有「合并 release PR」那一刻才会变成 true。
+
 ---
 
 ## 五、Commit 提交规范（Conventional Commits）
@@ -207,6 +213,7 @@ git push
 | 现象 | 原因 / 解决 |
 |---|---|
 | 合并 release PR 后没发布 | 检查 secrets 是否齐全，尤其 GPG 签名相关 |
+| publish 被跳过 / 提示 `This job was skipped` | 正常：只有合并 release-please 开的 release PR 才触发发布，合并普通分支不会。若 release 已存在但发布失败过，需本地手动补发 `./gradlew publishToMavenCentral` |
 | 一直不开 release PR | 提交里没有 `feat:` / `fix:`，或 commit 格式不规范 |
 | release-please 报 `not permitted to create or approve pull requests` | 仓库未开启 Actions 创建 PR 权限，见第六节「前置条件」 |
 | publish 失败：签名错误 | `GPG_PRIVATE_KEY` 不是 armored 格式，或 `GPG_PASSPHRASE` 不对 |
