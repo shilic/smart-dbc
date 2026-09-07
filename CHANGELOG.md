@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/shilic/smart-dbc/compare/v1.1.3...v1.1.4) (2026-09-07)
+
+
+### 问题修复
+
+* 删除qodana工作流程，并修复github发布时的权限问题 ([2fff448](https://github.com/shilic/smart-dbc/commit/2fff448c119a092b446451fda8e45967bd592161))
+
 ## [1.1.3](https://github.com/shilic/smart-dbc/compare/v1.1.2...v1.1.3) (2026-09-07)
 
 
