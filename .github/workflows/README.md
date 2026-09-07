@@ -31,9 +31,9 @@
 
 | 文件 | 作用 |
 |---|---|
-| `.release-please-config.json` | release-please 配置：`simple` 类型 + generic 更新 `build.gradle.kts`，中文 CHANGELOG 分节 |
+| `release-please-config.json` | release-please 配置：`simple` 类型 + generic 更新 `build.gradle.kts`，中文 CHANGELOG 分节 |
 | `.release-please-manifest.json` | 记录当前版本号（发布时由 release-please 自动更新） |
-| `qodana.yaml` | Qodana 扫描配置（`qodana.starter` 规则集，JDK 17） |
+| `.qodana.yaml` | Qodana 扫描配置（`qodana.starter` 规则集，JDK 17） |
 | `build.gradle.kts` | 第 19 行 `version = "..."`，版本号由 release-please 自动改写 |
 
 ---
@@ -48,7 +48,7 @@
    version = "1.0.11" // x-release-please-version
    ```
 
-2. **`.release-please-config.json`** —— 告诉 release-please「去改 build.gradle.kts」：
+2. **`release-please-config.json`** —— 告诉 release-please「去改 build.gradle.kts」：
 
    ```json
    "packages": {
@@ -160,7 +160,7 @@ git commit -m "feat!: 删除旧版 getModel(Class) 重载，统一用 KClass"
 把新增的这些文件提交并 push 到 GitHub：
 
 ```bash
-git add .github/ .release-please-config.json .release-please-manifest.json build.gradle.kts .qodana.yaml
+git add .github/ release-please-config.json .release-please-manifest.json build.gradle.kts .qodana.yaml
 git commit -m "ci: 接入 CI/CD 自动化发布流程"
 git push
 ```
@@ -192,7 +192,7 @@ git push
 
 3. **发布任务名**：`release.yml` 里 GitHub Packages 用的是聚合任务 `publishAllPublicationsToGitHubPackagesRepository`。若与你实际发布配置不一致，用 `./gradlew tasks` 确认后修改。
 
-4. **README 版本号不同步**：README 里的 `implementation("io.github.shilic:smart-dbc:1.0.11")` 和「版本更新」章节不会随 release-please 自动更新。如需同步，可把 `README.md` 也加入 `.release-please-config.json` 的 `extra-files`。
+4. **README 版本号不同步**：README 里的 `implementation("io.github.shilic:smart-dbc:1.0.11")` 和「版本更新」章节不会随 release-please 自动更新。如需同步，可把 `README.md` 也加入 `release-please-config.json` 的 `extra-files`。
 
 5. **Qodana 需要 token**：未配置 `QODANA_TOKEN` 时 Qodana 工作流会失败。若暂不使用，可删除 `qodana_code_quality.yml` 或先配上 token。
 
