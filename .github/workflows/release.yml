@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: release-please
         id: release
-        # 使用谷歌的 release-please-action 会自动修改版本号。完成CD的主要流程
+        # 使用谷歌的 release-please-action 会自动修改版本号。完成CD的主要流程。发布release。生成对应的PR。
         uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -39,6 +39,7 @@ jobs:
   publish:
     name: 发布到 Maven Central + GitHub Packages
     needs: release-please
+    # 必须上一步通过后，才会继续执行这一步骤。
     if: needs.release-please.outputs.release_created == 'true'
     runs-on: ubuntu-latest
     steps:
