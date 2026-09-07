@@ -43,6 +43,8 @@ class DbcFileWriter (
      *
      * */
     fun writeTo(file: File) {
+        // 确保父目录存在，否则输出目录不存在时会抛 FileNotFoundException
+        file.absoluteFile.parentFile?.mkdirs()
         // 自动判断文件编码: 如果文件存在，则尝试读取文件编码; 读取编码失败, 或输出文件不存在时，使用默认编码（GBK）
         val charset = if (file.exists()) { file.encoding ?: defaultEncoding } else { defaultEncoding }
         // 惰性消费序列，逐行写入
