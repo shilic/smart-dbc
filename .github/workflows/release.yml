@@ -74,6 +74,9 @@ jobs:
         run: ./gradlew publishAllPublicationsToGitHubPackagesRepository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 该任务同样触发 signMavenPublication（signAllPublications 签所有 publication），必须带上签名环境变量
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PASSPHRASE }}
 
 # =============================================================================
 # 需在仓库 Settings → Secrets and variables → Actions 中配置的 secrets：
