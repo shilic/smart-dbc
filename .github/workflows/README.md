@@ -214,6 +214,10 @@ git push
 
 6. **发布到 Maven Central 的凭据**：`MAVEN_CENTRAL_USERNAME` / `MAVEN_CENTRAL_PASSWORD` 是 Sonatype Central Portal 的 **token**（不是登录账号密码）。在 Sonatype 账户里生成。
 
+7. **发布失败后别用「Re-run failed jobs」补发**：GitHub 的「Re-run」用的是那次运行对应的**旧 workflow 文件**（不含你后来的修复），所以重跑还是老报错。要补发，要么本地手动跑 `./gradlew publish...`，要么 push 新提交触发新 run。
+
+8. **CI/CD 跑的是 master，不是 dev**：workflow 触发条件是 `push` 到 `master`。你在 `dev` 上的提交**不会触发 CI/CD**，改动要及时合并到 `master` 才会生效。
+
 ---
 
 ## 九、故障排查
@@ -226,6 +230,11 @@ git push
 | release-please 报 `not permitted to create or approve pull requests` | 仓库未开启 Actions 创建 PR 权限，见第六节「前置条件」 |
 | publish 失败：签名错误 / `Could not read PGP secret key` | `GPG_PRIVATE_KEY` 是坏的（多半复制了 `gradle.properties` 里 `\n\` 转义文本）。用 `gpg --armor --export-secret-keys` 重新导出真实换行文本重贴 |
 | publish 失败：401 | Maven Central token 无效或权限不足 |
+| 构建报 `Permission denied`（exit 126） | `gradlew` 丢失可执行位（Windows 开发常见）。工作流已加 `chmod +x gradlew` 防御；本地构建需手动 `chmod +x gradlew` |
+| 构建报 `Could not find or load main class org.gradle.wrapper.GradleWrapperMain` | `gradle-wrapper.jar` 被 `.gitignore` 的 `*.jar` 忽略了、没提交。需在 `*.jar` 之后加 `!gradle/wrapper/gradle-wrapper.jar` 并 `git add -f gradle/wrapper/gradle-wrapper.jar` |
+| publish 报 `Cannot perform signing ... no configured signatory` | 该发布任务缺 GPG 签名环境变量（`signingInMemoryKey`/`signingInMemoryKeyPassword`）。`signAllPublications` 签所有 publication，GitHub Packages 步骤也需要带上 |
+| GitHub Packages 发布报 `403 Forbidden` | workflow 的 `permissions` 缺 `packages: write` |
+| Maven Central 步骤成功但仓库里找不到包 | `publishToMavenCentral` 只上传到 Sonatype 暂存区，需去 central.sonatype.com 手动 Publish，或改用 `publishAndReleaseToMavenCentral` |
 | Qodana 工作流红叉 | 缺少 `QODANA_TOKEN` |
 
 ---
